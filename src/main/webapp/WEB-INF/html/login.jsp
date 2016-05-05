@@ -56,7 +56,7 @@
                               <input type="text" placeholder="用户名" name="userName"  >
                           </div>
                           <div class="clearfix">
-                              <input type="password" placeholder="密码" name="password">
+                              <input type="password" placeholder="密码" name="passWord">
                           </div>
                           <button class="btn btn-primary" type="submit">登 录</button>
                           <button class="btn" type="reset">重 置</button>
