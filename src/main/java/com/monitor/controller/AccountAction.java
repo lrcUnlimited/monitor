@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.monitor.exception.CodeException;
 import com.monitor.exception.ErrorMessage;
 import com.monitor.model.Account;
+import com.monitor.model.Pager;
 import com.monitor.service.account.IAccountService;
 
 @Controller
@@ -38,17 +40,42 @@ public class AccountAction {
 		return loginAccount;
 	}
 
+	@RequestMapping(value = "/e_query", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Pager queryUser(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+			@RequestParam(value = "userName", defaultValue = "") String userName)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		Pager pager = accountService.queryUser(pageNo, pageSize, accountId,
+				userName);
+		return pager;
+
+	}
+
 	@RequestMapping(value = "/e_add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	String add(@RequestBody Account account) throws CodeException {
-
+	String add(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestBody Account account) throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
 		if (StringUtils.isEmpty(account.getUserName())) {
 			throw new CodeException("用户名不能为空");
 		}
 		if (StringUtils.isEmpty(account.getPassWord())) {
 			throw new CodeException("密码不能为空");
 		}
-		accountService.saveAccount(account);
+		if (StringUtils.isEmpty(account.getUserPhone())) {
+			throw new CodeException("手机号不能为空");
+
+		}
+		accountService.saveAccount(accountId, account);
 		return "success";
 	}
 

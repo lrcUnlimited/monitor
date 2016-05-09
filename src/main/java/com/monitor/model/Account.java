@@ -1,5 +1,7 @@
 package com.monitor.model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +20,26 @@ public class Account {
 	private String userName;
 	@JsonIgnore
 	private String passWord;
+	private Date registerDate;// 用户添加日期
+	private String userPhone;// 用户电话
+	private String note;// 备注
 	private int type;// 用户类型0-代表普通用户，1-代表管理员
+
+	public Date getRegisterDate() {
+		return registerDate;
+	}
+
+	public void setRegisterDate(Date registerDate) {
+		this.registerDate = registerDate;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
 
 	public Integer getId() {
 		return id;
@@ -52,6 +73,14 @@ public class Account {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public String getUserPhone() {
+		return userPhone;
+	}
+
+	public void setUserPhone(String userPhone) {
+		this.userPhone = userPhone;
 	}
 
 }
