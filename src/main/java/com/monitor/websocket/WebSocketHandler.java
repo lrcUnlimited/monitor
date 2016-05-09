@@ -36,7 +36,6 @@ public class WebSocketHandler {
 
 		sessionUser.getBasicRemote().sendText(
 				"this is reply message from " + sessionUser.getId());
-		WebSocketMessagePoolUtil.sendMessage("");
 	}
 
 	/**

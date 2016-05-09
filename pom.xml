@@ -11,6 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>3.2.6.RELEASE</spring.version> <!-- spring版本 -->
+		<jackson.version>1.9.10</jackson.version>
 		<hibernate.version>4.1.9.Final</hibernate.version> <!-- hibernate版本，提供JPA ORM操作实现 -->
 	</properties>
 
@@ -22,6 +23,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- 依赖公共模块 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.1.36</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -395,6 +401,12 @@
 			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
+		</dependency>
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<!-- 测试相关依赖 -->
 		<dependency>

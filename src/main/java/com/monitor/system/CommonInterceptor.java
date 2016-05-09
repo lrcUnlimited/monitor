@@ -50,7 +50,7 @@ public class CommonInterceptor implements HandlerInterceptor {
 		String referer = req.getHeader("Referer");
 		String contextPath = req.getContextPath();
 		if (StringUtil.isNotEmpty(referer) && referer.indexOf(contextPath) < 0) {
-			CodeException ce = new CodeException("", "存在跨站攻击的风险");
+			CodeException ce = new CodeException("存在跨站攻击的风险");
 			throw ce;
 		}
 		// 安全过滤
@@ -62,7 +62,7 @@ public class CommonInterceptor implements HandlerInterceptor {
 				// throw ce;
 			}
 			if (false == SecurityUtil.checkSQLValidity(argV)) {
-				CodeException ce = new CodeException("", "包含SQL注入字符");
+				CodeException ce = new CodeException("包含SQL注入字符");
 				throw ce;
 			}
 		}

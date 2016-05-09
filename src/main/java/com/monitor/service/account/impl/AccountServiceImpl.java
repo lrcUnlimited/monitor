@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.monitor.dao.account.AccountRepository;
+import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.service.account.IAccountService;
 
@@ -15,10 +16,33 @@ public class AccountServiceImpl implements IAccountService {
 	private AccountRepository accountRepository;// 账户Repository
 
 	@Override
-	public Account getAccount(String userName, String passWord) {
+	public Account getAccount(String userName, String passWord)
+			throws CodeException {
 		Account account = accountRepository.loginAccount(userName, passWord);
-		logger.info("get account");
-		return account;
+		try {
+			if (account != null) {
+				return account;
+			} else {
+				throw new CodeException("用户名或密码错误");
+			}
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("内部错误" + e);
+			throw new CodeException("内部错误");
+
+		}
+	}
+
+	@Override
+	public boolean saveAccount(Account account) throws CodeException {
+		try {
+			accountRepository.save(account);
+			return true;
+		} catch (Exception e) {
+			logger.error("添加用户出错", e);
+			throw new CodeException("内部错误");
+		}
 	}
 
 }

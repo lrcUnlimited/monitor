@@ -11,30 +11,17 @@ public class CodeException extends Exception {
 	private static final long serialVersionUID = 8724252889850188629L;
 
 
-	private String code;
+	private String mess;
 
-	public CodeException(String code) {
-		super();
-		this.code = code;
+	public CodeException() {
 	}
 
-	public CodeException(String code, String message) {
-		super(message);
-		this.code = code;
+	public CodeException(String mess) {
+		this.mess = mess;
 	}
 
-	public CodeException(String code, Throwable cause) {
-		super(cause);
-		this.code = code;
-	}
-
-	public CodeException(String errorCode, String message, Throwable cause) {
-		super(message, cause);
-		this.code = errorCode;
-	}
-
-	public String getCode() {
-		return code;
+	public String getMessage() {
+		return mess;
 	}
 
 }

@@ -33,12 +33,7 @@
 
 	<bean id="exceptionResolver"
 		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="exceptionMappings">
-			<props>
-				<prop key="java.lang.Exception">/error/500.html</prop>
-				<prop key="com.monitor.exception.CodeException">/error/errorpage.html</prop>
-			</props>
-		</property>
+
 	</bean>
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
