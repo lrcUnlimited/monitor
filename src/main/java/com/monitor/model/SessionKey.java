@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class SessionKey {
 	private Date createDate;// 会话秘钥生成时间
-	private int randomNum;// 会话秘钥随机数
+	private String randomNum;// 会话秘钥随机数
 
 	public Date getCreateDate() {
 		return createDate;
@@ -20,11 +20,11 @@ public class SessionKey {
 		this.createDate = createDate;
 	}
 
-	public int getRandomNum() {
+	public String getRandomNum() {
 		return randomNum;
 	}
 
-	public void setRandomNum(int randomNum) {
+	public void setRandomNum(String randomNum) {
 		this.randomNum = randomNum;
 	}
 
