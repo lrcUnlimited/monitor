@@ -85,7 +85,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			} else if (type == 1) {
 				builder.append("  and device.manageDeviceStatus =1 and device.validTime <=DATE_ADD(now(),INTERVAL 3 DAY) ");
 				countSql.append(" and device.manageDeviceStatus =1 and device.validTime <=DATE_ADD(now(),INTERVAL 3 DAY) ");
-			} else {
+			} else if(type==2) {
 				builder.append("  and device.manageDeviceStatus =0 ");
 				countSql.append("  and device.manageDeviceStatus =0 ");
 			}
