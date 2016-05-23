@@ -1,14 +1,22 @@
 package com.monitor.service.device.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -218,6 +226,52 @@ public class DeviceServiceImpl implements IDeviceService {
 		} catch (Exception e) {
 			logger.error("更新设备有效期限出错", e);
 			throw new CodeException("更新设备有效期出错");
+
+		}
+	}
+
+	@Override
+	public ByteArrayOutputStream downloadDeviceZipFile(int accountId,
+			int deviceId) throws CodeException {
+		try {
+			Account account = accountRepository.findOne(accountId);
+			if (account == null || account.getType() == 0) {
+				throw new CodeException("没有权限");
+			}
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+					byteArrayOutputStream);
+			ZipOutputStream zipOutputStream = new ZipOutputStream(
+					bufferedOutputStream);
+			// simple file list, just for tests
+			ArrayList<File> files = new ArrayList<File>(2);
+			files.add(new File("D:\\1.txt"));
+			files.add(new File("D:\\emoji.emoji"));
+
+			// 打包文件
+			for (File file : files) {
+				zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+				FileInputStream fileInputStream = new FileInputStream(file);
+				IOUtils.copy(fileInputStream, zipOutputStream);
+				fileInputStream.close();
+				zipOutputStream.closeEntry();
+			}
+
+			if (zipOutputStream != null) {
+				zipOutputStream.finish();
+				zipOutputStream.flush();
+				IOUtils.closeQuietly(zipOutputStream);
+			}
+			IOUtils.closeQuietly(bufferedOutputStream);
+			IOUtils.closeQuietly(byteArrayOutputStream);
+			return byteArrayOutputStream;
+
+		} catch (CodeException e) {
+			throw e;
+
+		} catch (Exception e) {
+			logger.error("下载证书失败", e);
+			throw new CodeException("下载证书失败");
 
 		}
 	}
