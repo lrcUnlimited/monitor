@@ -245,8 +245,8 @@ public class DeviceServiceImpl implements IDeviceService {
 					bufferedOutputStream);
 			// simple file list, just for tests
 			ArrayList<File> files = new ArrayList<File>(2);
-			files.add(new File("D:\\1.txt"));
-			files.add(new File("D:\\emoji.emoji"));
+			files.add(new File("E:\\record.txt"));
+			files.add(new File("E:\\search.bat"));
 
 			// 打包文件
 			for (File file : files) {
