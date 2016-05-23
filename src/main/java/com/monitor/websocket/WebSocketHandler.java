@@ -75,7 +75,9 @@ public class WebSocketHandler {
 							deviceId);
 					// 设置发送消息的sessionKey
 					// sendMessage.setSessionKey(newSessionKey); }
+					sendMessage.setUpdateSessionKeyStatus(1);// 设置需要更新会话秘钥状态位
 					sendMessage.setType(1);// 设置状态为允许开机
+					sendMessage.setUpdateCRTStatus(device.getUpdateCRT());
 				}
 			}
 
