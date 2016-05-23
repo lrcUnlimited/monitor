@@ -70,5 +70,8 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	@Query("update Device device set device.manageDeviceStatus=?1, device.validTime=?2 where device.deviceId=?3")
 	public int updateDeviceMDStatusAndValidTime(int status, Date validTime,
 			int deviceId);
+	
+	@Query("select deviceName from Device device where device.deviceId=?1")
+	public String queryDeviceNameById(Integer deviceId);
 
 }

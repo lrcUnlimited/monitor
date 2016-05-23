@@ -32,6 +32,7 @@ import com.monitor.service.device.IDeviceService;
 @Controller
 @RequestMapping("/device")
 public class DeviceAction {
+	
 	@Autowired
 	private IDeviceService deviceService;
 
