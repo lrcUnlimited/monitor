@@ -1,5 +1,6 @@
 package com.monitor.service.device;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 import com.monitor.exception.CodeException;
@@ -59,10 +60,20 @@ public interface IDeviceService {
 	 * @param changeType
 	 * @param status
 	 * @param newValidTime
-	 * @throws CodeException 
+	 * @throws CodeException
 	 */
 
 	public void updateDeviceManageStatus(int accountId, int deviceId,
 			int changeType, int status, long newValidTime) throws CodeException;
+
+	/**
+	 * 下载证书以及设备信息相关文件
+	 * 
+	 * @param deviceId
+	 * @return
+	 * @throws CodeException
+	 */
+	public ByteArrayOutputStream downloadDeviceZipFile(int accountId,
+			int deviceId) throws CodeException;
 
 }

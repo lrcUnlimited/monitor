@@ -1,5 +1,6 @@
 package com.monitor.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -169,17 +170,27 @@ public class DeviceAction {
 		return "success";
 	}
 
-	@RequestMapping(value = "/{deviceId}", method = RequestMethod.GET)
-	public void getFile(@PathVariable("deviceId") int deviceId,
+	@RequestMapping(value = "/zip/{deviceId}", produces = "application/zip")
+	public void getFile(
+			@PathVariable("deviceId") int deviceId,
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			HttpServletResponse response) throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.addHeader("Content-Disposition",
+				"attachment; filename=\"test.zip\"");
+		ByteArrayOutputStream byteArrayOutputStream = deviceService
+				.downloadDeviceZipFile(accountId, deviceId);
 		try {
-			// get your file as InputStream
-			InputStream is = new FileInputStream("");
-			// copy it to response's OutputStream
-			org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-			response.flushBuffer();
-		} catch (IOException ex) {
-			throw new CodeException("IOError writing file to output stream");
+			response.getOutputStream().write(
+					byteArrayOutputStream.toByteArray());
+			response.getOutputStream().flush();
+			byteArrayOutputStream.close();
+
+		} catch (IOException e) {
+			throw new CodeException("下载文件出错");
 		}
 
 	}
