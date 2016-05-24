@@ -62,18 +62,19 @@ public class DeviceRecordAction {
 	 */
 	@RequestMapping(value = "/e_querylocation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	DeviceRecord devicerecord(
+	List<DeviceRecord> devicerecord(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
-			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId)
+			@RequestParam(value = "deviceList", defaultValue = "") List<Integer> deviceList)
 			
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		if (deviceId == 0) {
-			throw new CodeException("设备名错误");
+		if(deviceList==null||deviceList.size()==0){
+			throw new CodeException("请至少选择一个设备进行查看");
 		}
-		DeviceRecord  deviceRecord=deviceRecordService.queryNewlyLocation(deviceId);
+		
+		List<DeviceRecord>  deviceRecord=deviceRecordService.queryNewlyLocation(deviceList);
 		return deviceRecord;
 		
 	}

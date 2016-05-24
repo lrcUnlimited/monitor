@@ -1,5 +1,6 @@
 package com.monitor.service.devicerecord.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,13 +27,12 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	private static Logger logger = Logger
 			.getLogger(DeviceRrecordServiceImpl.class);
 
-	@Override
-	public DeviceRecord queryNewlyLocation(int deviceId) throws CodeException {
+	private DeviceRecord queryNewlyLocation(int deviceId) throws CodeException {
 		// TODO Auto-generated method stub
 		try {
 
 			StringBuilder deviceNewLocation = new StringBuilder(
-					"select * from devicerecord where realTime=(select MAX(realTime) from devicerecord WHERE devicerecord.deviceId =:deviceId) and devicerecord.deviceId=:deviceId");
+					"select * from devicerecord where deviceRecordId=(select MAX(deviceRecordId) from devicerecord WHERE devicerecord.deviceId =:deviceId)");
 
 			Query query = manager.createNativeQuery(
 					deviceNewLocation.toString(), DeviceRecord.class);
@@ -60,24 +60,23 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	}
 
 	@Override
-	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime, long endTime)
-			throws CodeException {
+	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime,
+			long endTime) throws CodeException {
 		// TODO Auto-generated method stub
 		try {
 			Date startDate;
 			Date endDate;
-			if(startTime ==0){
-				startDate=new Date(0);
-			}else{
-				startDate=new Date(startTime);
+			if (startTime == 0) {
+				startDate = new Date(0);
+			} else {
+				startDate = new Date(startTime);
 			}
-			if(endTime==0){
-				endDate=new Date();
-			}else{
-				endDate=new Date(endTime+86400000);
+			if (endTime == 0) {
+				endDate = new Date();
+			} else {
+				endDate = new Date(endTime + 86400000);
 			}
-			
-			
+
 			StringBuilder deviceAllLocation = new StringBuilder(
 					"select * from devicerecord where devicerecord.deviceId=:deviceId and devicerecord.locationStatus=1 and devicerecord.realTime>=:startTime and devicerecord.realTime<=:endTime ");
 			deviceAllLocation.append(" ORDER BY devicerecord.realTime");
@@ -105,4 +104,16 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 	}
 
+	@Override
+	public List<DeviceRecord> queryNewlyLocation(List<Integer> deviceList)
+			throws CodeException {
+		List<DeviceRecord> list = new ArrayList<DeviceRecord>();
+		for (Integer i : deviceList) {
+			DeviceRecord record = queryNewlyLocation(i);
+			if (record != null) {
+				list.add(record);
+			}
+		}
+		return list;
+	}
 }

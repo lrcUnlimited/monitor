@@ -13,7 +13,7 @@ public interface IDeviceRecordService {
 	 * @param accountID
 	 * @param devceId
 	 */
-	public DeviceRecord queryNewlyLocation(int deviceId) throws CodeException;
+	public List<DeviceRecord> queryNewlyLocation(List<Integer> deviceList) throws CodeException;
 	/**
 	 * 查找设备状态为1的信息
 	 * @param deviceId
