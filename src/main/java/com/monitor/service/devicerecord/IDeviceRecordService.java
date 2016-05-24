@@ -1,5 +1,6 @@
 package com.monitor.service.devicerecord;
 
+import java.util.Date;
 import java.util.List;
 
 import com.monitor.exception.CodeException;
@@ -19,5 +20,5 @@ public interface IDeviceRecordService {
 	 * @return
 	 * @throws CodeException
 	 */
-	public List<DeviceRecord> queryAllLocation(int deviceId) throws CodeException;
+	public List<DeviceRecord> queryAllLocation(int deviceId,long startTime, long endTime) throws CodeException;
 }

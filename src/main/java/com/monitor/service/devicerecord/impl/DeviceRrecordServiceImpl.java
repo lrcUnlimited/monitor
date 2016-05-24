@@ -1,5 +1,6 @@
 package com.monitor.service.devicerecord.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -59,18 +60,34 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	}
 
 	@Override
-	public List<DeviceRecord> queryAllLocation(int deviceId)
+	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime, long endTime)
 			throws CodeException {
 		// TODO Auto-generated method stub
 		try {
+			Date startDate;
+			Date endDate;
+			if(startTime ==0){
+				startDate=new Date(0);
+			}else{
+				startDate=new Date(startTime);
+			}
+			if(endTime==0){
+				endDate=new Date();
+			}else{
+				endDate=new Date(endTime+86400000);
+			}
+			
+			
 			StringBuilder deviceAllLocation = new StringBuilder(
-					"select * from devicerecord where devicerecord.deviceId=:deviceId and devicerecord.locationStatus=1");
+					"select * from devicerecord where devicerecord.deviceId=:deviceId and devicerecord.locationStatus=1 and devicerecord.realTime>=:startTime and devicerecord.realTime<=:endTime ");
 			deviceAllLocation.append(" ORDER BY devicerecord.realTime");
 			Query query = manager.createNativeQuery(
 					deviceAllLocation.toString(), DeviceRecord.class);
 
 			if (!StringUtils.isEmpty(deviceId)) {
 				query.setParameter("deviceId", deviceId);
+				query.setParameter("startTime", startDate);
+				query.setParameter("endTime", endDate);
 			}
 			@SuppressWarnings("unchecked")
 			List<DeviceRecord> list = query.getResultList();

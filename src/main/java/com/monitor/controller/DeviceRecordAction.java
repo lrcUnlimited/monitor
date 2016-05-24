@@ -1,5 +1,6 @@
 package com.monitor.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,9 @@ public class DeviceRecordAction {
 	public @ResponseBody
 	List<DeviceRecord> queryAllDevlceRecord(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
-			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId)
-			
+			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
+			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
@@ -90,7 +92,7 @@ public class DeviceRecordAction {
 		if (deviceId == 0) {
 			throw new CodeException("设备名错误");
 		}
-		List<DeviceRecord>  list=deviceRecordService.queryAllLocation(deviceId);
+		List<DeviceRecord>  list=deviceRecordService.queryAllLocation(deviceId,startTime,endTime);
 		return list;
 		
 	}
