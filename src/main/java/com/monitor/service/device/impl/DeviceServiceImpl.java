@@ -52,7 +52,9 @@ public class DeviceServiceImpl implements IDeviceService {
 			device.setCommunicationStatus(0);
 			device.setManageDeviceStatus(1);
 			device.setRegTime(new Date());
-			deviceRepository.save(device);
+			Device newDevice = deviceRepository.save(device);
+			
+
 			// 保存到命令记录中
 			CommandRecord commandRecord = new CommandRecord();
 			commandRecord.setAccountId(accountId);
@@ -85,7 +87,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			} else if (type == 1) {
 				builder.append("  and device.manageDeviceStatus =1 and device.validTime <=DATE_ADD(now(),INTERVAL 3 DAY) ");
 				countSql.append(" and device.manageDeviceStatus =1 and device.validTime <=DATE_ADD(now(),INTERVAL 3 DAY) ");
-			} else if(type==2) {
+			} else if (type == 2) {
 				builder.append("  and device.manageDeviceStatus =0 ");
 				countSql.append("  and device.manageDeviceStatus =0 ");
 			}

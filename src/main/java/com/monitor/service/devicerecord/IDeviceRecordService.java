@@ -13,12 +13,18 @@ public interface IDeviceRecordService {
 	 * @param accountID
 	 * @param devceId
 	 */
-	public List<DeviceRecord> queryNewlyLocation(List<Integer> deviceList) throws CodeException;
+	public List<DeviceRecord> queryNewlyLocation(List<Integer> deviceList)
+			throws CodeException;
+
+	public DeviceRecord queryNewlyLocation(int deviceId) throws CodeException;
+
 	/**
 	 * 查找设备状态为1的信息
+	 * 
 	 * @param deviceId
 	 * @return
 	 * @throws CodeException
 	 */
-	public List<DeviceRecord> queryAllLocation(int deviceId,long startTime, long endTime) throws CodeException;
+	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime,
+			long endTime) throws CodeException;
 }

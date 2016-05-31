@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.monitor.dao.account.AccountRepository;
+import com.monitor.dao.commandrecord.CommandRecordRepository;
 import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
+import com.monitor.model.CommandRecord;
 import com.monitor.model.Pager;
 import com.monitor.service.account.IAccountService;
 
@@ -24,6 +26,9 @@ public class AccountServiceImpl implements IAccountService {
 	private static Logger logger = Logger.getLogger(AccountServiceImpl.class);
 	@Autowired
 	private AccountRepository accountRepository;// 账户Repository
+	@Autowired
+	private CommandRecordRepository commandRecordRepository;
+
 	@PersistenceContext
 	private EntityManager manager;
 
@@ -40,7 +45,7 @@ public class AccountServiceImpl implements IAccountService {
 		} catch (CodeException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.error("内部错误" + e);
+			logger.error("内部错误" ,e);
 			throw new CodeException("内部错误");
 
 		}
@@ -57,7 +62,16 @@ public class AccountServiceImpl implements IAccountService {
 			account.setType(0);
 			account.setRegisterDate(new Date());
 			accountRepository.save(account);
+			// 保存命令记录
+			CommandRecord commandRecord = new CommandRecord();
+			commandRecord.setAccountId(accountId);
+			commandRecord.setRecordTime(new Date());
+			commandRecord.setType(0);
+			commandRecord.setContent("添加了新的用户: " + account.getUserName());
+			commandRecordRepository.save(commandRecord);
 			return true;
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("添加用户出错", e);
 			throw new CodeException("内部错误");
@@ -112,5 +126,35 @@ public class AccountServiceImpl implements IAccountService {
 
 		}
 
+	}
+
+	@Override
+	public void updateAccountInfo(int accountId, Account account)
+			throws CodeException {
+		Account adminAccount = accountRepository.findOne(accountId);
+		try {
+			if (adminAccount.getType() == 0) {
+				throw new CodeException("没有权限");
+			} else {
+				accountRepository.updateUserInfo(account.getUserName(),
+						account.getUserPhone(), account.getNote(),
+						account.getId());
+
+				// 保存命令记录
+				CommandRecord commandRecord = new CommandRecord();
+				commandRecord.setAccountId(accountId);
+				commandRecord.setRecordTime(new Date());
+				commandRecord.setType(0);
+				commandRecord.setContent("修改了用户ID为: " + account.getId()
+						+ "的个人信息");
+				commandRecordRepository.save(commandRecord);
+			}
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("内部错误" , e);
+			throw new CodeException("内部错误");
+
+		}
 	}
 }

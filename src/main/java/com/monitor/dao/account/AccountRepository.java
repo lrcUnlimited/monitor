@@ -27,7 +27,21 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	 */
 	@Query("select account from Account account where account.userName=?1 and account.passWord=?2")
 	public Account loginAccount(String userName, String passWord);
+
 	@Query("select userName from Account account where account.id=?1")
 	public String queryUserNameById(Integer accounId);
+
+	/**
+	 * 更新用户信息
+	 * 
+	 * @param userName
+	 * @param userPhone
+	 * @param note
+	 * @param accountId
+	 */
+	@Modifying
+	@Query("update Account account set account.userName=?1,account.userPhone=?2,account.note=?3 where account.id=?4 ")
+	public void updateUserInfo(String userName, String userPhone, String note,
+			int accountId);
 
 }

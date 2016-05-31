@@ -27,7 +27,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	private static Logger logger = Logger
 			.getLogger(DeviceRrecordServiceImpl.class);
 
-	private DeviceRecord queryNewlyLocation(int deviceId) throws CodeException {
+	@Override
+	public DeviceRecord queryNewlyLocation(int deviceId) throws CodeException {
 		// TODO Auto-generated method stub
 		try {
 

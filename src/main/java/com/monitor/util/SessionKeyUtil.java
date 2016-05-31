@@ -1,5 +1,7 @@
 package com.monitor.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -27,11 +29,11 @@ public class SessionKeyUtil {
 	 * @return
 	 */
 
-	public static String generateSessionKey() {
+	public static SessionKey generateSessionKey() {
 		SessionKey sessionKey = new SessionKey();
 		sessionKey.setRandomNum(generateRandomNum());
 		sessionKey.setCreateDate(new Date());
-		return JSON.toJSONString(sessionKey);
+		return sessionKey;
 	}
 
 	/**
@@ -54,25 +56,26 @@ public class SessionKeyUtil {
 	 * @param dbSessionKey
 	 *            :数据库中保存的
 	 * @return
+	 * @throws ParseException
 	 */
-	public static boolean isValidSessionKey(String sessionKey,
-			String dbSessionKey) {
-		if (StringUtil.isEmpty(sessionKey)) {
+	public static boolean isValidSessionKey(SimpleDateFormat sdf,
+			String keyCreateDate, String randomNum, String dbSessionKey)
+			throws ParseException {
+		if (keyCreateDate == null || keyCreateDate.length() == 0) {
 			return false;
 		}
-		SessionKey reciveKey = JSON.parseObject(sessionKey, SessionKey.class);
+		Date createDate = sdf.parse(keyCreateDate);
+
 		SessionKey dbKey = JSON.parseObject(dbSessionKey, SessionKey.class);
-		if (reciveKey.getRandomNum().equals(dbKey.getRandomNum())) {
-			if (getDateDiff(reciveKey.getCreateDate(), dbKey.getCreateDate()) < 24) {
+		if (randomNum.equals(dbKey.getRandomNum())) {
+			if (getDateDiff(createDate, new Date()) < 24) {
 				return true;
 			}
 		}
 		return false;
-
 	}
 
 	public static void main(String[] args) {
-		
-
+		System.out.println(SessionKeyUtil.generateSessionKey());
 	}
 }

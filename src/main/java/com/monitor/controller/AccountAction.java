@@ -26,7 +26,6 @@ public class AccountAction {
 	IAccountService accountService;
 
 	@RequestMapping(value = "/e_login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	
 	public @ResponseBody
 	Account login(@RequestBody Account account) throws CodeException {
 
@@ -77,6 +76,29 @@ public class AccountAction {
 
 		}
 		accountService.saveAccount(accountId, account);
+		return "success";
+	}
+
+	@RequestMapping(value = "/e_update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	String update(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestBody Account account) throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		if (StringUtils.isEmpty(account.getId())) {
+			throw new CodeException("获取不到用户id");
+
+		}
+		if (StringUtils.isEmpty(account.getUserName())) {
+			throw new CodeException("用户名不能为空");
+		}
+
+		if (StringUtils.isEmpty(account.getUserPhone())) {
+			throw new CodeException("手机号不能为空");
+		}
+		accountService.updateAccountInfo(accountId, account);
 		return "success";
 	}
 

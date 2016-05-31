@@ -31,4 +31,14 @@ public interface IAccountService {
 	 */
 	public Pager queryUser(Integer pageNo, Integer pageSize, Integer accountId,
 			String userName) throws CodeException;
+
+	/**
+	 * 修改用户信息
+	 * 
+	 * @param accountId
+	 * @param account
+	 * @return
+	 * @throws CodeException 
+	 */
+	public void updateAccountInfo(int accountId, Account account) throws CodeException;
 }
