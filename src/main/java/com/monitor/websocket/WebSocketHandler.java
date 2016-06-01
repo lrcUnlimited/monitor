@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import javax.websocket.OnClose;
@@ -41,6 +42,18 @@ public class WebSocketHandler {
 	IDeviceRecordService deviceRecordService;
 	@Autowired
 	DeviceRecordRepository deviceRecordRepository;
+	private static String crtPath = null;
+	// 初始化证书脚本地址
+	static {
+		if (crtPath == null) {
+			ResourceBundle bundle = ResourceBundle.getBundle("crtpath");
+			if (bundle == null) {
+				throw new IllegalArgumentException(
+						"[crtpath.properties] is not found!");
+			}
+			crtPath = bundle.getString("crt.path");
+		}
+	}
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
@@ -110,10 +123,28 @@ public class WebSocketHandler {
 			if (reciveMessage.getType() != nowType) {
 				deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备的状态
 			}
+			/*
+			 * if (sendMessage.getUpdateCRTStatus() == 1) {
+			 * sendMessage.setClientCRT(readFile("D://user1.crt"));
+			 * sendMessage.setClientKey(readFile("D://user1.key"));
+			 * deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位 }
+			 */
 			// 需要更新证书,则发送文件
 			if (sendMessage.getUpdateCRTStatus() == 1) {
-				sendMessage.setClientCRT(readFile("D://user1.crt"));
-				sendMessage.setClientKey(readFile("D://user1.key"));
+				// 创建新的证书文件
+				// 生成设备证书文件
+				ProcessBuilder pb = new ProcessBuilder(crtPath
+						+ "new_client_cert.sh", deviceId + "");
+				Process p = pb.start();
+				try {
+					p.waitFor();// 同步执行
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				sendMessage.setClientCRT(readFile(crtPath
+						+ "user/certificates/" + deviceId + ".crt"));// 读取证书文件
+				sendMessage.setClientKey(readFile(crtPath + "user/keys/"
+						+ deviceId + ".key"));// 读取私钥文件
 				deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
 			}
 

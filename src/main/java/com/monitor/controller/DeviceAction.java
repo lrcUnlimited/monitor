@@ -181,7 +181,7 @@ public class DeviceAction {
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.addHeader("Content-Disposition",
-				"attachment; filename=\"test.zip\"");
+				"attachment; filename=\"device.zip\"");
 		ByteArrayOutputStream byteArrayOutputStream = deviceService
 				.downloadDeviceZipFile(accountId, deviceId);
 		try {

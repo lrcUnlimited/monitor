@@ -1,14 +1,17 @@
 package com.monitor.service.device.impl;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -20,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
@@ -43,6 +47,20 @@ public class DeviceServiceImpl implements IDeviceService {
 
 	@PersistenceContext
 	private EntityManager manager;
+	private static String crtPath = null;
+	private static String clientInterval = null;
+	// 初始化证书脚本地址
+	static {
+		if (crtPath == null) {
+			ResourceBundle bundle = ResourceBundle.getBundle("crtpath");
+			if (bundle == null) {
+				throw new IllegalArgumentException(
+						"[crtpath.properties] is not found!");
+			}
+			crtPath = bundle.getString("crt.path");
+			clientInterval = bundle.getString("client.interval");
+		}
+	}
 
 	@Override
 	public void addNewDevice(int accountId, Device device) throws CodeException {
@@ -53,8 +71,21 @@ public class DeviceServiceImpl implements IDeviceService {
 			device.setManageDeviceStatus(1);
 			device.setRegTime(new Date());
 			Device newDevice = deviceRepository.save(device);
-			
+			// 生成设备信息文件
+			StringBuffer filePath = new StringBuffer(crtPath);
+			filePath.append("deviceInfo/").append(newDevice.getDeviceId());
+			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
+					filePath.toString())));
+			writer.write("device_id=" + newDevice.getDeviceId());
+			writer.newLine();
+			writer.write("interval=" + clientInterval);
+			writer.close();
+			// 生成设备证书文件
+			ProcessBuilder pb = new ProcessBuilder(crtPath
+					+ "new_client_cert.sh", newDevice.getDeviceId() + "");
 
+			Process p = pb.start();
+			p.waitFor();// 同步执行
 			// 保存到命令记录中
 			CommandRecord commandRecord = new CommandRecord();
 			commandRecord.setAccountId(accountId);
@@ -65,7 +96,6 @@ public class DeviceServiceImpl implements IDeviceService {
 		} catch (Exception e) {
 			logger.error("保存设备出错", e);
 			throw new CodeException("新增设备出错");
-
 		}
 	}
 
@@ -109,7 +139,6 @@ public class DeviceServiceImpl implements IDeviceService {
 		} catch (Exception e) {
 			logger.error("获取设备列表出错", e);
 			throw new CodeException("内部错误");
-
 		}
 	}
 
@@ -245,10 +274,13 @@ public class DeviceServiceImpl implements IDeviceService {
 					byteArrayOutputStream);
 			ZipOutputStream zipOutputStream = new ZipOutputStream(
 					bufferedOutputStream);
-			// simple file list, just for tests
-			ArrayList<File> files = new ArrayList<File>(2);
-			files.add(new File("E:\\record.txt"));
-			files.add(new File("E:\\search.bat"));
+			// 下载设备信息和证书文件
+			ArrayList<File> files = new ArrayList<File>(4);
+			files.add(new File(crtPath + "deviceInfo/" + deviceId));// 设备信息文件
+			files.add(new File(crtPath + "ca/ca.crt"));// ca根证书
+			files.add(new File(crtPath + "user/certificates/" + deviceId
+					+ ".crt"));// 客户端证书
+			files.add(new File(crtPath + "user/keys/" + deviceId + ".key"));// 客户端私钥
 
 			// 打包文件
 			for (File file : files) {

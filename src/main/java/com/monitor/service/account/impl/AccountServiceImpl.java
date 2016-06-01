@@ -11,6 +11,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.monitor.dao.account.AccountRepository;
@@ -45,7 +46,7 @@ public class AccountServiceImpl implements IAccountService {
 		} catch (CodeException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.error("内部错误" ,e);
+			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
 
 		}
@@ -152,7 +153,7 @@ public class AccountServiceImpl implements IAccountService {
 		} catch (CodeException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.error("内部错误" , e);
+			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
 
 		}

@@ -12,6 +12,7 @@ import com.monitor.exception.CodeException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.monitor.dao.account.AccountRepository;
@@ -60,7 +61,7 @@ public class CommandServiceImpl implements CommandService {
 			Query query = manager.createNativeQuery(countSql.toString());
 			Query queryList = manager.createNativeQuery(builder.toString(),
 					CommandRecord.class);
-//			String userName = accountRepository.queryUserNameById(accountId);
+			// String userName = accountRepository.queryUserNameById(accountId);
 
 			if (!StringUtils.isEmpty(type)) {
 				query.setParameter("type", type);
@@ -95,7 +96,7 @@ public class CommandServiceImpl implements CommandService {
 				CommandRecord.class);
 		@SuppressWarnings("unchecked")
 		List<CommandRecord> list = queryList.getResultList();
-		
+
 		return list;
 	}
 
