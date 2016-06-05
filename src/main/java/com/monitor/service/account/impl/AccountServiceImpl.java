@@ -60,7 +60,6 @@ public class AccountServiceImpl implements IAccountService {
 			if (operateAccount.getType() == 0) {
 				throw new CodeException("没有权限");
 			}
-			account.setType(0);
 			account.setRegisterDate(new Date());
 			accountRepository.save(account);
 			// 保存命令记录
