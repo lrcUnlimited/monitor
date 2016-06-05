@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.monitor.exception.CodeException;
 import com.monitor.model.DeviceRecord;
+import com.monitor.model.Pager;
 
 public interface IDeviceRecordService {
 	/**
@@ -27,4 +28,6 @@ public interface IDeviceRecordService {
 	 */
 	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime,
 			long endTime) throws CodeException;
+
+	public Pager queryDeviceHisLocation(int deviceId,int pageNo,int pageSize) throws CodeException;
 }

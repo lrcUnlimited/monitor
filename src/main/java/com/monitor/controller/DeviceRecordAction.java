@@ -20,12 +20,12 @@ import com.monitor.service.devicerecord.IDeviceRecordService;
 @Controller
 @RequestMapping("/devicerecord")
 public class DeviceRecordAction {
-	
+
 	@Autowired
 	private IDeviceService deviceService;
 	@Autowired
 	private IDeviceRecordService deviceRecordService;
-	
+
 	/**
 	 * 分页查询设备信息接口
 	 * 
@@ -55,6 +55,7 @@ public class DeviceRecordAction {
 
 	/**
 	 * 设备当前最新位置
+	 * 
 	 * @param accountId
 	 * @param deviceId
 	 * @return
@@ -65,20 +66,21 @@ public class DeviceRecordAction {
 	List<DeviceRecord> devicerecord(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "deviceList", defaultValue = "") List<Integer> deviceList)
-			
-			throws CodeException {
+
+	throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		if(deviceList==null||deviceList.size()==0){
+		if (deviceList == null || deviceList.size() == 0) {
 			throw new CodeException("请至少选择一个设备进行查看");
 		}
-		
-		List<DeviceRecord>  deviceRecord=deviceRecordService.queryNewlyLocation(deviceList);
+
+		List<DeviceRecord> deviceRecord = deviceRecordService
+				.queryNewlyLocation(deviceList);
 		return deviceRecord;
-		
+
 	}
-	
+
 	@RequestMapping(value = "/e_queryhistory", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DeviceRecord> queryAllDevlceRecord(
@@ -93,9 +95,30 @@ public class DeviceRecordAction {
 		if (deviceId == 0) {
 			throw new CodeException("设备名错误");
 		}
-		List<DeviceRecord>  list=deviceRecordService.queryAllLocation(deviceId,startTime,endTime);
+		List<DeviceRecord> list = deviceRecordService.queryAllLocation(
+				deviceId, startTime, endTime);
 		return list;
-		
+
+	}
+
+	@RequestMapping(value = "/e_queryallhistory", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Pager queryAllDeviceRecordById(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
+			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		if (deviceId == 0) {
+			throw new CodeException("设备名错误");
+		}
+		Pager pager = deviceRecordService.queryDeviceHisLocation(deviceId,
+				pageNo, pageSize);
+		return pager;
+
 	}
 
 }

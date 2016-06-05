@@ -1,5 +1,6 @@
 package com.monitor.service.devicerecord.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,9 @@ import org.springframework.util.StringUtils;
 
 import com.monitor.dao.device.DeviceRepository;
 import com.monitor.exception.CodeException;
+import com.monitor.model.Account;
 import com.monitor.model.DeviceRecord;
+import com.monitor.model.Pager;
 import com.monitor.service.devicerecord.IDeviceRecordService;
 
 @Service(value = "deviceRecordService")
@@ -117,5 +120,47 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public Pager queryDeviceHisLocation(int deviceId, int pageNo, int pageSize)
+			throws CodeException {
+		try {
+
+			Pager pager = new Pager(pageNo, pageSize);
+			int thisPage = (pageNo - 1) * pageSize;
+			StringBuilder countSql = new StringBuilder(
+					" select count(deviceRecordId) from devicerecord devicerecord "
+							+ " where 1=1 ");
+			StringBuilder builder = new StringBuilder(
+					"select * from devicerecord devicerecord where 1=1");
+			if (deviceId != 0) {
+				builder.append(" and devicerecord.deviceId =:deviceId ");
+				countSql.append(" and devicerecord.deviceId =:deviceId ");
+			}
+
+			builder.append(" ORDER BY devicerecord.realTime DESC ");
+			builder.append(" limit " + thisPage + "," + pageSize);
+
+			Query query = manager.createNativeQuery(countSql.toString());
+			Query queryList = manager.createNativeQuery(builder.toString(),
+					DeviceRecord.class);
+			if (deviceId != 0) {
+				query.setParameter("deviceId", deviceId);
+				queryList.setParameter("deviceId", deviceId);
+			}
+
+			pager.setTotalCount(((BigInteger) query.getSingleResult())
+					.intValue());
+			@SuppressWarnings("unchecked")
+			List<DeviceRecord> list = queryList.getResultList();
+			pager.setItems(list);
+			return pager;
+
+		} catch (Exception e) {
+			logger.error("获取设备历史列表出错", e);
+			throw new CodeException("内部错误");
+
+		}
 	}
 }
