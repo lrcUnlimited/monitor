@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class SendMessage {
 	private int type;// 0:关机 ，1：开机
-	private int updateCRTStatus;// 0:需要更新 1：不需要更新
+	private int updateCRTStatus;// 0:不需要更新 1：需要更新
 	private String keyCreateDate; // 会话秘钥创建时间
 	private String randomNum; // 随机数
 	private String clientCRT;// 客户端证书

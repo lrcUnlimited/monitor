@@ -14,7 +14,7 @@ public class Message {
 	private String randomNum; // 会话秘钥随机数
 	private double longitude;// 经度
 	private double latitude;// 纬度
-	private int type;// 发送命令 0-代表开机 1-代表关机
+	private int type;// 发送命令 0-代表关机 1-代表开机
 
 	public int getDeviceId() {
 		return deviceId;

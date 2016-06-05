@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.monitor.dao.account.AccountRepository;
 import com.monitor.exception.CodeException;
 import com.monitor.exception.ErrorMessage;
 import com.monitor.model.Account;
@@ -24,6 +25,8 @@ import com.monitor.service.account.IAccountService;
 public class AccountAction {
 	@Autowired
 	IAccountService accountService;
+	@Autowired
+	AccountRepository accountRepository;
 
 	@RequestMapping(value = "/e_login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
@@ -56,6 +59,29 @@ public class AccountAction {
 		return pager;
 
 	}
+	/**
+	 * 用户名唯一性校验
+	 * @param accountId
+	 * @param userName
+	 * @return
+	 * @throws CodeException
+	 */
+	@RequestMapping(value = "/e_queryUser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Account queryUserExist(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "userName", defaultValue = "") String userName)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		Account account = accountRepository.queryAccountbyuserName(userName);
+		
+		return account;
+		
+	}
+	
+	
 
 	@RequestMapping(value = "/e_add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody

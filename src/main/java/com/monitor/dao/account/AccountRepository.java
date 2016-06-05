@@ -30,6 +30,13 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
 	@Query("select userName from Account account where account.id=?1")
 	public String queryUserNameById(Integer accounId);
+	/**
+	 * 通过用户名找出用户，用于用户名唯一性
+	 * @param userName
+	 * @return
+	 */
+	@Query("select account from Account account where account.userName=?1")
+	public Account queryAccountbyuserName(String userName);
 
 	/**
 	 * 更新用户信息
