@@ -129,30 +129,30 @@ public class WebSocketHandler {
 			deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备的状态
 		}
 
-		if (sendMessage.getUpdateCRTStatus() == 1) {
-			sendMessage.setClientCRT(readFile("D://user1.crt"));
-			sendMessage.setClientKey(readFile("D://user1.key"));
-			deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
-		}
-
-		// // 需要更新证书,则发送文件
 		// if (sendMessage.getUpdateCRTStatus() == 1) {
-		// // 创建新的证书文件
-		// // 生成设备证书文件
-		// ProcessBuilder pb = new ProcessBuilder(crtPath
-		// + "new_client_cert.sh", deviceId + "");
-		// Process p = pb.start();
-		// try {
-		// p.waitFor();// 同步执行
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		// sendMessage.setClientCRT(readFile(crtPath
-		// + "user/certificates/" + deviceId + ".crt"));// 读取证书文件
-		// sendMessage.setClientKey(readFile(crtPath + "user/keys/"
-		// + deviceId + ".key"));// 读取私钥文件
+		// sendMessage.setClientCRT(readFile("D://user1.crt"));
+		// sendMessage.setClientKey(readFile("D://user1.key"));
 		// deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
 		// }
+
+		// 需要更新证书,则发送文件
+		if (sendMessage.getUpdateCRTStatus() == 1) {
+			// 创建新的证书文件
+			// 生成设备证书文件
+			ProcessBuilder pb = new ProcessBuilder(crtPath
+					+ "new_client_cert.sh", deviceId + "");
+			Process p = pb.start();
+			try {
+				p.waitFor();// 同步执行
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			sendMessage.setClientCRT(readFile(crtPath + "user/certificates/"
+					+ deviceId + ".crt"));// 读取证书文件
+			sendMessage.setClientKey(readFile(crtPath + "user/keys/" + deviceId
+					+ ".key"));// 读取私钥文件
+			deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
+		}
 
 		sendMessage(JSON.toJSONString(sendMessage));// 发送消息
 		// 将原始坐标转换为为百度坐标
