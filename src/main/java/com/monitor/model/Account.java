@@ -18,12 +18,20 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;// 账号ID
 	private String userName;
-	@JsonIgnore
 	private String passWord;
 	private Date registerDate;// 用户添加日期
 	private String userPhone;// 用户电话
 	private String note;// 备注
 	private int type;// 用户类型0-代表普通用户，1-代表管理员
+	private int isDelete;// 是否已经删除 0-代表未删除，1代表已删除
+
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
 
 	public Date getRegisterDate() {
 		return registerDate;
@@ -57,12 +65,10 @@ public class Account {
 		this.userName = userName;
 	}
 
-	@JsonIgnore
 	public String getPassWord() {
 		return passWord;
 	}
 
-	@JsonProperty
 	public void setPassWord(String passWord) {
 		this.passWord = passWord;
 	}

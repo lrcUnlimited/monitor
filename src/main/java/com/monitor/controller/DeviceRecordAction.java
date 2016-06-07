@@ -4,14 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.monitor.exception.CodeException;
+import com.monitor.exception.ErrorMessage;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
@@ -76,7 +80,7 @@ public class DeviceRecordAction {
 		}
 
 		List<DeviceRecord> deviceRecord = deviceRecordService
-				.queryNewlyLocation(deviceList);
+				.queryNewlyLocation(accountId, deviceList);
 		return deviceRecord;
 
 	}
@@ -96,7 +100,7 @@ public class DeviceRecordAction {
 			throw new CodeException("设备名错误");
 		}
 		List<DeviceRecord> list = deviceRecordService.queryAllLocation(
-				deviceId, startTime, endTime);
+				accountId, deviceId, startTime, endTime);
 		return list;
 
 	}
@@ -115,10 +119,16 @@ public class DeviceRecordAction {
 		if (deviceId == 0) {
 			throw new CodeException("设备名错误");
 		}
-		Pager pager = deviceRecordService.queryDeviceHisLocation(deviceId,
-				pageNo, pageSize);
+		Pager pager = deviceRecordService.queryDeviceHisLocation(accountId,
+				deviceId, pageNo, pageSize);
 		return pager;
 
+	}
+	@ExceptionHandler(CodeException.class)
+	@ResponseBody
+	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
+	public ErrorMessage handleException(CodeException e) {
+		return new ErrorMessage(e.getMessage());
 	}
 
 }

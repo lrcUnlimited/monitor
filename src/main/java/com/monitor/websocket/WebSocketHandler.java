@@ -170,8 +170,8 @@ public class WebSocketHandler {
 		DeviceRecord deviceRecord = deviceRecordService
 				.queryNewlyLocation(deviceId);
 
-		if (deviceRecord == null) { // 设置为正常状态
-			latestRecord.setLocationStatus(0);// 设置为正常状态
+		if (deviceRecord == null) { // 设置为危险信息
+			latestRecord.setLocationStatus(1);// 设置为危险信息
 		} else {
 			// 判断两个点之间的距离
 			int distance = distFrom(deviceRecord.getLatitude(),

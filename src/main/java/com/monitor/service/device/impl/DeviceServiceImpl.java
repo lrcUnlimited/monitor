@@ -65,6 +65,11 @@ public class DeviceServiceImpl implements IDeviceService {
 	@Override
 	public void addNewDevice(int accountId, Device device) throws CodeException {
 		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
 			// 添加新的设备
 			device.setDeviceStatus(0);
 			device.setCommunicationStatus(0);
@@ -93,6 +98,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setContent("添加了新的设备：" + device.getDeviceName());
 			comRecordRepository.save(commandRecord);
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("保存设备出错", e);
 			throw new CodeException("新增设备出错");
@@ -103,6 +110,10 @@ public class DeviceServiceImpl implements IDeviceService {
 	public Pager queryDevice(Integer pageNo, Integer pageSize,
 			Integer accountId, int type) throws CodeException {
 		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
+			}
 
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
@@ -136,6 +147,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			pager.setItems(list);
 			return pager;
 
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("获取设备列表出错", e);
 			throw new CodeException("内部错误");
@@ -146,6 +159,11 @@ public class DeviceServiceImpl implements IDeviceService {
 	public void updateDeviceCRT(int accountId, int deviceId, int status)
 			throws CodeException {
 		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
 			// 更新状态为
 			deviceRepository.updateDeviceCRTStatus(status, deviceId);
 			// 保存到命令记录中
@@ -155,6 +173,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setContent("更新了设备Id为: " + deviceId + " 的证书");
 			comRecordRepository.save(commandRecord);
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("更新设备证书出错", e);
 			throw new CodeException("更新设备证书出错");
@@ -167,8 +187,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
-			if (account.getType() == 0) {
-				throw new CodeException("您没有该权限");
+			if (account.getType() == 0 || account.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
 			} else {
 				// 更新设备有效期
 				Date validDate = new Date(newValidTime);
@@ -209,8 +229,8 @@ public class DeviceServiceImpl implements IDeviceService {
 
 		try {
 			Account account = accountRepository.findOne(accountId);
-			if (account.getType() == 0) {
-				throw new CodeException("您没有该权限");
+			if (account.getType() == 0 || account.getIsDelete()==1) {
+				throw new CodeException("请重新登录");
 			} else {
 				Date validTime = new Date(newValidTime);
 				CommandRecord commandRecord = new CommandRecord();
@@ -266,8 +286,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			int deviceId) throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
-			if (account == null || account.getType() == 0) {
-				throw new CodeException("没有权限");
+			if (account.getIsDelete()==1 || account.getType() == 0) {
+				throw new CodeException("请重新登录");
 			}
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(

@@ -31,9 +31,6 @@ public interface CommandService {
 	 */
 	public Pager queryCommandRecord(Integer pageNo, Integer pageSize, Integer accountId,
 			Integer type) throws CodeException;
-	/**
-	 * 获取CommandRecord
-	 */
-	public List<CommandRecord>  getCommandRecord();
+	
 
 }

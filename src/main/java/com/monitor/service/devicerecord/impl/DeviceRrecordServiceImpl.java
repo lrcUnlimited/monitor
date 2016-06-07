@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.device.DeviceRepository;
 import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
@@ -28,6 +29,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	private EntityManager manager;
 	@Autowired
 	DeviceRepository deviceRepository;
+	@Autowired
+	AccountRepository accountRepository;
 	private static Logger logger = Logger
 			.getLogger(DeviceRrecordServiceImpl.class);
 
@@ -65,10 +68,14 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	}
 
 	@Override
-	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime,
-			long endTime) throws CodeException {
+	public List<DeviceRecord> queryAllLocation(int accountId, int deviceId,
+			long startTime, long endTime) throws CodeException {
 		// TODO Auto-generated method stub
 		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
+			}
 			Date startDate;
 			Date endDate;
 			if (startTime == 0) {
@@ -101,6 +108,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			}
 			return list;
 
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("获取设备最历史地点出错", e);
@@ -110,23 +119,38 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	}
 
 	@Override
-	public List<DeviceRecord> queryNewlyLocation(List<Integer> deviceList)
-			throws CodeException {
-		List<DeviceRecord> list = new ArrayList<DeviceRecord>();
-		for (Integer i : deviceList) {
-			DeviceRecord record = queryNewlyLocation(i);
-			if (record != null) {
-				list.add(record);
+	public List<DeviceRecord> queryNewlyLocation(int accountId,
+			List<Integer> deviceList) throws CodeException {
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
 			}
+			List<DeviceRecord> list = new ArrayList<DeviceRecord>();
+			for (Integer i : deviceList) {
+				DeviceRecord record = queryNewlyLocation(i);
+				if (record != null) {
+					list.add(record);
+				}
+			}
+			return list;
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("获取最新位置出错", e);
+			throw new CodeException("获取最新位置出错");
 		}
-		return list;
+
 	}
 
 	@Override
-	public Pager queryDeviceHisLocation(int deviceId, int pageNo, int pageSize)
-			throws CodeException {
+	public Pager queryDeviceHisLocation(int accountId, int deviceId,
+			int pageNo, int pageSize) throws CodeException {
 		try {
-
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
+			}
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
 			StringBuilder countSql = new StringBuilder(
@@ -157,6 +181,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			pager.setItems(list);
 			return pager;
 
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("获取设备历史列表出错", e);
 			throw new CodeException("内部错误");

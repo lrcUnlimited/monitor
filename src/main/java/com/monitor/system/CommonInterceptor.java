@@ -13,12 +13,9 @@ import com.monitor.util.SecurityUtil;
 import com.monitor.util.StringUtil;
 
 /**
- * 拦截session过期 登录信息 权限控制 越权 字符注入
  * 
- * @Description TODO
- * @author clsu
- * @date 2013-7-25下午02:53:03
- * @CodeReviewer zwwang
+ * @author li
+ * 
  */
 public class CommonInterceptor implements HandlerInterceptor {
 
@@ -30,11 +27,6 @@ public class CommonInterceptor implements HandlerInterceptor {
 
 	public void afterCompletion(HttpServletRequest req,
 			HttpServletResponse res, Object obj, Exception e) throws Exception {
-		// 设置cookie
-		res.addHeader("Set-Cookie", "uid=112; Path=/; HttpOnly");
-
-		// 设置https的cookie
-		res.addHeader("Set-Cookie", "uid=112; Path=/; Secure; HttpOnly");
 	}
 
 	public void postHandle(HttpServletRequest req, HttpServletResponse res,
@@ -43,9 +35,6 @@ public class CommonInterceptor implements HandlerInterceptor {
 
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res,
 			Object obj) throws Exception {
-		// 国际化配置
-		req.getSession()
-				.setAttribute("language", req.getLocale().getLanguage());
 
 		String referer = req.getHeader("Referer");
 		String contextPath = req.getContextPath();
@@ -53,10 +42,12 @@ public class CommonInterceptor implements HandlerInterceptor {
 			CodeException ce = new CodeException("存在跨站攻击的风险");
 			throw ce;
 		}
+		System.out.println(obj);
 		// 安全过滤
 		Enumeration<String> argsEn = req.getParameterNames();
 		while (argsEn.hasMoreElements()) {
 			String argV = req.getParameter(argsEn.nextElement());
+			System.out.println(argV);
 			if (false == SecurityUtil.checkXSSValidity(argV)) {
 				// CodeException ce = new CodeException("", "包含XSS字符");
 				// throw ce;
@@ -64,25 +55,6 @@ public class CommonInterceptor implements HandlerInterceptor {
 			if (false == SecurityUtil.checkSQLValidity(argV)) {
 				CodeException ce = new CodeException("包含SQL注入字符");
 				throw ce;
-			}
-		}
-
-		boolean isOperation = false;
-		String url = req.getRequestURI();
-		String[] pathArr = url.split("\\.do")[0].split("/");
-		String method = pathArr[pathArr.length - 1];
-		if (method.startsWith("o_")) {
-			// 操作权限
-			isOperation = true;
-		}
-		String servletPath = req.getServletPath();
-		// 不拦截的URL
-		if (excludeUrls != null) {
-			for (String exc : excludeUrls) {
-				if (exc.equals(servletPath)) {
-					System.out.println("true");
-					return true;
-				}
 			}
 		}
 

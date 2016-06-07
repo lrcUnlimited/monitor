@@ -57,8 +57,9 @@ public class AccountServiceImpl implements IAccountService {
 			throws CodeException {
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
-			if (operateAccount.getType() == 0) {
-				throw new CodeException("没有权限");
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
 			}
 			account.setRegisterDate(new Date());
 			accountRepository.save(account);
@@ -83,7 +84,7 @@ public class AccountServiceImpl implements IAccountService {
 			String userName) throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
-			if (account.getType() == 1) {
+			if (account.getType() == 1 && account.getIsDelete() == 0) {
 				Pager pager = new Pager(pageNo, pageSize);
 				int thisPage = (pageNo - 1) * pageSize;
 				StringBuilder countSql = new StringBuilder(
@@ -91,6 +92,13 @@ public class AccountServiceImpl implements IAccountService {
 								+ " where 1=1 ");
 				StringBuilder builder = new StringBuilder(
 						"select * from account account where 1=1");
+				builder.append("  and account.isDelete=0 ");
+				countSql.append("  and account.isDelete=0 ");
+				if (accountId != 0) {
+					builder.append("  and account.id !=:id ");
+					countSql.append("  and account.id !=:id ");
+				}
+
 				if (!StringUtils.isEmpty(userName)) {
 					builder.append("  and account.userName =:userName ");
 					countSql.append("  and account.userName =:userName ");
@@ -102,7 +110,10 @@ public class AccountServiceImpl implements IAccountService {
 				Query query = manager.createNativeQuery(countSql.toString());
 				Query queryList = manager.createNativeQuery(builder.toString(),
 						Account.class);
-
+				if (accountId != 0) {
+					query.setParameter("id", accountId);
+					queryList.setParameter("id", accountId);
+				}
 				if (!StringUtils.isEmpty(userName)) {
 					query.setParameter("userName", userName);
 					queryList.setParameter("userName", userName);
@@ -115,7 +126,7 @@ public class AccountServiceImpl implements IAccountService {
 				return pager;
 
 			} else {
-				throw new CodeException("没有权限，无法操作");
+				throw new CodeException("请重新登录");
 			}
 
 		} catch (CodeException e) {
@@ -133,11 +144,12 @@ public class AccountServiceImpl implements IAccountService {
 			throws CodeException {
 		Account adminAccount = accountRepository.findOne(accountId);
 		try {
-			if (adminAccount.getType() == 0) {
-				throw new CodeException("没有权限");
+			if (adminAccount.getType() == 0 || adminAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
 			} else {
 				accountRepository.updateUserInfo(account.getUserName(),
 						account.getUserPhone(), account.getNote(),
+						account.getPassWord(), account.getType(),
 						account.getId());
 
 				// 保存命令记录
@@ -156,5 +168,76 @@ public class AccountServiceImpl implements IAccountService {
 			throw new CodeException("内部错误");
 
 		}
+	}
+
+	@Override
+	public Account account(int accountId) throws CodeException {
+		try {
+			Account account = accountRepository.findOne(accountId);
+			if (account.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
+			}
+			return account;
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("获取个人信息失败", e);
+			throw new CodeException("获取用户个人信息失败");
+		}
+	}
+
+	@Override
+	public void deleteAccount(int operateAccountId, int delAccountId)
+			throws CodeException {
+		try {
+			Account operateAccount = accountRepository
+					.findOne(operateAccountId);
+			if (operateAccountId == delAccountId) {
+				throw new CodeException("不能删除自己");
+
+			}
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
+			accountRepository.deleteAccount(delAccountId);
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("删除用户出错", e);
+		}
+	}
+
+	@Override
+	public void updatePersonalInfo(int accountId, Account account)
+			throws CodeException {
+		Account personalAccount = accountRepository.findOne(accountId);
+		try {
+			if (personalAccount.getIsDelete() == 1
+					|| accountId != account.getId()) {
+				throw new CodeException("请重新登录");
+			} else {
+				accountRepository.updateUserInfo(account.getUserName(),
+						account.getUserPhone(), account.getNote(),
+						account.getPassWord(), personalAccount.getType(),
+						account.getId());
+
+				// 保存命令记录
+				CommandRecord commandRecord = new CommandRecord();
+				commandRecord.setAccountId(accountId);
+				commandRecord.setRecordTime(new Date());
+				commandRecord.setType(0);
+				commandRecord.setContent("修改了用户ID为: " + account.getId()
+						+ "的个人信息");
+				commandRecordRepository.save(commandRecord);
+			}
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("内部错误", e);
+			throw new CodeException("内部错误");
+
+		}
+
 	}
 }
