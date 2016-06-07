@@ -59,8 +59,10 @@ public class AccountAction {
 		return pager;
 
 	}
+
 	/**
 	 * 用户名唯一性校验
+	 * 
 	 * @param accountId
 	 * @param userName
 	 * @return
@@ -76,12 +78,24 @@ public class AccountAction {
 			throw new CodeException("请重新登录");
 		}
 		Account account = accountRepository.queryAccountbyuserName(userName);
-		
+
 		return account;
-		
+
 	}
-	
-	
+
+	@RequestMapping(value = "/e_getInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Account getUserInfo(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		Account account = accountService.account(accountId);
+
+		return account;
+
+	}
 
 	@RequestMapping(value = "/e_add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
@@ -105,6 +119,14 @@ public class AccountAction {
 		return "success";
 	}
 
+	/**
+	 * 修改其他人信息
+	 * 
+	 * @param accountId
+	 * @param account
+	 * @return
+	 * @throws CodeException
+	 */
 	@RequestMapping(value = "/e_update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	String update(
@@ -128,10 +150,60 @@ public class AccountAction {
 		return "success";
 	}
 
+	/**
+	 * 修改个人信息
+	 * 
+	 * @param accountId
+	 * @param account
+	 * @return
+	 * @throws CodeException
+	 */
+	@RequestMapping(value = "/e_updatePersonal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	String updatePersonalInfo(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestBody Account account) throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		if (StringUtils.isEmpty(account.getId())) {
+			throw new CodeException("获取不到用户id");
+
+		}
+		if (StringUtils.isEmpty(account.getUserName())) {
+			throw new CodeException("用户名不能为空");
+		}
+
+		if (StringUtils.isEmpty(account.getUserPhone())) {
+			throw new CodeException("手机号不能为空");
+		}
+		accountService.updatePersonalInfo(accountId, account);
+		return "success";
+	}
+
 	@ExceptionHandler(CodeException.class)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
 	public ErrorMessage handleException(CodeException e) {
 		return new ErrorMessage(e.getMessage());
+	}
+
+	@RequestMapping(value = "/e_delete", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	String deleteUser(
+			@RequestParam(value = "accountId", defaultValue = "0") int operateAccountId,
+			@RequestParam(value = "delAccountId", defaultValue = "0") int delAccountId)
+			throws CodeException {
+		if (operateAccountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		if (delAccountId == 0) {
+			throw new CodeException("请选择要删除的用户");
+
+		}
+		accountService.deleteAccount(operateAccountId, delAccountId);
+
+		return "success";
+
 	}
 }

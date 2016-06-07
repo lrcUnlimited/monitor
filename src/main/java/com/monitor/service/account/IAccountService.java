@@ -38,7 +38,20 @@ public interface IAccountService {
 	 * @param accountId
 	 * @param account
 	 * @return
+	 * @throws CodeException
+	 */
+	public void updateAccountInfo(int accountId, Account account)
+			throws CodeException;
+
+	public Account account(int accountId) throws CodeException;
+
+	public void deleteAccount(int operateAccountId, int delAccountId) throws CodeException;
+	/**
+	 * 修改个人信息
+	 * @param accountId
+	 * @param account
 	 * @throws CodeException 
 	 */
-	public void updateAccountInfo(int accountId, Account account) throws CodeException;
+	public void updatePersonalInfo(int accountId,Account account) throws CodeException;
+
 }

@@ -25,13 +25,15 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	 * @param passWord
 	 * @return
 	 */
-	@Query("select account from Account account where account.userName=?1 and account.passWord=?2")
+	@Query("select account from Account account where account.userName=?1 and account.passWord=?2 and account.isDelete=0")
 	public Account loginAccount(String userName, String passWord);
 
 	@Query("select userName from Account account where account.id=?1")
 	public String queryUserNameById(Integer accounId);
+
 	/**
 	 * 通过用户名找出用户，用于用户名唯一性
+	 * 
 	 * @param userName
 	 * @return
 	 */
@@ -47,8 +49,17 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	 * @param accountId
 	 */
 	@Modifying
-	@Query("update Account account set account.userName=?1,account.userPhone=?2,account.note=?3 where account.id=?4 ")
+	@Query("update Account account set account.userName=?1,account.userPhone=?2,account.note=?3,account.passWord=?4,account.type=?5 where account.id=?6 ")
 	public void updateUserInfo(String userName, String userPhone, String note,
-			int accountId);
+			String passWord, int type, int accountId);
+
+	/**
+	 * 逻辑删除用户
+	 * 
+	 * @param accountId
+	 */
+	@Modifying
+	@Query("update Account account set account.isDelete=1 where account.id=?1")
+	public void deleteAccount(int accountId);
 
 }

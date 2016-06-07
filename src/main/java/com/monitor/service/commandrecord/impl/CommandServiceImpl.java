@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
+import com.monitor.model.Account;
 import com.monitor.model.CommandRecord;
 import com.monitor.model.Pager;
 import com.monitor.service.commandrecord.CommandService;
@@ -34,15 +35,17 @@ public class CommandServiceImpl implements CommandService {
 	@Override
 	public boolean saveCommandRecord(int accountId, CommandRecord commandRecord)
 			throws CodeException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Pager queryCommandRecord(Integer pageNo, Integer pageSize,
 			Integer accountId, Integer type) throws CodeException {
-		// TODO Auto-generated method stub
 		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
+			}
 
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
@@ -79,25 +82,14 @@ public class CommandServiceImpl implements CommandService {
 			pager.setItems(list);
 			return pager;
 
+		} catch (CodeException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("获取用户列表出错", e);
 			throw new CodeException("内部错误");
 
 		}
 
-	}
-
-	@Override
-	public List<CommandRecord> getCommandRecord() {
-		// TODO Auto-generated method stub
-		StringBuilder commandSql = new StringBuilder(
-				" select * from commandrecord ");
-		Query queryList = manager.createNativeQuery(commandSql.toString(),
-				CommandRecord.class);
-		@SuppressWarnings("unchecked")
-		List<CommandRecord> list = queryList.getResultList();
-
-		return list;
 	}
 
 }

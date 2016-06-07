@@ -14,8 +14,8 @@ public interface IDeviceRecordService {
 	 * @param accountID
 	 * @param devceId
 	 */
-	public List<DeviceRecord> queryNewlyLocation(List<Integer> deviceList)
-			throws CodeException;
+	public List<DeviceRecord> queryNewlyLocation(int accountId,
+			List<Integer> deviceList) throws CodeException;
 
 	public DeviceRecord queryNewlyLocation(int deviceId) throws CodeException;
 
@@ -26,8 +26,9 @@ public interface IDeviceRecordService {
 	 * @return
 	 * @throws CodeException
 	 */
-	public List<DeviceRecord> queryAllLocation(int deviceId, long startTime,
-			long endTime) throws CodeException;
+	public List<DeviceRecord> queryAllLocation(int accountId, int deviceId,
+			long startTime, long endTime) throws CodeException;
 
-	public Pager queryDeviceHisLocation(int deviceId,int pageNo,int pageSize) throws CodeException;
+	public Pager queryDeviceHisLocation(int accountId, int deviceId,
+			int pageNo, int pageSize) throws CodeException;
 }
