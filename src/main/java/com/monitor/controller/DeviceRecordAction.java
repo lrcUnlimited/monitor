@@ -124,6 +124,30 @@ public class DeviceRecordAction {
 		return pager;
 
 	}
+	@RequestMapping(value = "/e_queryallErrorDevice", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Pager queryallErrorDeviceRecordById(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		Pager pager = deviceRecordService.queryExceptionLocation(pageNo, pageSize, accountId);
+		return pager;
+	}
+	@RequestMapping(value = "/e_queryErrorDeviceCount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	int queryErrorDeviceCountById(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		int errordeviceCount = deviceRecordService.getErrorZLocatonDevice(accountId);
+		return errordeviceCount;
+	}
 	@ExceptionHandler(CodeException.class)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
