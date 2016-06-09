@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,7 +34,7 @@ import com.monitor.service.device.IDeviceService;
 @Controller
 @RequestMapping("/device")
 public class DeviceAction {
-	
+
 	@Autowired
 	private IDeviceService deviceService;
 
@@ -86,6 +87,27 @@ public class DeviceAction {
 		Pager pager = deviceService.queryDevice(pageNo, pageSize, accountId,
 				type);
 		return pager;
+
+	}
+	/**
+	 * 获取打印数据接口
+	 * @param accountId
+	 * @param type
+	 * @return
+	 * @throws CodeException
+	 */
+
+	@RequestMapping(value = "/e_queryPrint", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<Device> queryPrintDevice(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+
+		return deviceService.getAllDevice(accountId, type);
 
 	}
 
@@ -169,6 +191,18 @@ public class DeviceAction {
 		deviceService.updateDeviceManageStatus(accountId, deviceId, changeType,
 				status, modifyDeviceValidTime);
 		return "success";
+	}
+
+	@RequestMapping(value = "/e_odtotalcount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	int updateDeviceManageStatus(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+
+		return deviceService.getTotalOutDateCount(accountId);
 	}
 
 	@RequestMapping(value = "/zip/{deviceId}", produces = "application/zip")

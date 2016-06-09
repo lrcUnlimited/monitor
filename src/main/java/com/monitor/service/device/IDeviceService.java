@@ -2,6 +2,7 @@ package com.monitor.service.device;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
+import java.util.List;
 
 import com.monitor.exception.CodeException;
 import com.monitor.model.Device;
@@ -75,5 +76,9 @@ public interface IDeviceService {
 	 */
 	public ByteArrayOutputStream downloadDeviceZipFile(int accountId,
 			int deviceId) throws CodeException;
+
+	public int getTotalOutDateCount(int accountId) throws CodeException;
+
+	public List<Device> getAllDevice(int accountId,int type) throws CodeException;
 
 }

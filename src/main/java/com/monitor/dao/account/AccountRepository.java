@@ -12,7 +12,7 @@ import com.monitor.model.Account;
 
 /**
  * @Description: 账户实体数据库相关操作
- * @author malin
+ * 
  * @date 2014-8-14
  * @time 下午11:35:26
  */

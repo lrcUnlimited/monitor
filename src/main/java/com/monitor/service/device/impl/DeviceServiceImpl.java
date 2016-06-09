@@ -229,7 +229,7 @@ public class DeviceServiceImpl implements IDeviceService {
 
 		try {
 			Account account = accountRepository.findOne(accountId);
-			if (account.getType() == 0 || account.getIsDelete()==1) {
+			if (account.getType() == 0 || account.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			} else {
 				Date validTime = new Date(newValidTime);
@@ -286,7 +286,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			int deviceId) throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
-			if (account.getIsDelete()==1 || account.getType() == 0) {
+			if (account.getIsDelete() == 1 || account.getType() == 0) {
 				throw new CodeException("请重新登录");
 			}
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -328,5 +328,64 @@ public class DeviceServiceImpl implements IDeviceService {
 			throw new CodeException("下载证书失败");
 
 		}
+	}
+
+	@Override
+	public int getTotalOutDateCount(int accountId) throws CodeException {
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
+			StringBuilder countSql = new StringBuilder(
+					" select count(deviceId) from device device "
+							+ " where 1=1 ");
+			countSql.append(" and device.manageDeviceStatus =1 and device.validTime <=DATE_ADD(now(),INTERVAL 3 DAY) ");
+			Query query = manager.createNativeQuery(countSql.toString());
+			int totalCount = (((BigInteger) query.getSingleResult()).intValue());
+			return totalCount;
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("获取设备列表出错", e);
+			throw new CodeException("内部错误");
+		}
+	}
+
+	@Override
+	public List<Device> getAllDevice(int accountId, int type)
+			throws CodeException {
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1) {
+				throw new CodeException("请重新登录");
+			}
+
+			StringBuilder builder = new StringBuilder(
+					"select * from device device where 1=1");
+			if (type == 0) {
+				builder.append("  and device.manageDeviceStatus =1 and device.validTime >DATE_ADD(now(),INTERVAL 3 DAY) ");
+			} else if (type == 1) {
+				builder.append("  and device.manageDeviceStatus =1 and device.validTime <=DATE_ADD(now(),INTERVAL 3 DAY) ");
+			} else if (type == 2) {
+				builder.append("  and device.manageDeviceStatus =0 ");
+			}
+
+			builder.append(" ORDER BY device.validTime ASC ");
+
+			Query queryList = manager.createNativeQuery(builder.toString(),
+					Device.class);
+			@SuppressWarnings("unchecked")
+			List<Device> list = queryList.getResultList();
+			return list;
+
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("获取设备列表出错", e);
+			throw new CodeException("内部错误");
+		}
+
 	}
 }
