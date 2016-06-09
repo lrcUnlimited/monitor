@@ -12,5 +12,14 @@ import com.monitor.model.DeviceRecord;
 @Repository
 public interface DeviceRecordRepository extends
 		JpaRepository<DeviceRecord, Integer> {
+	/**
+	 * 修改设备记录表的一场未知信息操作位
+	 * @param deviceSessionKey
+	 * @param deviceId
+	 * @return
+	 */
+	@Modifying
+	@Query("update DeviceRecord deviceRecord set deviceRecord.operationType=1 where deviceRecord.deviceId=?1")
+	public int updateDeviceRecordOpeRationType(int deviceId);
 	
 }

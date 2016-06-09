@@ -31,4 +31,11 @@ public interface IDeviceRecordService {
 
 	public Pager queryDeviceHisLocation(int accountId, int deviceId,
 			int pageNo, int pageSize) throws CodeException;
+	//显示异常位置设备
+	public Pager queryExceptionLocation(Integer pageNo, Integer pageSize, Integer accountId ) throws CodeException;
+	//修改异常位置设备的操作位
+	public void updateOperationType(int accountId, int deviceId)
+			throws CodeException;
+	//获取设备位置危险信息的设备总数
+	public int getErrorZLocatonDevice(int accountId);
 }

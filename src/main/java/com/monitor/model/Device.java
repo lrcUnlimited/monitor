@@ -15,6 +15,8 @@ public class Device {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer deviceId;// 设备Id
 	private String deviceName;// 设备名字
+	private String lesseeName;//设备租用方名称
+	private String lesseePhone;//设备租用方电话
 	private Date regTime;// 设备添加时间
 	private Date enableTime;// 设备授权时间
 	private Integer deviceStatus;// 被控端设备状态，0-开关断开状态，1-开关闭合状态
@@ -23,6 +25,22 @@ public class Device {
 	private String sessionKey;// 会话秘钥
 	private int updateCRT;// 是否需要更新证书文件 0-代表不需要更新 1-代表需要更新
 	private Integer manageDeviceStatus;// 设备管理状态 0-代表关，1-代表开，默认为1
+
+	public String getLesseeName() {
+		return lesseeName;
+	}
+
+	public void setLesseeName(String lesseeName) {
+		this.lesseeName = lesseeName;
+	}
+
+	public String getLesseePhone() {
+		return lesseePhone;
+	}
+
+	public void setLesseePhone(String lesseePhone) {
+		this.lesseePhone = lesseePhone;
+	}
 
 	public Integer getDeviceId() {
 		return deviceId;

@@ -86,7 +86,7 @@ public class WebSocketHandler {
 		Message reciveMessage = JSON.parseObject(msg, Message.class);// 接收消息
 		SendMessage sendMessage = new SendMessage();// 发送消息
 		Date nowDate = new Date();// 当前日期
-		int nowType = 0;// 设备当前的状态
+		int nowType = 0;// 设备当前的管理状态
 
 		// 检查设备的状态
 		Device device = deviceRepository.findOne(deviceId);
@@ -126,7 +126,7 @@ public class WebSocketHandler {
 			}
 		}
 		if (reciveMessage.getType() != nowType) {
-			deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备的状态
+			deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备运行状态
 		}
 
 		// if (sendMessage.getUpdateCRTStatus() == 1) {
