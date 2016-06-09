@@ -1,5 +1,7 @@
 package com.monitor.dao.devicerecord;
 
+import java.util.Date;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +21,7 @@ public interface DeviceRecordRepository extends
 	 * @return
 	 */
 	@Modifying
-	@Query("update DeviceRecord deviceRecord set deviceRecord.operationType=1 where deviceRecord.deviceId=?1")
-	public int updateDeviceRecordOpeRationType(int deviceId);
+	@Query("update DeviceRecord deviceRecord set deviceRecord.operationType=1 where deviceRecord.deviceId=?1 and deviceRecord.realTime>=?2 and deviceRecord.realTime<=?3")
+	public int updateDeviceRecordOpeRationType(int deviceId,Date startTime,Date endTime);
 	
 }
