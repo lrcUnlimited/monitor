@@ -148,6 +148,22 @@ public class DeviceRecordAction {
 		int errordeviceCount = deviceRecordService.getErrorZLocatonDevice(accountId);
 		return errordeviceCount;
 	}
+	@RequestMapping(value = "/e_updateOperation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	String updateOperation(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
+			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		deviceRecordService.updateOperationType(accountId, deviceId, startTime, endTime);
+		
+		return "success";
+		
+	}
 	@ExceptionHandler(CodeException.class)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)

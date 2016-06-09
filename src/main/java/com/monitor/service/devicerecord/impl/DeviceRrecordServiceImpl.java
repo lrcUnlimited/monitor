@@ -250,15 +250,16 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	}
 
 	@Override
-	public void updateOperationType(int accountId, int deviceId)
+	public void updateOperationType(int accountId, int deviceId,long startTime,long endTime)
 			throws CodeException {
 		// TODO Auto-generated method stub
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
-			if (operateAccount.getIsDelete() == 1) {
+			if (operateAccount.getIsDelete() == 1 && operateAccount.getType()==0) {
 				throw new CodeException("请重新登录");
 			}
-			deviceRecordRepository.updateDeviceRecordOpeRationType(deviceId);
+			
+			deviceRecordRepository.updateDeviceRecordOpeRationType(deviceId,new Date(startTime),new Date(endTime));
 			}catch (CodeException e) {
 				throw e;
 			} catch (Exception e) {
