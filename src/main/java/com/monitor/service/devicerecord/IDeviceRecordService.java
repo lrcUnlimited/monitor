@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.monitor.exception.CodeException;
+import com.monitor.model.DeviceLocationError;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.Pager;
 
@@ -38,4 +39,14 @@ public interface IDeviceRecordService {
 			throws CodeException;
 	//获取设备位置危险信息的设备总数
 	public int getErrorZLocatonDevice(int accountId);
+	/**
+	 * 
+	 * @param pageNo
+	 * @param pageSize
+	 * @param accountId
+	 * @return
+	 * @throws CodeException
+	 */
+	public List<DeviceLocationError> queryAllExceptionLocation(Integer accountId ) throws CodeException;
+
 }

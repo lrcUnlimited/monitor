@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
 import com.monitor.dao.device.DeviceRepository;
+import com.monitor.dao.devicerecord.DeviceRecordRepository;
 import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.model.CommandRecord;
@@ -44,6 +45,8 @@ public class DeviceServiceImpl implements IDeviceService {
 	private CommandRecordRepository comRecordRepository;
 	@Autowired
 	private AccountRepository accountRepository;
+	@Autowired
+	private DeviceRecordRepository deviceRecordRepository;
 
 	@PersistenceContext
 	private EntityManager manager;
@@ -387,5 +390,25 @@ public class DeviceServiceImpl implements IDeviceService {
 			throw new CodeException("内部错误");
 		}
 
+	}
+
+	@Override
+	public void updateDeviceManStatus(int accountId, int deviceId,
+			long startTime, long endTime) throws CodeException {
+
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
+			deviceRecordRepository.updateDeviceRecordOpeRationType(deviceId,new Date(startTime),new Date(endTime));
+			deviceRepository.updateManageDeviceStatus(0, deviceId);
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("更新设备状态出错", e);
+			throw new CodeException("更新设备状态出错");
+		}
 	}
 }

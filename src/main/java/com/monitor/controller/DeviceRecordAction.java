@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.monitor.exception.CodeException;
 import com.monitor.exception.ErrorMessage;
+import com.monitor.model.DeviceLocationError;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
@@ -124,6 +125,7 @@ public class DeviceRecordAction {
 		return pager;
 
 	}
+
 	@RequestMapping(value = "/e_queryallErrorDevice", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Pager queryallErrorDeviceRecordById(
@@ -134,9 +136,22 @@ public class DeviceRecordAction {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		Pager pager = deviceRecordService.queryExceptionLocation(pageNo, pageSize, accountId);
+		Pager pager = deviceRecordService.queryExceptionLocation(pageNo,
+				pageSize, accountId);
 		return pager;
 	}
+
+	@RequestMapping(value = "/e_queryallErPositionDevice", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<DeviceLocationError> queryallErrorDeviceRecord(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		return deviceRecordService.queryAllExceptionLocation(accountId);
+	}
+
 	@RequestMapping(value = "/e_queryErrorDeviceCount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	int queryErrorDeviceCountById(
@@ -145,9 +160,11 @@ public class DeviceRecordAction {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		int errordeviceCount = deviceRecordService.getErrorZLocatonDevice(accountId);
+		int errordeviceCount = deviceRecordService
+				.getErrorZLocatonDevice(accountId);
 		return errordeviceCount;
 	}
+
 	@RequestMapping(value = "/e_updateOperation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	String updateOperation(
@@ -159,11 +176,13 @@ public class DeviceRecordAction {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		deviceRecordService.updateOperationType(accountId, deviceId, startTime, endTime);
-		
+		deviceRecordService.updateOperationType(accountId, deviceId, startTime,
+				endTime);
+
 		return "success";
-		
+
 	}
+
 	@ExceptionHandler(CodeException.class)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)

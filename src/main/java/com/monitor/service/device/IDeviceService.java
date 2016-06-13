@@ -79,6 +79,10 @@ public interface IDeviceService {
 
 	public int getTotalOutDateCount(int accountId) throws CodeException;
 
-	public List<Device> getAllDevice(int accountId,int type) throws CodeException;
+	public List<Device> getAllDevice(int accountId, int type)
+			throws CodeException;
+
+	public void updateDeviceManStatus(int accountId, int deviceId,
+			long startTime, long endTime) throws CodeException;
 
 }

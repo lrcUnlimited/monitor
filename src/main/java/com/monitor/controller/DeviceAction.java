@@ -89,8 +89,10 @@ public class DeviceAction {
 		return pager;
 
 	}
+
 	/**
 	 * 获取打印数据接口
+	 * 
 	 * @param accountId
 	 * @param type
 	 * @return
@@ -203,6 +205,33 @@ public class DeviceAction {
 		}
 
 		return deviceService.getTotalOutDateCount(accountId);
+	}
+
+	/**
+	 * 更新位置异常的管理状态
+	 * 
+	 * @param accountId
+	 * @return
+	 * @throws CodeException
+	 */
+	@RequestMapping(value = "/e_updateErrStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	String updateDeviceErrorManageStatus(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
+			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		if (deviceId == 0) {
+			throw new CodeException("请选择关闭设备");
+		}
+		deviceService.updateDeviceManStatus(accountId, deviceId, startTime,
+				endTime);
+
+		return "success";
 	}
 
 	@RequestMapping(value = "/zip/{deviceId}", produces = "application/zip")
