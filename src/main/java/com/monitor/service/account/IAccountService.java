@@ -1,5 +1,7 @@
 package com.monitor.service.account;
 
+import java.util.List;
+
 import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.model.Pager;
@@ -65,5 +67,7 @@ public interface IAccountService {
 	 * @throws CodeException
 	 */
 	public void logout(int accountId) throws CodeException;
+	
+	public List<Account> getAllAccount(int accountId) throws CodeException;
 
 }

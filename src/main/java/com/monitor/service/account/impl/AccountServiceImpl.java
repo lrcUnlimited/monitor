@@ -266,14 +266,50 @@ public class AccountServiceImpl implements IAccountService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setType(0);
-			commandRecord.setContent("用户: " + account.getUserName()
-					+ "退出系统");
+			commandRecord.setContent("用户: " + account.getUserName() + "退出系统");
 			commandRecordRepository.save(commandRecord);
 
 		} catch (CodeException e) {
 			throw e;
 		} catch (Exception e) {
 			logger.error("删除用户出错", e);
+		}
+	}
+
+	@Override
+	public List<Account> getAllAccount(int accountId) throws CodeException {
+		try {
+			Account account = accountRepository.findOne(accountId);
+			if (account.getType() == 1 && account.getIsDelete() == 0) {
+
+				StringBuilder builder = new StringBuilder(
+						"select * from account account where 1=1");
+				builder.append("  and account.isDelete=0 ");
+				if (accountId != 0) {
+					builder.append("  and account.id !=:id ");
+				}
+
+				builder.append(" ORDER BY account.registerDate DESC ");
+
+				Query queryList = manager.createNativeQuery(builder.toString(),
+						Account.class);
+				if (accountId != 0) {
+					queryList.setParameter("id", accountId);
+				}
+				@SuppressWarnings("unchecked")
+				List<Account> list = queryList.getResultList();
+				return list;
+
+			} else {
+				throw new CodeException("请重新登录");
+			}
+
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("获取用户列表出错", e);
+			throw new CodeException("内部错误");
+
 		}
 	}
 }
