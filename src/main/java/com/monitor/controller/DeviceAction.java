@@ -1,20 +1,15 @@
 package com.monitor.controller;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,28 +20,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.monitor.dao.device.DeviceRepository;
 import com.monitor.exception.CodeException;
 import com.monitor.exception.ErrorMessage;
+import com.monitor.model.Account;
 import com.monitor.model.Device;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
-
 @Controller
 @RequestMapping("/device")
 public class DeviceAction {
-
 	@Autowired
-	private IDeviceService deviceService;
-
+	IDeviceService deviceService;
 	/**
 	 * 新增设备接口
-	 * 
 	 * @param accountId
 	 * @param device
 	 * @return
 	 * @throws CodeException
 	 */
-
 	@RequestMapping(value = "/e_add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	String addDevice(
@@ -79,7 +71,11 @@ public class DeviceAction {
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "type", defaultValue = "0") int type)
+			@RequestParam(value = "type", defaultValue = "0") int type
+		
+			
+			
+			)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
@@ -154,7 +150,9 @@ public class DeviceAction {
 	String updateDeviceValidTime(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
-			@RequestParam(value = "modifyDeviceValidTime") Long modifyDeviceValidTime)
+			@RequestParam(value = "modifyDeviceValidTime") Long modifyDeviceValidTime,
+			@RequestParam(value = "addReason", defaultValue = "1") int addReason,
+			@RequestParam(value = "addNote", defaultValue = "") String addNote)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
@@ -165,8 +163,12 @@ public class DeviceAction {
 		if (modifyDeviceValidTime == null) {
 			throw new CodeException("请设置设备新的有效期");
 		}
+		if (StringUtils.isEmpty(addNote) ) {
+			throw new CodeException("请输入修改有效期的备注");
+		}
+		
 		deviceService.updateValidTime(accountId, deviceId,
-				modifyDeviceValidTime);
+				modifyDeviceValidTime,addReason,addNote);
 
 		return "success";
 	}
@@ -258,7 +260,6 @@ public class DeviceAction {
 		}
 
 	}
-
 	@ExceptionHandler(CodeException.class)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.monitor.model.Account;
 import com.monitor.model.Device;
 
 @Transactional
@@ -84,4 +85,9 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	@Modifying
 	@Query("update Device device set device.deviceStatus=?1 where device.deviceId=?2")
 	public int updateDeviceStatus(int status, int deviceId);
+	/**
+	 * 通过设备名称找出设备
+	 * @param userName
+	 * @return
+	 */
 }

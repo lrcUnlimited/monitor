@@ -50,7 +50,7 @@ public interface IDeviceService {
 	 * @param newValidTime
 	 * @throws CodeException
 	 */
-	public void updateValidTime(int accountId, int deviceId, long newValidTime)
+	public void updateValidTime(int accountId, int deviceId, long newValidTime,int addReason,String addNote)
 			throws CodeException;
 
 	/**
@@ -84,5 +84,4 @@ public interface IDeviceService {
 
 	public void updateDeviceManStatus(int accountId, int deviceId,
 			long startTime, long endTime) throws CodeException;
-
 }

@@ -106,7 +106,7 @@ public class AccountAction {
 			throw new CodeException("请重新登录");
 		}
 		if (StringUtils.isEmpty(account.getUserName())) {
-			throw new CodeException("用户名不能为空");
+			throw new CodeException("用户名不能为空或者用户名输入错误");
 		}
 		if (StringUtils.isEmpty(account.getPassWord())) {
 			throw new CodeException("密码不能为空");

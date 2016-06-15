@@ -136,7 +136,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				countSql.append("  and device.manageDeviceStatus =0 ");
 			}
 
-			builder.append(" ORDER BY device.validTime ASC ");
+			builder.append(" ORDER BY device.deviceId DESC ");
 			builder.append(" limit " + thisPage + "," + pageSize);
 
 			Query query = manager.createNativeQuery(countSql.toString());
@@ -186,7 +186,7 @@ public class DeviceServiceImpl implements IDeviceService {
 	}
 
 	@Override
-	public void updateValidTime(int accountId, int deviceId, long newValidTime)
+	public void updateValidTime(int accountId, int deviceId, long newValidTime,int addReason,String addNote)
 			throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
@@ -201,6 +201,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				}
 				deviceRepository.updateDeviceValidTime(validDate, deviceId);
 				// 保存到命令记录中
+				System.out.println("addNote:"+addNote);
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setAccountId(accountId);
 				commandRecord.setType(4);
@@ -411,4 +412,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			throw new CodeException("更新设备状态出错");
 		}
 	}
+
+
+
 }
