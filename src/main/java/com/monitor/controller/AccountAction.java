@@ -1,5 +1,7 @@
 package com.monitor.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,6 +59,19 @@ public class AccountAction {
 		Pager pager = accountService.queryUser(pageNo, pageSize, accountId,
 				userName);
 		return pager;
+
+	}
+
+	@RequestMapping(value = "/e_queryAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<Account> queryAllUser(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			throws CodeException {
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+
+		return accountService.getAllAccount(accountId);
 
 	}
 
