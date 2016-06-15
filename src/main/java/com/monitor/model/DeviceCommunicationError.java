@@ -2,18 +2,14 @@ package com.monitor.model;
 
 import java.util.Date;
 
-public class DeviceLocationError {
+public class DeviceCommunicationError {
 	private Integer deviceId;// 设备Id
 	private String deviceName;// 设备名字
-	private Date startTime;// 设备异常开始时间
-	private Date endTime;// 设备异常截止时间
+	private Date lastCommunicateTime;// 最后设备通信时间
 	private String lesseeName;// 设备租户名称
 	private String lesseePhone;// 设备租户电话
-	private Integer errorNumber;// 设备异常次数
-
-
-
-
+	private Date validTime; // 设备有效期
+	private Date regTime; // 设备录入时间
 
 	public Integer getDeviceId() {
 		return deviceId;
@@ -31,20 +27,12 @@ public class DeviceLocationError {
 		this.deviceName = deviceName;
 	}
 
-	public Date getStartTime() {
-		return startTime;
+	public Date getLastCommunicateTime() {
+		return lastCommunicateTime;
 	}
 
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
+	public void setLastCommunicateTime(Date lastCommunicateTime) {
+		this.lastCommunicateTime = lastCommunicateTime;
 	}
 
 	public String getLesseeName() {
@@ -63,12 +51,20 @@ public class DeviceLocationError {
 		this.lesseePhone = lesseePhone;
 	}
 
-	public Integer getErrorNumber() {
-		return errorNumber;
+	public Date getValidTime() {
+		return validTime;
 	}
 
-	public void setErrorNumber(Integer errorNumber) {
-		this.errorNumber = errorNumber;
+	public void setValidTime(Date validTime) {
+		this.validTime = validTime;
+	}
+
+	public Date getRegTime() {
+		return regTime;
+	}
+
+	public void setRegTime(Date regTime) {
+		this.regTime = regTime;
 	}
 
 }

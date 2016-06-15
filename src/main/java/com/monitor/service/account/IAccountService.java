@@ -45,13 +45,25 @@ public interface IAccountService {
 
 	public Account account(int accountId) throws CodeException;
 
-	public void deleteAccount(int operateAccountId, int delAccountId) throws CodeException;
+	public void deleteAccount(int operateAccountId, int delAccountId)
+			throws CodeException;
+
 	/**
 	 * 修改个人信息
+	 * 
 	 * @param accountId
 	 * @param account
-	 * @throws CodeException 
+	 * @throws CodeException
 	 */
-	public void updatePersonalInfo(int accountId,Account account) throws CodeException;
+	public void updatePersonalInfo(int accountId, Account account)
+			throws CodeException;
+
+	/**
+	 * 退出系统
+	 * 
+	 * @param accountId
+	 * @throws CodeException
+	 */
+	public void logout(int accountId) throws CodeException;
 
 }

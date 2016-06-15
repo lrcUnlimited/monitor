@@ -1,6 +1,5 @@
 package com.monitor.model;
 
-
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -21,11 +20,20 @@ public class DeviceRecord {
 	private Double latitude;// 设备当前纬度
 	private Date realTime;// 设备当前时间
 	private int status;// 设备当前状态
-	private int locationStatus;//设备位置变化状态位，默认为0（相邻的两个位置点距离超过500m，将该状态位设为1）
-	private int operationType;//设备异常位置操作，默认为0（0代表显示位置异常信息，1代表操作确认过）
+	private int locationStatus;// 设备位置变化状态位，默认为0（相邻的两个位置点距离超过500m，将该状态位设为1）
+	private int operationType;// 设备异常位置操作，默认为0（0代表显示位置异常信息，1代表操作确认过）
 	@Transient
 	private String deviceName;
+	@Transient
+	private Date validTime;// 设备有效期
 
+	public Date getValidTime() {
+		return validTime;
+	}
+
+	public void setValidTime(Date validTime) {
+		this.validTime = validTime;
+	}
 
 	public int getOperationType() {
 		return operationType;
