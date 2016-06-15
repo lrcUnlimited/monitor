@@ -21,6 +21,7 @@ import com.monitor.dao.devicerecord.DeviceRecordRepository;
 import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.model.Device;
+import com.monitor.model.DeviceCommunicationError;
 import com.monitor.model.DeviceLocationError;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.Pager;
@@ -59,8 +60,10 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 				return null;
 			}
 			DeviceRecord deviceRecord = list.get(0);
-			deviceRecord.setDeviceName(deviceRepository
-					.queryDeviceNameById(deviceRecord.getDeviceId()));
+			Device device = deviceRepository
+					.findOne(deviceRecord.getDeviceId());
+			deviceRecord.setValidTime(device.getValidTime());
+			deviceRecord.setDeviceName(device.getDeviceName());
 
 			return deviceRecord;
 
@@ -108,8 +111,10 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			@SuppressWarnings("unchecked")
 			List<DeviceRecord> list = query.getResultList();
 			for (DeviceRecord deviceRecord : list) {
-				deviceRecord.setDeviceName(deviceRepository
-						.queryDeviceNameById(deviceRecord.getDeviceId()));
+				Device device = deviceRepository.findOne(deviceRecord
+						.getDeviceId());
+				deviceRecord.setDeviceName(device.getDeviceName());
+				deviceRecord.setValidTime(device.getValidTime());
 			}
 			return list;
 
@@ -336,6 +341,133 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 		} catch (Exception e) {
 			logger.error("获取位置异常设备列表出错", e);
 			throw new CodeException("内部错误");
+		}
+	}
+
+	@Override
+	public Pager communicationExceptionDevice(int pageNo, int pageSize,
+			int accountId) throws CodeException {
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
+			Pager pager = new Pager(pageNo, pageSize);
+			int thisPage = (pageNo - 1) * pageSize;
+			StringBuilder countSql = new StringBuilder(
+					" select count( distinct deviceId) from devicerecord where realTime<DATE_SUB(now(),INTERVAL 4 DAY)");
+			StringBuilder builder = new StringBuilder(
+					"select deviceId,max(realTime) as maxTime from devicerecord group by deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY)  ");
+
+			builder.append(" limit " + thisPage + "," + pageSize);
+
+			Query query = manager.createNativeQuery(countSql.toString());
+			Query queryList = manager.createNativeQuery(builder.toString());
+
+			pager.setTotalCount(((BigInteger) query.getSingleResult())
+					.intValue());
+
+			@SuppressWarnings("unchecked")
+			List<Object[]> list = queryList.getResultList();
+			List<DeviceCommunicationError> devcieErrorList = new ArrayList<DeviceCommunicationError>();
+			for (int i = 0; i < list.size(); i++) {
+				DeviceCommunicationError deviceCommunicationError = new DeviceCommunicationError();
+				deviceCommunicationError.setDeviceId((Integer) list.get(i)[0]);
+				deviceCommunicationError.setLastCommunicateTime((Date) list
+						.get(i)[1]);// 最后一次通信时间
+				int deviceId = deviceCommunicationError.getDeviceId();
+				Device device = deviceRepository.findOne(deviceId);
+				deviceCommunicationError.setDeviceName(device.getDeviceName());
+				deviceCommunicationError.setLesseeName(device.getLesseeName());
+				deviceCommunicationError
+						.setLesseePhone(device.getLesseePhone());
+				deviceCommunicationError.setValidTime(device.getValidTime());
+				deviceCommunicationError.setRegTime(device.getRegTime());
+				devcieErrorList.add(deviceCommunicationError);
+			}
+			pager.setItems(devcieErrorList);
+			return pager;
+
+		} catch (CodeException e) {
+			throw e;
+
+		} catch (Exception e) {
+			logger.error("获取通信设备异常列表出错", e);
+			throw new CodeException("获取通信设备异常列表出错");
+
+		}
+	}
+
+	@Override
+	public List<DeviceCommunicationError> queryAllCommunicationExceptionDevice(
+			int accountId) throws CodeException {
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
+
+			StringBuilder builder = new StringBuilder(
+					"select deviceId,max(realTime) as maxTime from devicerecord group by deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY)  ");
+
+			Query queryList = manager.createNativeQuery(builder.toString());
+
+			@SuppressWarnings("unchecked")
+			List<Object[]> list = queryList.getResultList();
+			List<DeviceCommunicationError> devcieErrorList = new ArrayList<DeviceCommunicationError>();
+			for (int i = 0; i < list.size(); i++) {
+				DeviceCommunicationError deviceCommunicationError = new DeviceCommunicationError();
+				deviceCommunicationError.setDeviceId((Integer) list.get(i)[0]);
+				deviceCommunicationError.setLastCommunicateTime((Date) list
+						.get(i)[1]);// 最后一次通信时间
+				int deviceId = deviceCommunicationError.getDeviceId();
+				Device device = deviceRepository.findOne(deviceId);
+				deviceCommunicationError.setDeviceName(device.getDeviceName());
+				deviceCommunicationError.setLesseeName(device.getLesseeName());
+				deviceCommunicationError
+						.setLesseePhone(device.getLesseePhone());
+				deviceCommunicationError.setValidTime(device.getValidTime());
+				deviceCommunicationError.setRegTime(device.getRegTime());
+				devcieErrorList.add(deviceCommunicationError);
+			}
+			return devcieErrorList;
+
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("获取通信设备异常列表出错", e);
+			throw new CodeException("获取通信设备异常列表出错");
+
+		}
+	}
+
+	@Override
+	public int getCommunicationExceptionCount(int accountId)
+			throws CodeException {
+		try {
+			Account operateAccount = accountRepository.findOne(accountId);
+			if (operateAccount.getIsDelete() == 1
+					|| operateAccount.getType() == 0) {
+				throw new CodeException("请重新登录");
+			}
+
+			StringBuilder countSql = new StringBuilder(
+					" select count( distinct deviceId) from devicerecord where realTime<DATE_SUB(now(),INTERVAL 4 DAY)");
+
+			Query query = manager.createNativeQuery(countSql.toString());
+
+			int totalCount = ((BigInteger) query.getSingleResult()).intValue();
+			return totalCount;
+
+		} catch (CodeException e) {
+			throw e;
+
+		} catch (Exception e) {
+			logger.error("获取通信设备异常列表出错", e);
+			throw new CodeException("获取通信设备异常列表出错");
+
 		}
 	}
 }

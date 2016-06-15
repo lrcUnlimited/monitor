@@ -21,6 +21,7 @@ import com.monitor.model.Account;
 import com.monitor.model.CommandRecord;
 import com.monitor.model.Pager;
 import com.monitor.service.account.IAccountService;
+import com.monitor.util.MD5Util;
 
 @Service(value = "accountService")
 public class AccountServiceImpl implements IAccountService {
@@ -36,9 +37,20 @@ public class AccountServiceImpl implements IAccountService {
 	@Override
 	public Account getAccount(String userName, String passWord)
 			throws CodeException {
-		Account account = accountRepository.loginAccount(userName, passWord);
+		String encryptPassWord = MD5Util.getMD5Str(passWord);
+		Account account = accountRepository.loginAccount(userName,
+				encryptPassWord);
+
 		try {
 			if (account != null) {
+				CommandRecord commandRecord = new CommandRecord();
+				commandRecord.setAccountId(account.getId());
+				commandRecord.setRecordTime(new Date());
+				StringBuffer content = new StringBuffer();
+				content.append("用户:").append(userName).append("登录系统");
+				commandRecord.setContent(content.toString());
+				commandRecord.setType(0);
+				commandRecordRepository.save(commandRecord);
 				return account;
 			} else {
 				throw new CodeException("用户名或密码错误");
@@ -61,6 +73,7 @@ public class AccountServiceImpl implements IAccountService {
 					|| operateAccount.getType() == 0) {
 				throw new CodeException("请重新登录");
 			}
+			account.setPassWord(MD5Util.getMD5Str(account.getPassWord()));
 			account.setRegisterDate(new Date());
 			accountRepository.save(account);
 			// 保存命令记录
@@ -147,17 +160,17 @@ public class AccountServiceImpl implements IAccountService {
 			if (adminAccount.getType() == 0 || adminAccount.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			} else {
+				String md5PassWord = MD5Util.getMD5Str(account.getPassWord());
 				accountRepository.updateUserInfo(account.getUserName(),
-						account.getUserPhone(), account.getNote(),
-						account.getPassWord(), account.getType(),
-						account.getId());
+						account.getUserPhone(), account.getNote(), md5PassWord,
+						account.getType(), account.getId());
 
 				// 保存命令记录
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setAccountId(accountId);
 				commandRecord.setRecordTime(new Date());
 				commandRecord.setType(0);
-				commandRecord.setContent("修改了用户ID为: " + account.getId()
+				commandRecord.setContent("修改了用户: " + account.getUserName()
 						+ "的个人信息");
 				commandRecordRepository.save(commandRecord);
 			}
@@ -217,10 +230,11 @@ public class AccountServiceImpl implements IAccountService {
 					|| accountId != account.getId()) {
 				throw new CodeException("请重新登录");
 			} else {
+				String md5PassWord = MD5Util.getMD5Str(account.getPassWord());
+
 				accountRepository.updateUserInfo(account.getUserName(),
-						account.getUserPhone(), account.getNote(),
-						account.getPassWord(), personalAccount.getType(),
-						account.getId());
+						account.getUserPhone(), account.getNote(), md5PassWord,
+						personalAccount.getType(), account.getId());
 
 				// 保存命令记录
 				CommandRecord commandRecord = new CommandRecord();
@@ -236,8 +250,30 @@ public class AccountServiceImpl implements IAccountService {
 		} catch (Exception e) {
 			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
-
 		}
 
+	}
+
+	@Override
+	public void logout(int accountId) throws CodeException {
+		try {
+			Account account = accountRepository.findOne(accountId);
+			if (account == null) {
+				throw new CodeException("不存在该用户");
+			}
+			// 保存命令记录
+			CommandRecord commandRecord = new CommandRecord();
+			commandRecord.setAccountId(accountId);
+			commandRecord.setRecordTime(new Date());
+			commandRecord.setType(0);
+			commandRecord.setContent("用户: " + account.getUserName()
+					+ "退出系统");
+			commandRecordRepository.save(commandRecord);
+
+		} catch (CodeException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("删除用户出错", e);
+		}
 	}
 }

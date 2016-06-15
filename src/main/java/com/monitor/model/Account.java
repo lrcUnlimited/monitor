@@ -8,8 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 
 @Entity
 @Table(name = "account")
@@ -18,6 +20,7 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;// 账号ID
 	private String userName;
+	@JsonIgnore
 	private String passWord;
 	private Date registerDate;// 用户添加日期
 	private String userPhone;// 用户电话
@@ -65,10 +68,11 @@ public class Account {
 		this.userName = userName;
 	}
 
+	@JsonIgnore
 	public String getPassWord() {
 		return passWord;
 	}
-
+	@JsonProperty
 	public void setPassWord(String passWord) {
 		this.passWord = passWord;
 	}
