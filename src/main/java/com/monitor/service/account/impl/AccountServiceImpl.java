@@ -81,7 +81,7 @@ public class AccountServiceImpl implements IAccountService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setType(0);
-			commandRecord.setContent("添加了新的用户: " + account.getUserName());
+			commandRecord.setContent("注册新用户: " + "("+account.getUserName()+")");
 			commandRecordRepository.save(commandRecord);
 			return true;
 		} catch (CodeException e) {
@@ -170,8 +170,8 @@ public class AccountServiceImpl implements IAccountService {
 				commandRecord.setAccountId(accountId);
 				commandRecord.setRecordTime(new Date());
 				commandRecord.setType(0);
-				commandRecord.setContent("修改了用户: " + account.getUserName()
-						+ "的个人信息");
+				commandRecord.setContent("修改用户: " +"("+ account.getUserName()+")"
+						+ "个人信息");
 				commandRecordRepository.save(commandRecord);
 			}
 		} catch (CodeException e) {
@@ -213,7 +213,19 @@ public class AccountServiceImpl implements IAccountService {
 					|| operateAccount.getType() == 0) {
 				throw new CodeException("请重新登录");
 			}
+			
+			// 保存命令记录
+			CommandRecord commandRecord = new CommandRecord();
+			Account delAccount = accountRepository.findOne(delAccountId);
+			commandRecord.setAccountId(operateAccountId);
+			commandRecord.setRecordTime(new Date());
+			commandRecord.setType(0);
+			commandRecord.setContent("删除用户:"+"(" + delAccount.getUserName()+")"
+					+ "个人信息");
+			commandRecordRepository.save(commandRecord);
+			//删除设备
 			accountRepository.deleteAccount(delAccountId);
+			
 		} catch (CodeException e) {
 			throw e;
 		} catch (Exception e) {
@@ -239,10 +251,11 @@ public class AccountServiceImpl implements IAccountService {
 				// 保存命令记录
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setAccountId(accountId);
+				commandRecord.setAccountName(account.getUserName());
 				commandRecord.setRecordTime(new Date());
 				commandRecord.setType(0);
-				commandRecord.setContent("修改了用户ID为: " + account.getId()
-						+ "的个人信息");
+				commandRecord.setContent("修改用户:"+"(" + account.getUserName()+")"
+						+ "个人信息");
 				commandRecordRepository.save(commandRecord);
 			}
 		} catch (CodeException e) {
