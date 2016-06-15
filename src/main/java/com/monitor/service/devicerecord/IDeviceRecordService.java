@@ -29,7 +29,7 @@ public interface IDeviceRecordService {
 	 * @throws CodeException
 	 */
 	public List<DeviceRecord> queryAllLocation(int accountId, int deviceId,
-			long startTime, long endTime) throws CodeException;
+			long startTime, long endTime,int type) throws CodeException;
 
 	public Pager queryDeviceHisLocation(int accountId, int deviceId,
 			int pageNo, int pageSize) throws CodeException;

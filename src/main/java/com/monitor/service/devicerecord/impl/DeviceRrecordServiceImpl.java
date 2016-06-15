@@ -77,28 +77,36 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 	@Override
 	public List<DeviceRecord> queryAllLocation(int accountId, int deviceId,
-			long startTime, long endTime) throws CodeException {
+			long startTime, long endTime, int type) throws CodeException {
 		// TODO Auto-generated method stub
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
 			if (operateAccount.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			}
-			Date startDate;
-			Date endDate;
-			if (startTime == 0) {
-				startDate = new Date(0);
+			Date startDate = null;
+			Date endDate = null;
+			if (type == 0) {
+				if (startTime == 0) {
+					startDate = new Date(0);
+				} else {
+					startDate = new Date(startTime);
+				}
+				if (endTime == 0) {
+					endDate = new Date();
+				} else {
+					endDate = new Date(endTime + 86400000);
+				}
 			} else {
 				startDate = new Date(startTime);
-			}
-			if (endTime == 0) {
-				endDate = new Date();
-			} else {
-				endDate = new Date(endTime + 86400000);
+				endDate = new Date(endTime);
 			}
 
 			StringBuilder deviceAllLocation = new StringBuilder(
 					"select * from devicerecord where devicerecord.deviceId=:deviceId and devicerecord.locationStatus=1 and devicerecord.realTime>=:startTime and devicerecord.realTime<=:endTime ");
+			if(type==1){
+				deviceAllLocation.append(" and devicerecord.operationType=0 ");
+			}
 			deviceAllLocation.append(" ORDER BY devicerecord.realTime");
 			Query query = manager.createNativeQuery(
 					deviceAllLocation.toString(), DeviceRecord.class);

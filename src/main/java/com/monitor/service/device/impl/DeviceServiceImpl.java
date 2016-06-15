@@ -92,7 +92,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			ProcessBuilder pb = new ProcessBuilder(crtPath
 					+ "new_client_cert.sh", newDevice.getDeviceId() + "");
 
-			Process p = pb.start();
+			Process p = pb.start();  
 			p.waitFor();// 同步执行
 			// 保存到命令记录中
 			CommandRecord commandRecord = new CommandRecord();

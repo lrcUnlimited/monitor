@@ -93,7 +93,8 @@ public class DeviceRecordAction {
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
 			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
-			@RequestParam(value = "endTime", defaultValue = "0") long endTime)
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime,
+			@RequestParam(value="type",defaultValue="0")int type)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
@@ -102,7 +103,7 @@ public class DeviceRecordAction {
 			throw new CodeException("设备名错误");
 		}
 		List<DeviceRecord> list = deviceRecordService.queryAllLocation(
-				accountId, deviceId, startTime, endTime);
+				accountId, deviceId, startTime, endTime,type);
 		return list;
 
 	}
