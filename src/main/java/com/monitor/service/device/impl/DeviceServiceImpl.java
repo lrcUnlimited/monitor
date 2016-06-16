@@ -100,7 +100,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setType(2);
 			commandRecord.setRecordTime(new Date());
-			commandRecord.setContent("添加了新的设备：" + device.getDeviceName());
+			commandRecord.setContent("新增设备：" + "("+device.getDeviceName()+")");
 			comRecordRepository.save(commandRecord);
 		} catch (CodeException e) {
 			throw e;
@@ -225,11 +225,12 @@ public class DeviceServiceImpl implements IDeviceService {
 			// 更新状态为
 			deviceRepository.updateDeviceCRTStatus(status, deviceId);
 			// 保存到命令记录中
+			Device device = deviceRepository.findOne(deviceId);
 			CommandRecord commandRecord = new CommandRecord();
 			commandRecord.setAccountId(accountId);
 			commandRecord.setType(3);
 			commandRecord.setRecordTime(new Date());
-			commandRecord.setContent("更新了设备Id为: " + deviceId + " 的证书");
+			commandRecord.setContent("更新设备: " + "("+device.getDeviceName() +")"+ " 证书");
 			comRecordRepository.save(commandRecord);
 		} catch (CodeException e) {
 			throw e;
@@ -263,9 +264,9 @@ public class DeviceServiceImpl implements IDeviceService {
 				commandRecord.setRecordTime(new Date());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				StringBuffer buffer = new StringBuffer();
-				buffer.append("更改设备ID为:").append(deviceId).append("的有效期由 ")
+				buffer.append("设备:(").append(device.getDeviceName()).append(")有效期")
 						.append(sdf.format(device.getValidTime()))
-						.append("更改为 ").append(sdf.format(validDate));
+						.append("修改为").append(sdf.format(validDate));
 				commandRecord.setContent(buffer.toString());
 				comRecordRepository.save(commandRecord);
 
@@ -291,9 +292,11 @@ public class DeviceServiceImpl implements IDeviceService {
 			if (account.getType() == 0 || account.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			} else {
+				Device device = deviceRepository.findOne(deviceId);
 				Date validTime = new Date(newValidTime);
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setAccountId(accountId);
+				commandRecord.setType(2);
 				commandRecord.setRecordTime(new Date());
 				String manageType = null;
 				if (status == 0) {
@@ -306,12 +309,10 @@ public class DeviceServiceImpl implements IDeviceService {
 					deviceRepository.updateManageDeviceStatus(status, deviceId);
 					// 保存到设备记录中
 					StringBuffer buffer = new StringBuffer();
-					buffer.append("更改设备ID为:").append(deviceId).append("的状态为")
-							.append(manageType);
+					buffer.append(manageType).append("设备:(").append(device.getDeviceName()).append(")");
 					commandRecord.setContent(buffer.toString());
 				} else {
 					// 对设备新的有效期进行检查
-					Device device = deviceRepository.findOne(deviceId);
 					if (device.getValidTime().after(validTime)) {
 						throw new CodeException("请设置正确的有效期");
 					}
@@ -321,11 +322,11 @@ public class DeviceServiceImpl implements IDeviceService {
 							validTime, deviceId);
 					// 保存到设备记录
 					StringBuffer buffer = new StringBuffer();
-					buffer.append("更改设备ID为:").append(deviceId).append("的状态为")
-							.append(manageType).append("同时将设备有效期从")
+					buffer.append("设备:(").append(device.getDeviceName()).append(")有效期")
 							.append(sdf.format(device.getValidTime()))
-							.append("更改为").append(sdf.format(validTime));
+							.append("修改为").append(sdf.format(validTime));
 					commandRecord.setContent(buffer.toString());
+					commandRecord.setType(4);
 				}
 				comRecordRepository.save(commandRecord);
 			}
@@ -503,6 +504,15 @@ public class DeviceServiceImpl implements IDeviceService {
 			deviceRecordRepository.updateDeviceRecordOpeRationType(deviceId,
 					new Date(startTime), new Date(endTime));
 			deviceRepository.updateManageDeviceStatus(0, deviceId);
+			//命令记录日志
+			Device device = deviceRepository.findOne(deviceId);
+			CommandRecord commandRecord = new CommandRecord();
+			commandRecord.setAccountId(accountId);
+			commandRecord.setType(2);
+			commandRecord.setRecordTime(new Date());
+			commandRecord.setContent("关闭设备：" + "("+device.getDeviceName()+")");
+			comRecordRepository.save(commandRecord);
+			
 		} catch (CodeException e) {
 			throw e;
 		} catch (Exception e) {
