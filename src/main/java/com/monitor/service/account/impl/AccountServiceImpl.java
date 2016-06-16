@@ -94,7 +94,7 @@ public class AccountServiceImpl implements IAccountService {
 
 	@Override
 	public Pager queryUser(Integer pageNo, Integer pageSize, Integer accountId,
-			String userName) throws CodeException {
+			String userName,String userPhone,long startTime,long endTime) throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
 			if (account.getType() == 1 && account.getIsDelete() == 0) {
@@ -116,6 +116,18 @@ public class AccountServiceImpl implements IAccountService {
 					builder.append("  and account.userName =:userName ");
 					countSql.append("  and account.userName =:userName ");
 				}
+				if(!StringUtils.isEmpty(userPhone)){
+					builder.append("  and account.userPhone=:userPhone ");
+					countSql.append("  and account.userPhone =:userPhone ");
+				}
+				if(startTime!=0){
+					builder.append("  and account.registerDate>=:startDate ");
+					countSql.append("  and account.registerDate>=:startDate ");
+				}
+				if(endTime!=0){
+					builder.append("  and account.registerDate<=:endDate ");
+					countSql.append("  and account.registerDate<=:endDate ");
+				}
 
 				builder.append(" ORDER BY account.registerDate DESC ");
 				builder.append(" limit " + thisPage + "," + pageSize);
@@ -130,6 +142,20 @@ public class AccountServiceImpl implements IAccountService {
 				if (!StringUtils.isEmpty(userName)) {
 					query.setParameter("userName", userName);
 					queryList.setParameter("userName", userName);
+				}
+				if(!StringUtils.isEmpty(userPhone)){
+					query.setParameter("userPhone", userPhone);
+					queryList.setParameter("userPhone", userPhone);
+				}
+				if(startTime!=0){
+					Date startDate=new Date(startTime);
+					query.setParameter("startDate", startDate);
+					queryList.setParameter("startDate", startDate);
+				}
+				if(endTime!=0){
+					Date endDate=new Date(endTime);
+					query.setParameter("endDate", endDate);
+					queryList.setParameter("endDate", endDate);
 				}
 				pager.setTotalCount(((BigInteger) query.getSingleResult())
 						.intValue());
@@ -160,10 +186,20 @@ public class AccountServiceImpl implements IAccountService {
 			if (adminAccount.getType() == 0 || adminAccount.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			} else {
-				String md5PassWord = MD5Util.getMD5Str(account.getPassWord());
-				accountRepository.updateUserInfo(account.getUserName(),
-						account.getUserPhone(), account.getNote(), md5PassWord,
-						account.getType(), account.getId());
+				if (account.getPassWord() == null
+						|| account.getPassWord().length() == 0) {
+					accountRepository.updateUserInfoNoPassWord(
+							account.getUserName(), account.getUserPhone(),
+							account.getNote(), account.getType(),
+							account.getId());
+
+				} else {
+					String md5PassWord = MD5Util.getMD5Str(account
+							.getPassWord());
+					accountRepository.updateUserInfo(account.getUserName(),
+							account.getUserPhone(), account.getNote(),
+							md5PassWord, account.getType(), account.getId());
+				}
 
 				// 保存命令记录
 				CommandRecord commandRecord = new CommandRecord();
@@ -277,7 +313,7 @@ public class AccountServiceImpl implements IAccountService {
 	}
 
 	@Override
-	public List<Account> getAllAccount(int accountId) throws CodeException {
+	public List<Account> getAllAccount(int accountId,String userName,String userPhone,long startTime,long endTime) throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
 			if (account.getType() == 1 && account.getIsDelete() == 0) {
@@ -288,13 +324,37 @@ public class AccountServiceImpl implements IAccountService {
 				if (accountId != 0) {
 					builder.append("  and account.id !=:id ");
 				}
-
+				if (!StringUtils.isEmpty(userName)) {
+					builder.append("  and account.userName =:userName ");
+				}
+				if(!StringUtils.isEmpty(userPhone)){
+					builder.append("  and account.userPhone=:userPhone ");
+				}
+				if(startTime!=0){
+					builder.append("  and account.registerDate>=:startDate ");
+				}
+				if(endTime!=0){
+					builder.append("  and account.registerDate<=:endDate ");
+				}
 				builder.append(" ORDER BY account.registerDate DESC ");
-
 				Query queryList = manager.createNativeQuery(builder.toString(),
 						Account.class);
 				if (accountId != 0) {
 					queryList.setParameter("id", accountId);
+				}
+				if (!StringUtils.isEmpty(userName)) {
+					queryList.setParameter("userName", userName);
+				}
+				if(!StringUtils.isEmpty(userPhone)){
+					queryList.setParameter("userPhone", userPhone);
+				}
+				if(startTime!=0){
+					Date startDate=new Date(startTime);
+					queryList.setParameter("startDate", startDate);
+				}
+				if(endTime!=0){
+					Date endDate=new Date(endTime);
+					queryList.setParameter("endDate", endDate);
 				}
 				@SuppressWarnings("unchecked")
 				List<Account> list = queryList.getResultList();

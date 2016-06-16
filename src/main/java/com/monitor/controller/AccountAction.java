@@ -51,13 +51,16 @@ public class AccountAction {
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "userName", defaultValue = "") String userName)
+			@RequestParam(value = "searchUserName", defaultValue = "") String userName,
+			@RequestParam(value = "searchUserPhone", defaultValue = "") String userPhone,
+			@RequestParam(value = "startSearchDate", defaultValue = "0") long startTime,
+			@RequestParam(value = "endSearchDate", defaultValue = "0") long endTime)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
 		Pager pager = accountService.queryUser(pageNo, pageSize, accountId,
-				userName);
+				userName, userPhone, startTime, endTime);
 		return pager;
 
 	}
@@ -65,13 +68,18 @@ public class AccountAction {
 	@RequestMapping(value = "/e_queryAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<Account> queryAllUser(
-			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "searchUserName", defaultValue = "") String userName,
+			@RequestParam(value = "searchUserPhone", defaultValue = "") String userPhone,
+			@RequestParam(value = "startSearchDate", defaultValue = "0") long startTime,
+			@RequestParam(value = "endSearchDate", defaultValue = "0") long endTime)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
 
-		return accountService.getAllAccount(accountId);
+		return accountService.getAllAccount(accountId, userName, userPhone,
+				startTime, endTime);
 
 	}
 

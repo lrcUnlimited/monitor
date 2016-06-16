@@ -29,7 +29,9 @@ public interface IDeviceService {
 	 * @throws CodeException
 	 */
 	public Pager queryDevice(Integer pageNo, Integer pageSize,
-			Integer accountId, int type) throws CodeException;
+			Integer accountId, int type, String deviceName, String lesseeName,
+			long startTime, long endTime, long startValidTime, long endValidTime)
+			throws CodeException;
 
 	/**
 	 * 更新设备是否需要更新证书状态位
@@ -50,8 +52,8 @@ public interface IDeviceService {
 	 * @param newValidTime
 	 * @throws CodeException
 	 */
-	public void updateValidTime(int accountId, int deviceId, long newValidTime,int addReason,String addNote)
-			throws CodeException;
+	public void updateValidTime(int accountId, int deviceId, long newValidTime,
+			int addReason, String addNote) throws CodeException;
 
 	/**
 	 * 更新设备的状态
@@ -79,8 +81,9 @@ public interface IDeviceService {
 
 	public int getTotalOutDateCount(int accountId) throws CodeException;
 
-	public List<Device> getAllDevice(int accountId, int type)
-			throws CodeException;
+	public List<Device> getAllDevice(int accountId, int type,
+			String deviceName, String lesseeName, long startTime, long endTime,
+			long startValidTime, long endValidTime) throws CodeException;
 
 	public void updateDeviceManStatus(int accountId, int deviceId,
 			long startTime, long endTime) throws CodeException;

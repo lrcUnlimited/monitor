@@ -36,7 +36,7 @@ public interface IDeviceRecordService {
 
 	// 显示异常位置设备
 	public Pager queryExceptionLocation(Integer pageNo, Integer pageSize,
-			Integer accountId) throws CodeException;
+			Integer accountId,String deviceName,String lesseeName) throws CodeException;
 
 	// 修改异常位置设备的操作位
 	public void updateOperationType(int accountId, int deviceId,
@@ -53,7 +53,7 @@ public interface IDeviceRecordService {
 	 * @return
 	 * @throws CodeException
 	 */
-	public List<DeviceLocationError> queryAllExceptionLocation(Integer accountId)
+	public List<DeviceLocationError> queryAllExceptionLocation(Integer accountId,String deviceName,String  lesseeName)
 			throws CodeException;
 
 	/**
@@ -64,7 +64,7 @@ public interface IDeviceRecordService {
 	 * @throws CodeException
 	 */
 	public Pager communicationExceptionDevice(int pageNo, int pageSize,
-			int accountId) throws CodeException;
+			int accountId,String deviceName,String  lesseeName) throws CodeException;
 
 	/**
 	 * 获取所有24小时内未获得通信的设备
@@ -74,7 +74,7 @@ public interface IDeviceRecordService {
 	 * @throws CodeException
 	 */
 	public List<DeviceCommunicationError> queryAllCommunicationExceptionDevice(
-			int accountId) throws CodeException;
+			int accountId,String deviceName,String  lesseeName) throws CodeException;
 
 	/**
 	 * 获取通信异常总数

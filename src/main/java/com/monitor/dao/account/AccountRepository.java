@@ -54,6 +54,19 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 			String passWord, int type, int accountId);
 
 	/**
+	 * 更新用户信息,不进行密码的更新
+	 * 
+	 * @param userName
+	 * @param userPhone
+	 * @param note
+	 * @param accountId
+	 */
+	@Modifying
+	@Query("update Account account set account.userName=?1,account.userPhone=?2,account.note=?3,account.type=?4 where account.id=?5 ")
+	public void updateUserInfoNoPassWord(String userName, String userPhone,
+			String note, int type, int accountId);
+
+	/**
 	 * 逻辑删除用户
 	 * 
 	 * @param accountId

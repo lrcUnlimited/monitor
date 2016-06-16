@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
@@ -92,7 +93,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			ProcessBuilder pb = new ProcessBuilder(crtPath
 					+ "new_client_cert.sh", newDevice.getDeviceId() + "");
 
-			Process p = pb.start();  
+			Process p = pb.start();
 			p.waitFor();// 同步执行
 			// 保存到命令记录中
 			CommandRecord commandRecord = new CommandRecord();
@@ -111,7 +112,9 @@ public class DeviceServiceImpl implements IDeviceService {
 
 	@Override
 	public Pager queryDevice(Integer pageNo, Integer pageSize,
-			Integer accountId, int type) throws CodeException {
+			Integer accountId, int type, String deviceName, String lesseeName,
+			long startTime, long endTime, long startValidTime, long endValidTime)
+			throws CodeException {
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
 			if (operateAccount.getIsDelete() == 1) {
@@ -135,6 +138,30 @@ public class DeviceServiceImpl implements IDeviceService {
 				builder.append("  and device.manageDeviceStatus =0 ");
 				countSql.append("  and device.manageDeviceStatus =0 ");
 			}
+			if (!StringUtils.isEmpty(deviceName)) {
+				builder.append("  and device.deviceName =:deviceName ");
+				countSql.append("  and device.deviceName =:deviceName ");
+			}
+			if (!StringUtils.isEmpty(lesseeName)) {
+				builder.append("  and device.lesseeName =:lesseeName ");
+				countSql.append("  and device.lesseeName =:lesseeName ");
+			}
+			if (startTime != 0) {
+				builder.append("  and device.regTime >=:startTime ");
+				countSql.append("  and device.regTime >=:startTime ");
+			}
+			if (endTime != 0) {
+				builder.append("  and device.regTime <=:endTime ");
+				countSql.append("  and device.regTime <=:endTime ");
+			}
+			if (startValidTime != 0) {
+				builder.append("  and device.validTime >=:startValidTime ");
+				countSql.append("  and device.validTime >=:startValidTime ");
+			}
+			if (endValidTime != 0) {
+				builder.append("  and device.validTime <=:endValidTime ");
+				countSql.append("  and device.validTime <=:endValidTime ");
+			}
 
 			builder.append(" ORDER BY device.deviceId DESC ");
 			builder.append(" limit " + thisPage + "," + pageSize);
@@ -142,6 +169,34 @@ public class DeviceServiceImpl implements IDeviceService {
 			Query query = manager.createNativeQuery(countSql.toString());
 			Query queryList = manager.createNativeQuery(builder.toString(),
 					Device.class);
+			if (!StringUtils.isEmpty(deviceName)) {
+				query.setParameter("deviceName", deviceName);
+				queryList.setParameter("deviceName", deviceName);
+			}
+			if (!StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("lesseeName", lesseeName);
+				queryList.setParameter("lesseeName", lesseeName);
+			}
+			if (startTime != 0) {
+				Date startDate = new Date(startTime);
+				query.setParameter("startTime", startDate);
+				queryList.setParameter("startTime", startDate);
+			}
+			if (endTime != 0) {
+				Date endDate = new Date(endTime);
+				query.setParameter("endTime", endDate);
+				queryList.setParameter("endTime", endDate);
+			}
+			if (startValidTime != 0) {
+				Date startValidDate = new Date(startValidTime);
+				query.setParameter("startValidTime", startValidDate);
+				queryList.setParameter("startValidTime", startValidDate);
+			}
+			if (endValidTime != 0) {
+				Date endValidDate = new Date(endValidTime);
+				query.setParameter("endValidTime", endValidDate);
+				queryList.setParameter("endValidTime", endValidDate);
+			}
 
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());
@@ -186,8 +241,8 @@ public class DeviceServiceImpl implements IDeviceService {
 	}
 
 	@Override
-	public void updateValidTime(int accountId, int deviceId, long newValidTime,int addReason,String addNote)
-			throws CodeException {
+	public void updateValidTime(int accountId, int deviceId, long newValidTime,
+			int addReason, String addNote) throws CodeException {
 		try {
 			Account account = accountRepository.findOne(accountId);
 			if (account.getType() == 0 || account.getIsDelete() == 1) {
@@ -201,7 +256,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				}
 				deviceRepository.updateDeviceValidTime(validDate, deviceId);
 				// 保存到命令记录中
-				System.out.println("addNote:"+addNote);
+				System.out.println("addNote:" + addNote);
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setAccountId(accountId);
 				commandRecord.setType(4);
@@ -358,7 +413,8 @@ public class DeviceServiceImpl implements IDeviceService {
 	}
 
 	@Override
-	public List<Device> getAllDevice(int accountId, int type)
+	public List<Device> getAllDevice(int accountId, int type, String deviceName, String lesseeName,
+			long startTime, long endTime, long startValidTime, long endValidTime)
 			throws CodeException {
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
@@ -375,11 +431,52 @@ public class DeviceServiceImpl implements IDeviceService {
 			} else if (type == 2) {
 				builder.append("  and device.manageDeviceStatus =0 ");
 			}
+			if (!StringUtils.isEmpty(deviceName)) {
+				builder.append("  and device.deviceName =:deviceName ");
+			}
+			if (!StringUtils.isEmpty(lesseeName)) {
+				builder.append("  and device.lesseeName =:lesseeName ");
+			}
+			if (startTime != 0) {
+				builder.append("  and device.regTime >=:startTime ");
+			}
+			if (endTime != 0) {
+				builder.append("  and device.regTime <=:endTime ");
+			}
+			if (startValidTime != 0) {
+				builder.append("  and device.validTime >=:startValidTime ");
+			}
+			if (endValidTime != 0) {
+				builder.append("  and device.validTime <=:endValidTime ");
+			}
 
 			builder.append(" ORDER BY device.validTime ASC ");
 
 			Query queryList = manager.createNativeQuery(builder.toString(),
 					Device.class);
+			if (!StringUtils.isEmpty(deviceName)) {
+				queryList.setParameter("deviceName", deviceName);
+			}
+			if (!StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("lesseeName", lesseeName);
+			}
+			if (startTime != 0) {
+				Date startDate = new Date(startTime);
+				queryList.setParameter("startTime", startDate);
+			}
+			if (endTime != 0) {
+				Date endDate = new Date(endTime);
+				queryList.setParameter("endTime", endDate);
+			}
+			if (startValidTime != 0) {
+				Date startValidDate = new Date(startValidTime);
+				queryList.setParameter("startValidTime", startValidDate);
+			}
+			if (endValidTime != 0) {
+				Date endValidDate = new Date(endValidTime);
+				queryList.setParameter("endValidTime", endValidDate);
+			}
+
 			@SuppressWarnings("unchecked")
 			List<Device> list = queryList.getResultList();
 			return list;
@@ -403,7 +500,8 @@ public class DeviceServiceImpl implements IDeviceService {
 					|| operateAccount.getType() == 0) {
 				throw new CodeException("请重新登录");
 			}
-			deviceRecordRepository.updateDeviceRecordOpeRationType(deviceId,new Date(startTime),new Date(endTime));
+			deviceRecordRepository.updateDeviceRecordOpeRationType(deviceId,
+					new Date(startTime), new Date(endTime));
 			deviceRepository.updateManageDeviceStatus(0, deviceId);
 		} catch (CodeException e) {
 			throw e;
@@ -412,7 +510,5 @@ public class DeviceServiceImpl implements IDeviceService {
 			throw new CodeException("更新设备状态出错");
 		}
 	}
-
-
 
 }

@@ -48,13 +48,20 @@ public class DeviceRecordAction {
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "type", defaultValue = "0") int type)
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			@RequestParam(value = "searchDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchLessName", defaultValue = "") String lesseeName,
+			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime,
+			@RequestParam(value = "startValidTime", defaultValue = "0") long startValidTime,
+			@RequestParam(value = "endValidTime", defaultValue = "0") long endValidTime)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
 		Pager pager = deviceService.queryDevice(pageNo, pageSize, accountId,
-				type);
+				type, deviceName, lesseeName, startTime, endTime,
+				startValidTime, endValidTime);
 		return pager;
 
 	}
@@ -94,7 +101,7 @@ public class DeviceRecordAction {
 			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
 			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
 			@RequestParam(value = "endTime", defaultValue = "0") long endTime,
-			@RequestParam(value="type",defaultValue="0")int type)
+			@RequestParam(value = "type", defaultValue = "0") int type)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
@@ -103,7 +110,7 @@ public class DeviceRecordAction {
 			throw new CodeException("设备名错误");
 		}
 		List<DeviceRecord> list = deviceRecordService.queryAllLocation(
-				accountId, deviceId, startTime, endTime,type);
+				accountId, deviceId, startTime, endTime, type);
 		return list;
 
 	}
@@ -133,13 +140,15 @@ public class DeviceRecordAction {
 	Pager queryallErrorDeviceRecordById(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize)
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+			@RequestParam(value = "searchExceptionDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchExceptionLessName", defaultValue = "") String lesseeName)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
 		Pager pager = deviceRecordService.queryExceptionLocation(pageNo,
-				pageSize, accountId);
+				pageSize, accountId, deviceName, lesseeName);
 		return pager;
 	}
 
@@ -157,13 +166,15 @@ public class DeviceRecordAction {
 	Pager queryAllCommunicationExceptionDevice(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize)
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+			@RequestParam(value = "searchExceptionDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchExceptionLessName", defaultValue = "") String lesseeName)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
 		Pager pager = deviceRecordService.communicationExceptionDevice(pageNo,
-				pageSize, accountId);
+				pageSize, accountId, deviceName, lesseeName);
 		return pager;
 	}
 
@@ -198,24 +209,29 @@ public class DeviceRecordAction {
 	@RequestMapping(value = "/e_queryallErCommunicationDevice", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DeviceCommunicationError> queryallCommunicationErrorDeviceRecord(
-			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "searchExceptionDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchExceptionLessName", defaultValue = "") String lesseeName)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		return deviceRecordService
-				.queryAllCommunicationExceptionDevice(accountId);
+		return deviceRecordService.queryAllCommunicationExceptionDevice(
+				accountId, deviceName, lesseeName);
 	}
 
 	@RequestMapping(value = "/e_queryallErPositionDevice", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DeviceLocationError> queryallErrorDeviceRecord(
-			@RequestParam(value = "accountId", defaultValue = "0") int accountId)
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "searchExceptionDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchExceptionLessName", defaultValue = "") String lesseeName)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		return deviceRecordService.queryAllExceptionLocation(accountId);
+		return deviceRecordService.queryAllExceptionLocation(accountId,
+				deviceName, lesseeName);
 	}
 
 	@RequestMapping(value = "/e_queryErrorDeviceCount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

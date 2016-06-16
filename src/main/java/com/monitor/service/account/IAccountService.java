@@ -32,7 +32,7 @@ public interface IAccountService {
 	 * @throws CodeException
 	 */
 	public Pager queryUser(Integer pageNo, Integer pageSize, Integer accountId,
-			String userName) throws CodeException;
+			String userName,String userPhone,long startTime,long endTime) throws CodeException;
 
 	/**
 	 * 修改用户信息
@@ -68,6 +68,6 @@ public interface IAccountService {
 	 */
 	public void logout(int accountId) throws CodeException;
 	
-	public List<Account> getAllAccount(int accountId) throws CodeException;
+	public List<Account> getAllAccount(int accountId,String userName,String userPhone,long startTime,long endTime) throws CodeException;
 
 }

@@ -104,7 +104,7 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 			StringBuilder deviceAllLocation = new StringBuilder(
 					"select * from devicerecord where devicerecord.deviceId=:deviceId and devicerecord.locationStatus=1 and devicerecord.realTime>=:startTime and devicerecord.realTime<=:endTime ");
-			if(type==1){
+			if (type == 1) {
 				deviceAllLocation.append(" and devicerecord.operationType=0 ");
 			}
 			deviceAllLocation.append(" ORDER BY devicerecord.realTime");
@@ -210,7 +210,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 	@Override
 	public Pager queryExceptionLocation(Integer pageNo, Integer pageSize,
-			Integer accountId) throws CodeException {
+			Integer accountId, String deviceName, String lesseeName)
+			throws CodeException {
 		// TODO Auto-generated method stub
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
@@ -224,12 +225,39 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			StringBuilder builder = new StringBuilder(
 					"select  deviceId, count(*) as errorNumber,min(realTime) as startTime, max(realTime) as endTime from devicerecord where locationStatus=1 and operationType=0 ");
 
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				countSql.append(" and deviceId in (select deviceId from device where deviceName=:deviceName and lesseeName=:lesseeName ) ");
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName and lesseeName=:lesseeName ) ");
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				countSql.append(" and deviceId in (select deviceId from device where deviceName=:deviceName ) ");
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName  ) ");
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				countSql.append(" and deviceId in (select deviceId from device where lesseeName=:lesseeName ) ");
+				builder.append(" and deviceId in (select deviceId from device where lesseeName=:lesseeName ) ");
+			}
 			builder.append(" group by deviceId ");
 			builder.append(" limit " + thisPage + "," + pageSize);
 
 			Query query = manager.createNativeQuery(countSql.toString());
 			Query queryList = manager.createNativeQuery(builder.toString());
-
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("deviceName", deviceName);
+				queryList.setParameter("deviceName", deviceName);
+				query.setParameter("lesseeName", lesseeName);
+				queryList.setParameter("lesseeName", lesseeName);
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("deviceName", deviceName);
+				queryList.setParameter("deviceName", deviceName);
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("lesseeName", lesseeName);
+				queryList.setParameter("lesseeName", lesseeName);
+			}
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());
 
@@ -310,7 +338,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 	}
 
 	@Override
-	public List<DeviceLocationError> queryAllExceptionLocation(Integer accountId)
+	public List<DeviceLocationError> queryAllExceptionLocation(
+			Integer accountId, String deviceName, String lesseeName)
 			throws CodeException {
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
@@ -320,10 +349,29 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 			StringBuilder builder = new StringBuilder(
 					"select  deviceId, count(*) as errorNumber,min(realTime) as startTime, max(realTime) as endTime from devicerecord where locationStatus=1 and operationType=0 ");
-
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName and lesseeName=:lesseeName ) ");
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName  ) ");
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				builder.append(" and deviceId in (select deviceId from device where lesseeName=:lesseeName ) ");
+			}
 			builder.append(" group by deviceId ");
 			Query queryList = manager.createNativeQuery(builder.toString());
-
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("deviceName", deviceName);
+				queryList.setParameter("lesseeName", lesseeName);
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("deviceName", deviceName);
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("lesseeName", lesseeName);
+			}
 			@SuppressWarnings("unchecked")
 			List<Object[]> list = queryList.getResultList();
 			List<DeviceLocationError> devcieErrorList = new ArrayList<DeviceLocationError>();
@@ -354,7 +402,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 	@Override
 	public Pager communicationExceptionDevice(int pageNo, int pageSize,
-			int accountId) throws CodeException {
+			int accountId, String deviceName, String lesseeName)
+			throws CodeException {
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
 			if (operateAccount.getIsDelete() == 1
@@ -364,15 +413,43 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
 			StringBuilder countSql = new StringBuilder(
-					" select count( distinct deviceId) from devicerecord where realTime<DATE_SUB(now(),INTERVAL 4 DAY)");
+					" select count( distinct deviceId) from devicerecord where realTime<DATE_SUB(now(),INTERVAL 1 DAY)");
 			StringBuilder builder = new StringBuilder(
-					"select deviceId,max(realTime) as maxTime from devicerecord group by deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY)  ");
+					"select deviceId,max(realTime) as maxTime from devicerecord where 1=1 ");
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				countSql.append(" and deviceId in (select deviceId from device where deviceName=:deviceName and lesseeName=:lesseeName ) ");
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName and lesseeName=:lesseeName ) ");
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				countSql.append(" and deviceId in (select deviceId from device where deviceName=:deviceName ) ");
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName  ) ");
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				countSql.append(" and deviceId in (select deviceId from device where lesseeName=:lesseeName ) ");
+				builder.append(" and deviceId in (select deviceId from device where lesseeName=:lesseeName ) ");
+			}
+			builder.append(" group by deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY) ");
 
 			builder.append(" limit " + thisPage + "," + pageSize);
 
 			Query query = manager.createNativeQuery(countSql.toString());
 			Query queryList = manager.createNativeQuery(builder.toString());
-
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("deviceName", deviceName);
+				queryList.setParameter("deviceName", deviceName);
+				query.setParameter("lesseeName", lesseeName);
+				queryList.setParameter("lesseeName", lesseeName);
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("deviceName", deviceName);
+				queryList.setParameter("deviceName", deviceName);
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				query.setParameter("lesseeName", lesseeName);
+				queryList.setParameter("lesseeName", lesseeName);
+			}
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());
 
@@ -409,7 +486,8 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 
 	@Override
 	public List<DeviceCommunicationError> queryAllCommunicationExceptionDevice(
-			int accountId) throws CodeException {
+			int accountId, String deviceName, String lesseeName)
+			throws CodeException {
 		try {
 			Account operateAccount = accountRepository.findOne(accountId);
 			if (operateAccount.getIsDelete() == 1
@@ -418,9 +496,31 @@ public class DeviceRrecordServiceImpl implements IDeviceRecordService {
 			}
 
 			StringBuilder builder = new StringBuilder(
-					"select deviceId,max(realTime) as maxTime from devicerecord group by deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY)  ");
+					"select deviceId,max(realTime) as maxTime from devicerecord where 1=1  ");
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName and lesseeName=:lesseeName ) ");
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				builder.append(" and deviceId in (select deviceId from device where deviceName=:deviceName  ) ");
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				builder.append(" and deviceId in (select deviceId from device where lesseeName=:lesseeName ) ");
+			}
+			builder.append(" group by deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY) ");
 
 			Query queryList = manager.createNativeQuery(builder.toString());
+			if (!StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("deviceName", deviceName);
+				queryList.setParameter("lesseeName", lesseeName);
+			} else if (!StringUtils.isEmpty(deviceName)
+					&& StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("deviceName", deviceName);
+			} else if (StringUtils.isEmpty(deviceName)
+					&& !StringUtils.isEmpty(lesseeName)) {
+				queryList.setParameter("lesseeName", lesseeName);
+			}
 
 			@SuppressWarnings("unchecked")
 			List<Object[]> list = queryList.getResultList();

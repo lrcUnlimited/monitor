@@ -27,13 +27,16 @@ import com.monitor.model.Account;
 import com.monitor.model.Device;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
+
 @Controller
 @RequestMapping("/device")
 public class DeviceAction {
 	@Autowired
 	IDeviceService deviceService;
+
 	/**
 	 * 新增设备接口
+	 * 
 	 * @param accountId
 	 * @param device
 	 * @return
@@ -71,17 +74,20 @@ public class DeviceAction {
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "type", defaultValue = "0") int type
-		
-			
-			
-			)
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			@RequestParam(value = "searchDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchLessName", defaultValue = "") String lesseeName,
+			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime,
+			@RequestParam(value = "startValidTime", defaultValue = "0") long startValidTime,
+			@RequestParam(value = "endValidTime", defaultValue = "0") long endValidTime)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
 		Pager pager = deviceService.queryDevice(pageNo, pageSize, accountId,
-				type);
+				type, deviceName, lesseeName, startTime, endTime,
+				startValidTime, endValidTime);
 		return pager;
 
 	}
@@ -99,14 +105,19 @@ public class DeviceAction {
 	public @ResponseBody
 	List<Device> queryPrintDevice(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
-			@RequestParam(value = "type", defaultValue = "0") int type)
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			@RequestParam(value = "searchDeviceName", defaultValue = "") String deviceName,
+			@RequestParam(value = "searchLessName", defaultValue = "") String lesseeName,
+			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
+			@RequestParam(value = "endTime", defaultValue = "0") long endTime,
+			@RequestParam(value = "startValidTime", defaultValue = "0") long startValidTime,
+			@RequestParam(value = "endValidTime", defaultValue = "0") long endValidTime)
 			throws CodeException {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-
-		return deviceService.getAllDevice(accountId, type);
-
+		return deviceService.getAllDevice(accountId, type, deviceName,
+				lesseeName, startTime, endTime, startValidTime, endValidTime);
 	}
 
 	/**
@@ -163,12 +174,12 @@ public class DeviceAction {
 		if (modifyDeviceValidTime == null) {
 			throw new CodeException("请设置设备新的有效期");
 		}
-		if (StringUtils.isEmpty(addNote) ) {
+		if (StringUtils.isEmpty(addNote)) {
 			throw new CodeException("请输入修改有效期的备注");
 		}
-		
+
 		deviceService.updateValidTime(accountId, deviceId,
-				modifyDeviceValidTime,addReason,addNote);
+				modifyDeviceValidTime, addReason, addNote);
 
 		return "success";
 	}
@@ -260,6 +271,7 @@ public class DeviceAction {
 		}
 
 	}
+
 	@ExceptionHandler(CodeException.class)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
