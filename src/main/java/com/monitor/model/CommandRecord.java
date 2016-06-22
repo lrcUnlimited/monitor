@@ -18,7 +18,7 @@ public class CommandRecord {
 	private Integer accountId;//命令操作用户id
 	private Date recordTime;//命令操作时间
 	private String content;//命令内容
-	private Integer type;//命令类型-0代表用户管理操作，1代表授权操作，2代表设备管理操作，3代表用户远程更新操作,4代表充值，即增加设备使用期限
+	private Integer type;//命令类型-0代表用户管理操作，1代表授权操作、暂时没用，2代表设备管理操作，3代表用户远程更新操作,4代表充值，即增加设备使用期限
 	@Transient
 	private String accountName;//命令操作用户名
 	public String getAccountName() {

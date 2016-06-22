@@ -40,9 +40,9 @@ public class CommandServiceImpl implements CommandService {
 
 	@Override
 	public Pager queryCommandRecord(Integer pageNo, Integer pageSize,
-			Integer accountId, Integer type) throws CodeException {
+			Integer accountId1,String userName,Integer type) throws CodeException {
 		try {
-			Account operateAccount = accountRepository.findOne(accountId);
+			Account operateAccount = accountRepository.findOne(accountId1);
 			if (operateAccount.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			}
@@ -50,12 +50,16 @@ public class CommandServiceImpl implements CommandService {
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
 			StringBuilder countSql = new StringBuilder(
-					" select count(id) from commandrecord cr " + " where 1=1 ");
+					" select count(id) from commandrecord cr where 1=1 ");
 			StringBuilder builder = new StringBuilder(
 					"select * from commandrecord cr where 1=1");
-			if (!StringUtils.isEmpty(type)) {
+			if (type!=-1) {
 				builder.append("  and cr.type =:type ");
 				countSql.append("  and cr.type =:type ");
+			}
+			if (!StringUtils.isEmpty(userName)) {
+				builder.append("  and cr.accountId =:accountId ");
+				countSql.append("  and cr.accountId =:accountId ");
 			}
 
 			builder.append(" ORDER BY cr.recordTime DESC ");
@@ -66,9 +70,15 @@ public class CommandServiceImpl implements CommandService {
 					CommandRecord.class);
 			// String userName = accountRepository.queryUserNameById(accountId);
 
-			if (!StringUtils.isEmpty(type)) {
+			if (type!=-1) {
 				query.setParameter("type", type);
 				queryList.setParameter("type", type);
+			}
+			if (!StringUtils.isEmpty(userName)) {
+				Account account = accountRepository.queryAccountbyuserName(userName);
+				Integer accountId = account.getId();
+				query.setParameter("accountId", accountId);
+				queryList.setParameter("accountId", accountId);
 			}
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());

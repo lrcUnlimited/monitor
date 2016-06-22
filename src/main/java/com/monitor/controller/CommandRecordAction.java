@@ -44,12 +44,13 @@ public class CommandRecordAction {
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "type", defaultValue = "") Integer type)
+			@RequestParam(value = "searchUser", defaultValue = "") String userName,
+			@RequestParam(value = "searchType", defaultValue = "-1") Integer type)
 			throws CodeException {
 		if (accountId == 0) {  
 			throw new CodeException("请重新登录");
 		}
-		Pager pager = commandService.queryCommandRecord(pageNo, pageSize, accountId, type);
+		Pager pager = commandService.queryCommandRecord(pageNo, pageSize, accountId, userName,type);
 		return pager;
 
 	}

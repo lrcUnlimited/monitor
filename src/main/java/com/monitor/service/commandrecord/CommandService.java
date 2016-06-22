@@ -30,7 +30,7 @@ public interface CommandService {
 	 * @throws CodeException
 	 */
 	public Pager queryCommandRecord(Integer pageNo, Integer pageSize, Integer accountId,
-			Integer type) throws CodeException;
+			String userName,Integer type) throws CodeException;
 	
 
 }
