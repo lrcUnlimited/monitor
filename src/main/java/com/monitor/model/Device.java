@@ -25,9 +25,17 @@ public class Device {
 	private String sessionKey;// 会话秘钥
 	private int updateCRT;// 是否需要更新证书文件 0-代表不需要更新 1-代表需要更新
 	private Integer manageDeviceStatus;// 设备管理状态 0-代表关，1-代表开，默认为1
-
+	private Integer arrearageCount;//客户每次被强制自动关机则不良行为记数+1，将所有用户按照不良行为记录数进行图表统计显示；默认为0；
 	public String getLesseeName() {
 		return lesseeName;
+	}
+
+	public Integer getArrearageCount() {
+		return arrearageCount;
+	}
+
+	public void setArrearageCount(Integer arrearageCount) {
+		this.arrearageCount = arrearageCount;
 	}
 
 	public void setLesseeName(String lesseeName) {

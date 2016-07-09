@@ -100,6 +100,7 @@ public class WebSocketHandler {
 			if (nowDate.after(device.getValidTime())) {
 				// 设备已经过期,更新数据库中的设备管理状态为off
 				deviceRepository.updateManageDeviceStatus(0, deviceId);
+				deviceRepository.updateArrearageCount(deviceId);
 				sendMessage.setType(0);// 发送关机指令
 				nowType = 0;
 			} else {

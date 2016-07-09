@@ -24,6 +24,15 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	@Modifying
 	@Query("update Device device set device.sessionKey=?1 where device.deviceId=?2")
 	public int updateDeviceSessionKey(String deviceSessionKey, int deviceId);
+	/**
+	 * 修改设备的arrearageCount，使其+1
+	 * @param deviceId
+	 * @return
+	 */
+	@Modifying
+	@Query("update Device device set device.arrearageCount=device.arrearageCount+1 where device.deviceId=?1")
+	public int updateArrearageCount(int deviceId);
+
 
 	/**
 	 * 更新设备的管理状态
@@ -86,8 +95,11 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	@Query("update Device device set device.deviceStatus=?1 where device.deviceId=?2")
 	public int updateDeviceStatus(int status, int deviceId);
 	/**
-	 * 通过设备名称找出设备
-	 * @param userName
-	 * @return
+	 * 更改设备名中的状态位
+	 * @param status
+	 * @param deviceId
 	 */
+	@Modifying
+	@Query("update Device device set device.communicationStatus=?1 where device.deviceId=?2")
+	public void updateCommunicationStatus0(int status, int deviceId);
 }

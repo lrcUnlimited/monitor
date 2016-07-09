@@ -123,6 +123,10 @@ public class DeviceServiceImpl implements IDeviceService {
 
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
+			//查询通信正常设备的Id,小于24小时即为通信正常
+			StringBuilder select_comCorSql = new StringBuilder("select deviceId,max(realTime) as maxTime from devicerecord devicerecord where 1=1 group by devicerecord.deviceId having maxTime>DATE_SUB(now(),INTERVAL 1  DAY)");
+			//查询通信异常设备的Id,超过24小时即为通信异常
+			StringBuilder select_comErrSql = new StringBuilder("select deviceId,max(realTime) as maxTime from devicerecord devicerecord where 1=1 group by devicerecord.deviceId having maxTime<DATE_SUB(now(),INTERVAL 1  DAY)");
 			StringBuilder countSql = new StringBuilder(
 					" select count(deviceId) from device device "
 							+ " where 1=1 ");
@@ -169,6 +173,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			Query query = manager.createNativeQuery(countSql.toString());
 			Query queryList = manager.createNativeQuery(builder.toString(),
 					Device.class);
+			Query queryComErr = manager.createNativeQuery(select_comErrSql.toString());
+			Query queryComCor = manager.createNativeQuery(select_comCorSql.toString());
 			if (!StringUtils.isEmpty(deviceName)) {
 				query.setParameter("deviceName", deviceName);
 				queryList.setParameter("deviceName", deviceName);
@@ -200,6 +206,22 @@ public class DeviceServiceImpl implements IDeviceService {
 
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());
+			@SuppressWarnings("unchecked")
+			List<Object[]> listComErr = queryComErr.getResultList();
+			if(listComErr.size()>0){
+			for (int i = 0; i < listComErr.size(); i++) {
+				int deviceId=(Integer) listComErr.get(i)[0];
+				deviceRepository.updateCommunicationStatus0(0, deviceId);
+				}
+			}
+			@SuppressWarnings("unchecked")
+			List<Object[]> listComCor = queryComCor.getResultList();
+			if(listComCor.size()>0){
+			for (int i = 0; i < listComCor.size(); i++) {
+				int deviceId=(Integer) listComCor.get(i)[0];
+				deviceRepository.updateCommunicationStatus0(1, deviceId);
+				}
+			}
 			@SuppressWarnings("unchecked")
 			List<Device> list = queryList.getResultList();
 			pager.setItems(list);
