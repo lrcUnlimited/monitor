@@ -22,6 +22,9 @@ public class DeviceRecord {
 	private int status;// 设备当前状态
 	private int locationStatus;// 设备位置变化状态位，默认为0（相邻的两个位置点距离超过500m，将该状态位设为1）
 	private int operationType;// 设备异常位置操作，默认为0（0代表显示位置异常信息，1代表操作确认过）
+	private String province; // 设备所在省
+	private String city; // 设备所在城市
+	private String district; // 设备所在区县
 	@Transient
 	private String deviceName;
 	@Transient
@@ -105,6 +108,30 @@ public class DeviceRecord {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
 	}
 
 }

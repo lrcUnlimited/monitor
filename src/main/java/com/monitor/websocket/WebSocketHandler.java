@@ -159,6 +159,12 @@ public class WebSocketHandler {
 		// 将原始坐标转换为为百度坐标
 		JSONObject jsonObject = HttpRequestUtil.sendGet(
 				reciveMessage.getLongitude(), reciveMessage.getLatitude());
+		if(jsonObject==null){
+			return;
+		}
+		// 获取坐标所在省市信息
+		JSONObject addressInfo = HttpRequestUtil.sendGet(
+				jsonObject.getDouble("y"), jsonObject.getDouble("x"));
 
 		// 处理gps信息
 		DeviceRecord latestRecord = new DeviceRecord();
@@ -167,6 +173,11 @@ public class WebSocketHandler {
 		latestRecord.setLatitude(jsonObject.getDouble("y"));
 		latestRecord.setRealTime(new Date());
 		latestRecord.setStatus(reciveMessage.getType());// 设置当前设备的状态
+		if (addressInfo != null) {
+			latestRecord.setProvince(addressInfo.getString("province"));
+			latestRecord.setCity(addressInfo.getString("city"));
+			latestRecord.setDistrict(addressInfo.getString("district"));
+		}
 
 		DeviceRecord deviceRecord = deviceRecordService
 				.queryNewlyLocation(deviceId);
