@@ -34,8 +34,11 @@ import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.model.CommandRecord;
 import com.monitor.model.Device;
+import com.monitor.model.DeviceRecord;
+import com.monitor.model.DeviceStatus;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
+import com.monitor.util.MD5Util;
 
 @Service(value = "deviceService")
 public class DeviceServiceImpl implements IDeviceService {
@@ -543,4 +546,63 @@ public class DeviceServiceImpl implements IDeviceService {
 		}
 	}
 
+	@SuppressWarnings("null")
+	@Override
+	public List<DeviceStatus> queryDeviceStatus() throws CodeException
+	{
+		List<DeviceStatus> resultList = new ArrayList<DeviceStatus>();
+		try{
+			StringBuilder deviceStatusStatistic = new StringBuilder(
+					"select DISTINCT province from devicerecord");
+
+			Query query = manager.createNativeQuery(
+					deviceStatusStatistic.toString());
+		
+			@SuppressWarnings("unchecked")
+			List<String> list = query.getResultList();
+			if (list == null || list.size() == 0) {
+				return null;
+			}
+			System.out.println(list.size());
+			for(int i = 0; i < list.size(); i++){
+				DeviceStatus deviceStatus = new DeviceStatus();
+			
+				String province =  list.get(i);
+//				System.out.println(list.get(i));
+				StringBuilder deviceOnStatusStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"' and status = 1");
+				Query qOn = manager.createNativeQuery(deviceOnStatusStatistic.toString());
+				System.out.println(deviceOnStatusStatistic.toString());
+				@SuppressWarnings("unchecked")
+				List<Object[]> onDeviceList = qOn.getResultList();
+				StringBuilder deviceOffStatusStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"' and status = 2");
+				Query qOff = manager.createNativeQuery(deviceOffStatusStatistic.toString());
+				System.out.println(deviceOffStatusStatistic.toString());
+				@SuppressWarnings("unchecked")
+				List<Object[]> offDeviceList = qOff.getResultList();
+				
+				if(onDeviceList == null || onDeviceList.size() == 0){
+					deviceStatus.setOnDeviceNum(0);
+				} else {
+					deviceStatus.setOnDeviceNum(onDeviceList.size());
+				}
+				
+				if(offDeviceList == null || offDeviceList.size() == 0){
+					deviceStatus.setOffDeviceNum(0);
+				} else {
+					deviceStatus.setOffDeviceNum(offDeviceList.size());
+				}
+				
+				System.out.println(offDeviceList.size());
+				deviceStatus.setProvince(province);
+				resultList.add(deviceStatus);
+			}
+			
+			System.out.println(resultList);
+			return resultList;
+
+		} catch (Exception e) {
+			logger.error("内部错误", e);
+			throw new CodeException("内部错误");
+		}
+	}
 }

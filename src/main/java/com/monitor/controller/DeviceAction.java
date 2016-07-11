@@ -2,6 +2,7 @@ package com.monitor.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import com.monitor.exception.CodeException;
 import com.monitor.exception.ErrorMessage;
 import com.monitor.model.Account;
 import com.monitor.model.Device;
+import com.monitor.model.DeviceStatus;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
 
@@ -278,5 +280,21 @@ public class DeviceAction {
 	public ErrorMessage handleException(CodeException e) {
 		return new ErrorMessage(e.getMessage());
 	}
+	
+	@RequestMapping(value = "/e_queryDeviceStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<DeviceStatus> queryStatus(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			HttpServletResponse response) throws CodeException{
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		List<DeviceStatus> resultList = new ArrayList<DeviceStatus>();
+		System.out.println(deviceService.queryDeviceStatus());
+		resultList = deviceService.queryDeviceStatus();
+		return resultList;
+	}
+	
 
 }

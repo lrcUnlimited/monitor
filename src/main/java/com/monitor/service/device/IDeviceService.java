@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.monitor.exception.CodeException;
 import com.monitor.model.Device;
+import com.monitor.model.DeviceStatus;
 import com.monitor.model.Pager;
 
 public interface IDeviceService {
@@ -87,4 +88,11 @@ public interface IDeviceService {
 
 	public void updateDeviceManStatus(int accountId, int deviceId,
 			long startTime, long endTime) throws CodeException;
+	
+	/**
+	 * 
+	 * @return
+	 * @throws CodeException
+	 */
+	public List<DeviceStatus> queryDeviceStatus() throws CodeException;
 }
