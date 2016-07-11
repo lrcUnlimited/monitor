@@ -574,19 +574,19 @@ public class DeviceServiceImpl implements IDeviceService {
 				System.out.println(deviceOnStatusStatistic.toString());
 				@SuppressWarnings("unchecked")
 				List<Object[]> onDeviceList = qOn.getResultList();
-				StringBuilder deviceOffStatusStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"' and status = 2");
+				StringBuilder deviceOffStatusStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"' and status = 0");
 				Query qOff = manager.createNativeQuery(deviceOffStatusStatistic.toString());
 				System.out.println(deviceOffStatusStatistic.toString());
 				@SuppressWarnings("unchecked")
 				List<Object[]> offDeviceList = qOff.getResultList();
 				
-				if(onDeviceList == null || onDeviceList.size() == 0){
+				if(onDeviceList.get(0)[0] == null || onDeviceList.size() == 0){
 					deviceStatus.setOnDeviceNum(0);
 				} else {
 					deviceStatus.setOnDeviceNum(onDeviceList.size());
 				}
 				
-				if(offDeviceList == null || offDeviceList.size() == 0){
+				if(offDeviceList.get(0)[0] == null || offDeviceList.size() == 0){
 					deviceStatus.setOffDeviceNum(0);
 				} else {
 					deviceStatus.setOffDeviceNum(offDeviceList.size());
