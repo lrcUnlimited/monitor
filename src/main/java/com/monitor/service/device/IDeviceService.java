@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.monitor.exception.CodeException;
 import com.monitor.model.Device;
+import com.monitor.model.DeviceArrearagePercentage;
 import com.monitor.model.DeviceStatus;
+import com.monitor.model.LesseeDeviceInfo;
 import com.monitor.model.Pager;
 
 public interface IDeviceService {
@@ -91,8 +93,29 @@ public interface IDeviceService {
 	
 	/**
 	 * 
-	 * @return
+	 * @return List<DeviceStatus>
 	 * @throws CodeException
 	 */
 	public List<DeviceStatus> queryDeviceStatus() throws CodeException;
+	
+	/**
+	 * 
+	 * @return List first value as the device is on, second is as the device is off
+	 * @throws CodeException
+	 */
+	public List queryTotalNumOfDeviceStatus() throws CodeException;
+	
+	/**
+	 * 
+	 * @return List of device information
+	 * @throws CodeException
+	 */
+	public List<DeviceArrearagePercentage> queryArrearagePercentage() throws CodeException;
+	
+	/**
+	 * 
+	 * @return List of device information of every lessee
+	 * @throws CodeException
+	 */
+	public List<LesseeDeviceInfo> queryLesseeDeviceInformation() throws CodeException;
 }

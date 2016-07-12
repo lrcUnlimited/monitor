@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,8 +35,10 @@ import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.model.CommandRecord;
 import com.monitor.model.Device;
+import com.monitor.model.DeviceArrearagePercentage;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.DeviceStatus;
+import com.monitor.model.LesseeDeviceInfo;
 import com.monitor.model.Pager;
 import com.monitor.service.device.IDeviceService;
 import com.monitor.util.MD5Util;
@@ -568,15 +571,14 @@ public class DeviceServiceImpl implements IDeviceService {
 				DeviceStatus deviceStatus = new DeviceStatus();
 			
 				String province =  list.get(i);
-//				System.out.println(list.get(i));
 				StringBuilder deviceOnStatusStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"' and status = 1");
 				Query qOn = manager.createNativeQuery(deviceOnStatusStatistic.toString());
-				System.out.println(deviceOnStatusStatistic.toString());
+
 				@SuppressWarnings("unchecked")
 				List<Object[]> onDeviceList = qOn.getResultList();
 				StringBuilder deviceOffStatusStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"' and status = 0");
 				Query qOff = manager.createNativeQuery(deviceOffStatusStatistic.toString());
-				System.out.println(deviceOffStatusStatistic.toString());
+
 				@SuppressWarnings("unchecked")
 				List<Object[]> offDeviceList = qOff.getResultList();
 				
@@ -592,7 +594,7 @@ public class DeviceServiceImpl implements IDeviceService {
 					deviceStatus.setOffDeviceNum(offDeviceList.size());
 				}
 				
-				System.out.println(offDeviceList.size());
+
 				deviceStatus.setProvince(province);
 				resultList.add(deviceStatus);
 			}
@@ -600,6 +602,127 @@ public class DeviceServiceImpl implements IDeviceService {
 			System.out.println(resultList);
 			return resultList;
 
+		} catch (Exception e) {
+			logger.error("内部错误", e);
+			throw new CodeException("内部错误");
+		}
+	}
+	
+	@Override
+	public List queryTotalNumOfDeviceStatus() throws CodeException {
+		List resultList = new ArrayList();
+		try{
+			StringBuilder deviceOnStatusStatistic = new StringBuilder("select count(*) from device where communicationStatus = 1");
+			Query qOn = manager.createNativeQuery(deviceOnStatusStatistic.toString());
+			
+			StringBuilder deviceOffStatusStatistic = new StringBuilder("select count(*) from device where communicationStatus = 0");
+			Query qOff = manager.createNativeQuery(deviceOffStatusStatistic.toString());
+			
+			List onList = qOn.getResultList();
+			List offList = qOff.getResultList();
+			
+			resultList.add(onList);
+			resultList.add(offList);
+			
+			return resultList;
+		} catch (Exception e) {
+			logger.error("内部错误", e);
+			throw new CodeException("内部错误");
+		}
+	}
+
+	@Override
+	public List<DeviceArrearagePercentage> queryArrearagePercentage() throws CodeException {
+		List<DeviceArrearagePercentage> resultList = new ArrayList<DeviceArrearagePercentage>();
+		try{
+			StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
+			Query qTotal = manager.createNativeQuery(deviceArrearageTotalStatistic.toString());
+			List<BigDecimal> totalResultList = qTotal.getResultList();
+			float total = ((BigDecimal) totalResultList.get(0)).floatValue();
+			//((BigInteger) query.getSingleResult()).intValue()
+			
+			StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
+			Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+			List<String> lesseeNameList = queryLesseeName.getResultList();
+			for(int i = 0; i < lesseeNameList.size(); i++){
+				DeviceArrearagePercentage deviceArrearagePercentage = new DeviceArrearagePercentage();
+				
+				String lesseeName = lesseeNameList.get(i);
+				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + lesseeName + "'");
+				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
+				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
+				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+				float arrearagePercentage = arrearageNumber / total;
+				
+				deviceArrearagePercentage.setLessee(lesseeName);
+				deviceArrearagePercentage.setPercantage(arrearagePercentage);
+				resultList.add(deviceArrearagePercentage);
+			}
+			
+			return resultList;
+		} catch (Exception e) {
+			logger.error("内部错误", e);
+			throw new CodeException("内部错误");
+		}
+	}
+
+	@Override
+	public List<LesseeDeviceInfo> queryLesseeDeviceInformation()
+			throws CodeException {
+		List<LesseeDeviceInfo> resultList = new ArrayList<LesseeDeviceInfo>();
+		try{
+			StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
+			Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+			List<String> lesseeNameList = queryLesseeName.getResultList();
+			
+			//查询租赁商为空集
+			if(lesseeNameList.get(0) == null){
+				LesseeDeviceInfo nullResult = new LesseeDeviceInfo();
+				nullResult.setArrearageDeviceNum(0);
+				nullResult.setLesseeName("N/A");
+				nullResult.setNormalDeviceNum(0);
+				nullResult.setTotalDeviceNum(0);
+				nullResult.setWillArrearageDeviceNum(0);
+				resultList.add(nullResult);
+				return resultList;
+			}
+			for(int i = 0; i < lesseeNameList.size(); i++){
+				String lesseeName = lesseeNameList.get(i);
+				
+				//get total device number
+				StringBuilder lesseeDeviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
+				Query queryLesseeDeviceTotalNum = manager.createNativeQuery(lesseeDeviceTotalNum.toString());
+				List<BigInteger> lesseeDeviceTotalNumList = queryLesseeDeviceTotalNum.getResultList();
+				int totalDeviceNum = lesseeDeviceTotalNumList.get(0).intValue();
+				// ((BigDecimal) totalResultList.get(0)).floatValue();
+				
+				//get arrearage device number
+				StringBuilder lesseeArrearageDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and deviceStatus = 0");
+				Query queryArrearageDeviceNum = manager.createNativeQuery(lesseeArrearageDeviceNum.toString());
+				List<BigInteger> arrearageDeviceNumList = queryArrearageDeviceNum.getResultList();
+				int arrearageDeviceNum = arrearageDeviceNumList.get(0).intValue();
+			
+				//get normal device number
+				int normalDeviceNum = totalDeviceNum - arrearageDeviceNum;
+				
+				//get will arrearage device number
+				//select count(*) from device where lesseeName = 'uestc' and validTime <= DATE_ADD(now(),INTERVAL 3 DAY);
+				StringBuilder willArrearageLesseeDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and deviceStatus = 0");
+				Query queryWillArrearageLesseeDeviceNum = manager.createNativeQuery(willArrearageLesseeDeviceNum.toString());
+				List<BigInteger> willArrearageLesseeDeviceNumList = queryWillArrearageLesseeDeviceNum.getResultList();
+				int willArrearageDeviceNum = willArrearageLesseeDeviceNumList.get(0).intValue();
+				
+				LesseeDeviceInfo lesseeDeviceInfo = new LesseeDeviceInfo();
+				lesseeDeviceInfo.setArrearageDeviceNum(arrearageDeviceNum);
+				lesseeDeviceInfo.setLesseeName(lesseeName);
+				lesseeDeviceInfo.setNormalDeviceNum(normalDeviceNum);
+				lesseeDeviceInfo.setTotalDeviceNum(totalDeviceNum);
+				lesseeDeviceInfo.setWillArrearageDeviceNum(willArrearageDeviceNum);
+				
+				resultList.add(lesseeDeviceInfo);
+			}
+			
+			return resultList;
 		} catch (Exception e) {
 			logger.error("内部错误", e);
 			throw new CodeException("内部错误");

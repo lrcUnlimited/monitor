@@ -297,4 +297,39 @@ public class DeviceAction {
 	}
 	
 
+	@RequestMapping(value = "/e_queryTotalNumOfDeviceStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List queryTotalNumOfDeviceStatus(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			HttpServletResponse response) throws CodeException{
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		return deviceService.queryTotalNumOfDeviceStatus();
+	}
+	
+	@RequestMapping(value = "/e_queryArrearagePercentage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List queryArrearagePercentage(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			HttpServletResponse response) throws CodeException{
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		return deviceService.queryArrearagePercentage();
+	}
+	
+	@RequestMapping(value = "/e_queryLesseeDeviceInformation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List queryLesseeDeviceInformation(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			HttpServletResponse response) throws CodeException{
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		return deviceService.queryLesseeDeviceInformation();
+	}
 }
