@@ -32,7 +32,7 @@ public interface IDeviceService {
 	 * @throws CodeException
 	 */
 	public Pager queryDevice(Integer pageNo, Integer pageSize,
-			Integer accountId, int type, String deviceName, String lesseeName,
+			Integer accountId, int type, String deviceName, String lesseeName,String provice,
 			long startTime, long endTime, long startValidTime, long endValidTime)
 			throws CodeException;
 

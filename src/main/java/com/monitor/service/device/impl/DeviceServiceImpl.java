@@ -118,7 +118,7 @@ public class DeviceServiceImpl implements IDeviceService {
 
 	@Override
 	public Pager queryDevice(Integer pageNo, Integer pageSize,
-			Integer accountId, int type, String deviceName, String lesseeName,
+			Integer accountId, int type, String deviceName, String lesseeName,String provice,
 			long startTime, long endTime, long startValidTime, long endValidTime)
 			throws CodeException {
 		try {
@@ -147,6 +147,10 @@ public class DeviceServiceImpl implements IDeviceService {
 			} else if (type == 2) {
 				builder.append("  and device.manageDeviceStatus =0 ");
 				countSql.append("  and device.manageDeviceStatus =0 ");
+			}
+			if (!StringUtils.isEmpty(provice)) {
+				builder.append("  and device.provice =:provice ");
+				countSql.append("  and device.provice =:provice ");
 			}
 			if (!StringUtils.isEmpty(deviceName)) {
 				builder.append("  and device.deviceName =:deviceName ");
