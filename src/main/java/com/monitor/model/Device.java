@@ -26,6 +26,34 @@ public class Device {
 	private int updateCRT;// 是否需要更新证书文件 0-代表不需要更新 1-代表需要更新
 	private Integer manageDeviceStatus;// 设备管理状态 0-代表关，1-代表开，默认为1
 	private Integer arrearageCount;//客户每次被强制自动关机则不良行为记数+1，将所有用户按照不良行为记录数进行图表统计显示；默认为0；
+	private String provice;//设备所在省份
+	private String city;//设备所在城市
+	private String district;//设备所在区域
+	
+	public String getProvice() {
+		return provice;
+	}
+
+	public void setProvice(String provice) {
+		this.provice = provice;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
 	public String getLesseeName() {
 		return lesseeName;
 	}
