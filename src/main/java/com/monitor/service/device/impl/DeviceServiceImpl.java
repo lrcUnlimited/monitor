@@ -118,7 +118,7 @@ public class DeviceServiceImpl implements IDeviceService {
 
 	@Override
 	public Pager queryDevice(Integer pageNo, Integer pageSize,
-			Integer accountId, int type, String deviceName, String lesseeName,String provice,
+			Integer accountId, int type, String deviceName, String lesseeName,String provice1,
 			long startTime, long endTime, long startValidTime, long endValidTime)
 			throws CodeException {
 		try {
@@ -126,6 +126,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			if (operateAccount.getIsDelete() == 1) {
 				throw new CodeException("请重新登录");
 			}
+			String provice = java.net.URLDecoder.decode(provice1,"UTF-8"); 
 
 			Pager pager = new Pager(pageNo, pageSize);
 			int thisPage = (pageNo - 1) * pageSize;
