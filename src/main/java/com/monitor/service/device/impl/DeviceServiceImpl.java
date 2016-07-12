@@ -555,47 +555,21 @@ public class DeviceServiceImpl implements IDeviceService {
 	{
 		List<DeviceStatus> resultList = new ArrayList<DeviceStatus>();
 		try{
-			StringBuilder deviceStatusStatistic = new StringBuilder("select DISTINCT province from devicerecord");
-			Query query = manager.createNativeQuery(deviceStatusStatistic.toString());
+			StringBuilder deviceProvince = new StringBuilder("select DISTINCT provice from device");
+			Query queryDeviceProvince = manager.createNativeQuery(deviceProvince.toString());
+			List<String> provinceList = queryDeviceProvince.getResultList();
 		
-			@SuppressWarnings("unchecked")
-			List<String> list = query.getResultList();
-			if (list == null || list.size() == 0) {
-				return null;
-			}
+			//List<Device> deviceList = query.getResultList();
+//			for(int i = 0; i < provinceList.size(); i++){
+//				StringBuilder deviceProvince = new StringBuilder("select * from device where provice = '" + "'")
+//			}
 
+//			Query query = manager.createNativeQuery(countSql.toString());
+//			Query queryList = manager.createNativeQuery(builder.toString(),
+//					Device.class);
 			
-			//System.out.println(list.size());
-			for(int i = 0; i < list.size(); i++){
-				DeviceStatus deviceStatus = new DeviceStatus();
-		
-				String province =  list.get(i);
-				StringBuilder deviceIdStatistic = new StringBuilder("select distinct deviceId, max(realTime) from devicerecord where province = '" + province +"'");
-				Query queryDeviceId = manager.createNativeQuery(deviceIdStatistic.toString());
-
-				List<Integer> deviceIdList = queryDeviceId.getResultList();
-				int onDeviceCounter = 0;
-				int offDeviceCounter = 0;
-				int offAndArrearageDeviceCounter = 0;
-				for(int j = 0; j < deviceIdList.size(); j++){
-					int deviceId = ((Integer)deviceIdList.get(j)).intValue();
-					StringBuilder deviceIsAtCurProvince = new StringBuilder("SELECT province from devicerecord where deviceId = " + deviceId + " HAVING max(realTime)");
-					Query queryCorDeviceRecord = manager.createNativeQuery(deviceIsAtCurProvince.toString());
-					List<String> corDeviceRecordList = queryCorDeviceRecord.getResultList();
-					if(province != corDeviceRecordList.get(0)){
-						continue;
-					} else {
-						StringBuilder deviceInfo = new StringBuilder("select manageDeviceStatus from device where deviceId = " + deviceId);
-						Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString());
-						//List<Integer>
-					}
-				}
-				
-				deviceStatus.setProvince(province);
-				resultList.add(deviceStatus);
-			}
 			
-			System.out.println(resultList);
+			//System.out.println(resultList);
 			return resultList;
 
 		} catch (Exception e) {
