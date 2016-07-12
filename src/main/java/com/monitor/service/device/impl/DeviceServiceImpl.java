@@ -189,6 +189,10 @@ public class DeviceServiceImpl implements IDeviceService {
 				query.setParameter("deviceName", deviceName);
 				queryList.setParameter("deviceName", deviceName);
 			}
+			if (!StringUtils.isEmpty(provice)) {
+				query.setParameter("provice", provice);
+				queryList.setParameter("provice", provice);
+			}
 			if (!StringUtils.isEmpty(lesseeName)) {
 				query.setParameter("lesseeName", lesseeName);
 				queryList.setParameter("lesseeName", lesseeName);
@@ -564,18 +568,32 @@ public class DeviceServiceImpl implements IDeviceService {
 			List<String> provinceList = queryDeviceProvince.getResultList();
 		
 			//List<Device> deviceList = query.getResultList();
-//			for(int i = 0; i < provinceList.size(); i++){
-//				StringBuilder deviceProvince = new StringBuilder("select * from device where provice = '" + "'")
-//			}
-
-//			Query query = manager.createNativeQuery(countSql.toString());
-//			Query queryList = manager.createNativeQuery(builder.toString(),
-//					Device.class);
-			
-			
-			//System.out.println(resultList);
+			for(int i = 0; i < provinceList.size(); i++){
+				String province = provinceList.get(i);
+				StringBuilder onDeviceInfo = new StringBuilder("select count(*) from device where provice = '" + province + "' and manageDeviceStatus = 1");
+				Query queryOnDeviceInfo = manager.createNativeQuery(onDeviceInfo.toString());
+				List<BigInteger> onDeviceInfoList = queryOnDeviceInfo.getResultList();
+				int onDeviceNum = onDeviceInfoList.get(0).intValue();
+				
+				StringBuilder offDeviceInfo = new StringBuilder("select count(*) from device where provice = '" + province + "' and manageDeviceStatus = 0");
+				Query queryOffDeviceInfo = manager.createNativeQuery(offDeviceInfo.toString());
+				List<BigInteger> offDeviceInfoList = queryOffDeviceInfo.getResultList();
+				int offDeviceNum = offDeviceInfoList.get(0).intValue();
+				
+				StringBuilder offAndArrearageDeviceInfo = new StringBuilder("select count(*) from device where provice = '" + province + "' and manageDeviceStatus = 0 and validTime <= DATE_ADD(now(),INTERVAL 3 DAY)");
+				Query queryOffAndArrearageDeviceInfo = manager.createNativeQuery(offAndArrearageDeviceInfo.toString());
+				List<BigInteger> offAndArrearageDeviceInfoList = queryOffAndArrearageDeviceInfo.getResultList();
+				int offAndArrearageDeviceNum = offAndArrearageDeviceInfoList.get(0).intValue();
+				
+				DeviceStatus deviceStatus = new DeviceStatus();
+				deviceStatus.setOnDeviceNum(onDeviceNum);
+				deviceStatus.setOffDeviceNum(offDeviceNum);
+				deviceStatus.setOffAndArrearageDeviceNum(offAndArrearageDeviceNum);
+				deviceStatus.setProvince(province);
+				
+				resultList.add(deviceStatus);
+			}
 			return resultList;
-
 		} catch (Exception e) {
 			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
