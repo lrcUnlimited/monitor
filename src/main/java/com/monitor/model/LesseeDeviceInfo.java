@@ -18,6 +18,9 @@ public class LesseeDeviceInfo {
 	}
 	public void setTotalDeviceNum(int totalDeviceNum) {
 		this.totalDeviceNum = totalDeviceNum;
+		
+		
+		
 	}
 	public int getNormalDeviceNum() {
 		return normalDeviceNum;
