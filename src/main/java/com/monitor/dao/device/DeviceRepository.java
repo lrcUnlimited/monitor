@@ -102,4 +102,18 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	@Modifying
 	@Query("update Device device set device.communicationStatus=?1 where device.deviceId=?2")
 	public void updateCommunicationStatus0(int status, int deviceId);
+	/**
+	 * 更新设备的所在省份
+	 * @param provice
+	 * @param deviceId
+	 */
+	@Modifying
+	@Query("update Device device set device.provice=?1 where device.deviceId=?2")
+	public void updateDeviceProvice(String provice, int deviceId);
+	@Modifying
+	@Query("update Device device set device.city=?1 where device.deviceId=?2")
+	public void updateDeviceCity(String city, int deviceId);
+	@Modifying
+	@Query("update Device device set device.district=?1 where device.deviceId=?2")
+	public void updateDeviceDistrict(String district, int deviceId);
 }

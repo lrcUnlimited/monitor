@@ -177,6 +177,9 @@ public class WebSocketHandler {
 			latestRecord.setProvince(addressInfo.getString("province"));
 			latestRecord.setCity(addressInfo.getString("city"));
 			latestRecord.setDistrict(addressInfo.getString("district"));
+			deviceRepository.updateDeviceProvice(addressInfo.getString("province"), deviceId);
+			deviceRepository.updateDeviceCity(addressInfo.getString("city"), deviceId);
+			deviceRepository.updateDeviceDistrict(addressInfo.getString("district"), deviceId);
 		}
 
 		DeviceRecord deviceRecord = deviceRecordService
