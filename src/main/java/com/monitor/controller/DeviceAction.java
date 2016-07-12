@@ -79,6 +79,7 @@ public class DeviceAction {
 			@RequestParam(value = "type", defaultValue = "0") int type,
 			@RequestParam(value = "searchDeviceName", defaultValue = "") String deviceName,
 			@RequestParam(value = "searchLessName", defaultValue = "") String lesseeName,
+			@RequestParam(value = "provice", defaultValue = "") String provice,
 			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
 			@RequestParam(value = "endTime", defaultValue = "0") long endTime,
 			@RequestParam(value = "startValidTime", defaultValue = "0") long startValidTime,
@@ -88,7 +89,7 @@ public class DeviceAction {
 			throw new CodeException("请重新登录");
 		}
 		Pager pager = deviceService.queryDevice(pageNo, pageSize, accountId,
-				type, deviceName, lesseeName, startTime, endTime,
+				type, deviceName, lesseeName,provice, startTime, endTime,
 				startValidTime, endValidTime);
 		return pager;
 
