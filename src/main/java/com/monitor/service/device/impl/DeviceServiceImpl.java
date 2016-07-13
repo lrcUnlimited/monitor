@@ -652,16 +652,23 @@ public class DeviceServiceImpl implements IDeviceService {
 				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
 				
 				
-//				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
-//				Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
-//				List<BigInteger> deviceTotalNumList = queryDeviceTotalNum.getResultList();
-//				int totalNum = deviceTotalNumList.get(0).intValue();
+				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
+				Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
+				List<BigInteger> deviceTotalNumList = queryDeviceTotalNum.getResultList();
+				int totalNum = deviceTotalNumList.get(0).intValue();
 				
+				StringBuilder deviceNormalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and manageDeviceStatus = 1");
+				Query queryDeviceNormalNum = manager.createNativeQuery(deviceNormalNum.toString());
+				List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
+				int normalDeviceNum = deviceNormalNumList.get(0).intValue();
 				
 				float arrearagePercentage = (float) arrearageNumber / total;
 				
 				deviceArrearagePercentage.setLessee(lesseeName);
 				deviceArrearagePercentage.setPercantage(arrearagePercentage);
+				deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
+				deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
+				
 				resultList.add(deviceArrearagePercentage);
 			}
 			
@@ -717,6 +724,12 @@ public class DeviceServiceImpl implements IDeviceService {
 				Query queryWillArrearageLesseeDeviceNum = manager.createNativeQuery(willArrearageLesseeDeviceNum.toString());
 				List<BigInteger> willArrearageLesseeDeviceNumList = queryWillArrearageLesseeDeviceNum.getResultList();
 				int willArrearageDeviceNum = willArrearageLesseeDeviceNumList.get(0).intValue();
+				
+				//get total arrearage number
+				StringBuilder totalArrearageLesseeDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and deviceStatus = 0");
+				Query queryTotalArrearageLesseeDeviceNum = manager.createNativeQuery(totalArrearageLesseeDeviceNum.toString());
+				List<BigDecimal> totalArrearageLesseeDeviceNumList = queryTotalArrearageLesseeDeviceNum.getResultList();
+				int totalArreatageDeviceNum = totalArrearageLesseeDeviceNumList.get(0).intValue();
 				
 				LesseeDeviceInfo lesseeDeviceInfo = new LesseeDeviceInfo();
 				lesseeDeviceInfo.setArrearageDeviceNum(arrearageDeviceNum);
