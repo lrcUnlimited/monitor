@@ -125,5 +125,5 @@ public interface IDeviceService {
 	 * @throws CodeException
 	 */
 	public Pager queryLesseeDeviceInformationPager(Integer pageNo, Integer pageSize,
-			Integer accountId, int type, String lesseeName) throws CodeException;
+			Integer accountId, int type, String lesseeName, int arrearagePercentageType) throws CodeException;
 }
