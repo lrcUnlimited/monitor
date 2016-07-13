@@ -118,4 +118,12 @@ public interface IDeviceService {
 	 * @throws CodeException
 	 */
 	public List<LesseeDeviceInfo> queryLesseeDeviceInformation() throws CodeException;
+	
+	/**
+	 * 
+	 * @return List of device information by pager
+	 * @throws CodeException
+	 */
+	public Pager queryLesseeDeviceInformationPager(Integer pageNo, Integer pageSize,
+			Integer accountId, int type, String lesseeName) throws CodeException;
 }

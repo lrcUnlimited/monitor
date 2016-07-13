@@ -6,6 +6,7 @@ public class LesseeDeviceInfo {
 	private int normalDeviceNum; //正常设备数
 	private int arrearageDeviceNum; //欠费设备数
 	private int willArrearageDeviceNum; //即将欠费设备数
+	private String lesseePhone;//设备租用方电话
 	
 	public String getLesseeName() {
 		return lesseeName;
@@ -39,5 +40,11 @@ public class LesseeDeviceInfo {
 	}
 	public void setWillArrearageDeviceNum(int willArrearageDeviceNum) {
 		this.willArrearageDeviceNum = willArrearageDeviceNum;
+	}
+	public String getLesseePhone() {
+		return lesseePhone;
+	}
+	public void setLesseePhone(String lesseePhone) {
+		this.lesseePhone = lesseePhone;
 	}
 }

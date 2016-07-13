@@ -333,4 +333,19 @@ public class DeviceAction {
 		}
 		return deviceService.queryLesseeDeviceInformation();
 	}
+	
+	@RequestMapping(value = "/e_queryLesseeDeviceInformationPager", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Pager queryLesseeDeviceInformationPager(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
+			HttpServletResponse response) throws CodeException{
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName);
+	}
 }

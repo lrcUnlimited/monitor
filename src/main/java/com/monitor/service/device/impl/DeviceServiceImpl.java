@@ -713,10 +713,123 @@ public class DeviceServiceImpl implements IDeviceService {
 				
 				resultList.add(lesseeDeviceInfo);
 			}
-			
+
 			return resultList;
 		} catch (Exception e) {
 			logger.error("内部错误", e);
+			throw new CodeException("内部错误");
+		}
+	}
+
+	@Override
+	public Pager queryLesseeDeviceInformationPager(Integer pageNo,
+			Integer pageSize, Integer accountId, int type, String lesseeName)
+			throws CodeException {
+		try {
+			Pager pager = new Pager(pageNo, pageSize);
+			int thisPage = (pageNo - 1) * pageSize;
+			List<LesseeDeviceInfo> resultList = new ArrayList();
+			if(!StringUtils.isEmpty(lesseeName)){
+				//get total device number
+				StringBuilder lesseeDeviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
+				Query queryLesseeDeviceTotalNum = manager.createNativeQuery(lesseeDeviceTotalNum.toString());
+				List<BigInteger> lesseeDeviceTotalNumList = queryLesseeDeviceTotalNum.getResultList();
+				int totalDeviceNum = lesseeDeviceTotalNumList.get(0).intValue();
+				// ((BigDecimal) totalResultList.get(0)).floatValue();
+				
+				//get arrearage device number
+				StringBuilder lesseeArrearageDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'and validTime <= DATE_ADD(now(),INTERVAL 3 DAY)");
+				Query queryArrearageDeviceNum = manager.createNativeQuery(lesseeArrearageDeviceNum.toString());
+				@SuppressWarnings("unchecked")
+				List<BigInteger> arrearageDeviceNumList = queryArrearageDeviceNum.getResultList();
+				int arrearageDeviceNum = arrearageDeviceNumList.get(0).intValue();
+			
+				//get normal device number
+				int normalDeviceNum = totalDeviceNum - arrearageDeviceNum;
+				
+				//get will arrearage device number
+				//select count(*) from device where lesseeName = 'uestc' and validTime <= DATE_ADD(now(),INTERVAL 3 DAY);
+				StringBuilder willArrearageLesseeDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and deviceStatus = 0");
+				Query queryWillArrearageLesseeDeviceNum = manager.createNativeQuery(willArrearageLesseeDeviceNum.toString());
+				@SuppressWarnings("unchecked")
+				List<BigInteger> willArrearageLesseeDeviceNumList = queryWillArrearageLesseeDeviceNum.getResultList();
+				int willArrearageDeviceNum = willArrearageLesseeDeviceNumList.get(0).intValue();
+				
+				StringBuilder deviceInfo = new StringBuilder("select * from device where lesseeName = '" + lesseeName + "'");
+				Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString(), Device.class);
+				@SuppressWarnings("unchecked")
+				List<Device> deviceInfoList = queryDeviceInfo.getResultList();
+				String lesseePhone = deviceInfoList.get(0).getLesseePhone();
+				
+				LesseeDeviceInfo lesseeDeviceInfo = new LesseeDeviceInfo();
+				lesseeDeviceInfo.setArrearageDeviceNum(arrearageDeviceNum);
+				lesseeDeviceInfo.setLesseeName(lesseeName);
+				lesseeDeviceInfo.setNormalDeviceNum(normalDeviceNum);
+				lesseeDeviceInfo.setTotalDeviceNum(totalDeviceNum);
+				lesseeDeviceInfo.setWillArrearageDeviceNum(willArrearageDeviceNum);
+				lesseeDeviceInfo.setLesseePhone(lesseePhone);
+				
+				resultList.add(lesseeDeviceInfo);
+			} else {
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
+				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+				@SuppressWarnings("unchecked")
+				List<String> lesseeNameList = queryLesseeName.getResultList();
+				
+				//查询租赁商为空集
+				if(lesseeNameList.get(0) == null){
+					LesseeDeviceInfo nullResult = new LesseeDeviceInfo();
+					nullResult.setArrearageDeviceNum(0);
+					nullResult.setLesseeName("N/A");
+					nullResult.setNormalDeviceNum(0);
+					nullResult.setTotalDeviceNum(0);
+					nullResult.setWillArrearageDeviceNum(0);
+					resultList.add(nullResult);
+				}
+				for(int i = 0; i < lesseeNameList.size(); i++){
+					String curLesseeName = lesseeNameList.get(i);
+					
+					//get total device number
+					StringBuilder lesseeDeviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + curLesseeName + "'");
+					Query queryLesseeDeviceTotalNum = manager.createNativeQuery(lesseeDeviceTotalNum.toString());
+					@SuppressWarnings("unchecked")
+					List<BigInteger> lesseeDeviceTotalNumList = queryLesseeDeviceTotalNum.getResultList();
+					int totalDeviceNum = lesseeDeviceTotalNumList.get(0).intValue();
+					// ((BigDecimal) totalResultList.get(0)).floatValue();
+					
+					//get arrearage device number
+					StringBuilder lesseeArrearageDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + curLesseeName + "'and validTime <= DATE_ADD(now(),INTERVAL 3 DAY)");
+					Query queryArrearageDeviceNum = manager.createNativeQuery(lesseeArrearageDeviceNum.toString());
+					@SuppressWarnings("unchecked")
+					List<BigInteger> arrearageDeviceNumList = queryArrearageDeviceNum.getResultList();
+					int arrearageDeviceNum = arrearageDeviceNumList.get(0).intValue();
+				
+					//get normal device number
+					int normalDeviceNum = totalDeviceNum - arrearageDeviceNum;
+					
+					//get will arrearage device number
+					//select count(*) from device where lesseeName = 'uestc' and validTime <= DATE_ADD(now(),INTERVAL 3 DAY);
+					StringBuilder willArrearageLesseeDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + curLesseeName + "' and deviceStatus = 0");
+					Query queryWillArrearageLesseeDeviceNum = manager.createNativeQuery(willArrearageLesseeDeviceNum.toString());
+					@SuppressWarnings("unchecked")
+					List<BigInteger> willArrearageLesseeDeviceNumList = queryWillArrearageLesseeDeviceNum.getResultList();
+					int willArrearageDeviceNum = willArrearageLesseeDeviceNumList.get(0).intValue();
+					
+					LesseeDeviceInfo lesseeDeviceInfo = new LesseeDeviceInfo();
+					lesseeDeviceInfo.setArrearageDeviceNum(arrearageDeviceNum);
+					lesseeDeviceInfo.setLesseeName(curLesseeName);
+					lesseeDeviceInfo.setNormalDeviceNum(normalDeviceNum);
+					lesseeDeviceInfo.setTotalDeviceNum(totalDeviceNum);
+					lesseeDeviceInfo.setWillArrearageDeviceNum(willArrearageDeviceNum);
+					
+					resultList.add(lesseeDeviceInfo);
+				}
+			}
+			pager.setTotalCount(resultList.size());
+			pager.setItems(resultList);
+			return pager;
+		} catch (Exception e) {
+			logger.error("获取设备列表出错", e);
 			throw new CodeException("内部错误");
 		}
 	}
