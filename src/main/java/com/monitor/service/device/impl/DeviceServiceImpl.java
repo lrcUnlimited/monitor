@@ -669,6 +669,25 @@ public class DeviceServiceImpl implements IDeviceService {
 				deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
 				deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
 				
+
+				if(arrearagePercentage > 0 && arrearagePercentage <= 0.05){
+					deviceArrearagePercentage.setArrearagePercentageType(1);
+				} else if(arrearagePercentage > 0.05 && arrearagePercentage <= 0.1){
+					deviceArrearagePercentage.setArrearagePercentageType(2);
+				} else if(arrearagePercentage > 0.1 && arrearagePercentage <= 0.15){
+					deviceArrearagePercentage.setArrearagePercentageType(3);
+				} else if(arrearagePercentage > 0.15 && arrearagePercentage <= 0.2){
+					deviceArrearagePercentage.setArrearagePercentageType(4);
+				} else if(arrearagePercentage > 0.2 && arrearagePercentage <= 0.25){
+					deviceArrearagePercentage.setArrearagePercentageType(5);
+				} else if(arrearagePercentage > 0.25 && arrearagePercentage <= 0.3){
+					deviceArrearagePercentage.setArrearagePercentageType(6);
+				} else if(arrearagePercentage > 0.3 && arrearagePercentage <= 1){
+					deviceArrearagePercentage.setArrearagePercentageType(7);
+				} else {
+					deviceArrearagePercentage.setArrearagePercentageType(0);
+				}
+				
 				resultList.add(deviceArrearagePercentage);
 			}
 			

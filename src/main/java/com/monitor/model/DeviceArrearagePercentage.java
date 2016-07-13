@@ -6,6 +6,7 @@ public class DeviceArrearagePercentage {
 	private int arrearageDeviceNum;//欠费设备数
 	private int normalDeviceNum;//正常设备数
 	private String lesseePhone;//设备租用方电话
+	private int arrearagePercentageType;//
 	
 	public float getPercantage() {
 		return percantage;
@@ -36,5 +37,11 @@ public class DeviceArrearagePercentage {
 	}
 	public void setLesseePhone(String lesseePhone) {
 		this.lesseePhone = lesseePhone;
+	}
+	public int getArrearagePercentageType() {
+		return arrearagePercentageType;
+	}
+	public void setArrearagePercentageType(int arrearagePercentageType) {
+		this.arrearagePercentageType = arrearagePercentageType;
 	}
 }
