@@ -605,17 +605,22 @@ public class DeviceServiceImpl implements IDeviceService {
 	public List queryTotalNumOfDeviceStatus() throws CodeException {
 		List resultList = new ArrayList();
 		try{
-			StringBuilder deviceOnStatusStatistic = new StringBuilder("select count(*) from device where communicationStatus = 1");
+			StringBuilder deviceOnStatusStatistic = new StringBuilder("select count(*) from device where manageDeviceStatus = 1");
 			Query qOn = manager.createNativeQuery(deviceOnStatusStatistic.toString());
 			
-			StringBuilder deviceOffStatusStatistic = new StringBuilder("select count(*) from device where communicationStatus = 0");
+			StringBuilder deviceOffStatusStatistic = new StringBuilder("select count(*) from device where manageDeviceStatus = 0");
 			Query qOff = manager.createNativeQuery(deviceOffStatusStatistic.toString());
+			
+			StringBuilder deviceOffAndArrearageStatusStatistic = new StringBuilder("select count(*) from device where manageDeviceStatus = 0 and validTime <= DATE_ADD(now(),INTERVAL 3 DAY)");
+			Query qOffAndArrearage = manager.createNativeQuery(deviceOffAndArrearageStatusStatistic.toString());
 			
 			List onList = qOn.getResultList();
 			List offList = qOff.getResultList();
+			List offAndArrearageList = qOffAndArrearage.getResultList();
 			
 			resultList.add(onList);
 			resultList.add(offList);
+			resultList.add(offAndArrearageList);
 			
 			return resultList;
 		} catch (Exception e) {
@@ -631,6 +636,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
 			Query qTotal = manager.createNativeQuery(deviceArrearageTotalStatistic.toString());
 			List<BigDecimal> totalResultList = qTotal.getResultList();
+			
 			float total = ((BigDecimal) totalResultList.get(0)).floatValue();
 			//((BigInteger) query.getSingleResult()).intValue()
 			StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
@@ -644,7 +650,15 @@ public class DeviceServiceImpl implements IDeviceService {
 				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
 				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
 				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
-				float arrearagePercentage = arrearageNumber / total;
+				
+				
+//				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
+//				Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
+//				List<BigInteger> deviceTotalNumList = queryDeviceTotalNum.getResultList();
+//				int totalNum = deviceTotalNumList.get(0).intValue();
+				
+				
+				float arrearagePercentage = (float) arrearageNumber / total;
 				
 				deviceArrearagePercentage.setLessee(lesseeName);
 				deviceArrearagePercentage.setPercantage(arrearagePercentage);
