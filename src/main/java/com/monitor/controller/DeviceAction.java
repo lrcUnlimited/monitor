@@ -342,7 +342,7 @@ public class DeviceAction {
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
 			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
-			@RequestParam(value = "arrearagePercentageType", defaultValue = "0") int arrearagePercentageType,
+			@RequestParam(value = "arrearagePercentageType", defaultValue = "-1") int arrearagePercentageType,
 			HttpServletResponse response) throws CodeException{
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");

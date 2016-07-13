@@ -779,6 +779,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			float total = ((BigDecimal) totalResultList.get(0)).floatValue();
 			
 			Pager pager = new Pager(pageNo, pageSize);
+			pager.setTotalCount(0);
 			int thisPage = (pageNo - 1) * pageSize;
 			List<DeviceArrearagePercentage> resultList = new ArrayList();
 			if(!StringUtils.isEmpty(lesseeName)){
@@ -826,6 +827,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				} else if(arrearagePercentageType == 6 && (arrearagePercentage <= 0.25 || arrearagePercentage > 0.3)){
 					return pager;
 				} else if(arrearagePercentageType == 7 && (arrearagePercentage <= 0.3 || arrearagePercentage > 1)){
+					return pager;
+				} else if(arrearagePercentageType == 0 && arrearagePercentage != 0){
 					return pager;
 				}
 				
@@ -882,6 +885,8 @@ public class DeviceServiceImpl implements IDeviceService {
 					} else if(arrearagePercentageType == 6 && (arrearagePercentage <= 0.25 || arrearagePercentage > 0.3)){
 						continue;
 					} else if(arrearagePercentageType == 7 && (arrearagePercentage <= 0.3 || arrearagePercentage > 1)){
+						continue;
+					}else if(arrearagePercentageType == 0 && arrearagePercentage != 0){
 						continue;
 					}
 					
