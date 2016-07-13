@@ -689,7 +689,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				// ((BigDecimal) totalResultList.get(0)).floatValue();
 				
 				//get arrearage device number
-				StringBuilder lesseeArrearageDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and deviceStatus = 0");
+				StringBuilder lesseeArrearageDeviceNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'and validTime <= DATE_ADD(now(),INTERVAL 3 DAY)");
 				Query queryArrearageDeviceNum = manager.createNativeQuery(lesseeArrearageDeviceNum.toString());
 				List<BigInteger> arrearageDeviceNumList = queryArrearageDeviceNum.getResultList();
 				int arrearageDeviceNum = arrearageDeviceNumList.get(0).intValue();
