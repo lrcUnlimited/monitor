@@ -1,19 +1,13 @@
 package com.monitor.model;
 
 public class DeviceArrearagePercentage {
-	private float percantage;//欠费率
+	private float percentage;//欠费率
 	private String lessee;//租赁商名称
 	private int arrearageDeviceNum;//欠费设备数
 	private int normalDeviceNum;//正常设备数
 	private String lesseePhone;//设备租用方电话
 	private int arrearagePercentageType;//
 	
-	public float getPercantage() {
-		return percantage;
-	}
-	public void setPercantage(float percantage) {
-		this.percantage = percantage;
-	}
 	public String getLessee() {
 		return lessee;
 	}
@@ -43,5 +37,11 @@ public class DeviceArrearagePercentage {
 	}
 	public void setArrearagePercentageType(int arrearagePercentageType) {
 		this.arrearagePercentageType = arrearagePercentageType;
+	}
+	public float getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(float percentage) {
+		this.percentage = percentage;
 	}
 }
