@@ -110,7 +110,7 @@ public interface IDeviceService {
 	 * @return List of device information
 	 * @throws CodeException
 	 */
-	public List<DeviceArrearagePercentage> queryArrearagePercentage() throws CodeException;
+	public List<DeviceArrearagePercentage> queryArrearagePercentage(Integer month) throws CodeException;
 	
 	/**
 	 * 
@@ -125,5 +125,5 @@ public interface IDeviceService {
 	 * @throws CodeException
 	 */
 	public Pager queryLesseeDeviceInformationPager(Integer pageNo, Integer pageSize,
-			Integer accountId, int type, String lesseeName, int arrearagePercentageType) throws CodeException;
+			Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month) throws CodeException;
 }

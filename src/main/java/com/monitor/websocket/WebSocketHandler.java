@@ -21,9 +21,11 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.monitor.dao.commandrecord.CommandRecordRepository;
 import com.monitor.dao.device.DeviceRepository;
 import com.monitor.dao.devicerecord.DeviceRecordRepository;
 import com.monitor.exception.CodeException;
+import com.monitor.model.CommandRecord;
 import com.monitor.model.Device;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.Message;
@@ -44,6 +46,8 @@ public class WebSocketHandler {
 	IDeviceRecordService deviceRecordService;
 	@Autowired
 	DeviceRecordRepository deviceRecordRepository;
+	@Autowired
+	CommandRecordRepository commandRecordRepository;
 	private static String crtPath = null;
 	// 初始化证书脚本地址
 	static {
@@ -101,6 +105,13 @@ public class WebSocketHandler {
 				// 设备已经过期,更新数据库中的设备管理状态为off
 				deviceRepository.updateManageDeviceStatus(0, deviceId);
 				deviceRepository.updateArrearageCount(deviceId);
+				//欠费关闭的设备被记录在日志表
+				CommandRecord commandRecord = new CommandRecord();
+				commandRecord.setDeviceId(deviceId);
+				commandRecord.setDeviceCloseType(1);
+				commandRecord.setContent("设备欠费被关闭");
+				commandRecord.setLesseeName(device.getLesseeName());
+				commandRecordRepository.saveAndFlush(commandRecord);
 				sendMessage.setType(0);// 发送关机指令
 				nowType = 0;
 			} else {

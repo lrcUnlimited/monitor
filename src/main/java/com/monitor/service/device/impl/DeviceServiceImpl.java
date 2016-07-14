@@ -630,7 +630,7 @@ public class DeviceServiceImpl implements IDeviceService {
 	}
 
 	@Override
-	public List<DeviceArrearagePercentage> queryArrearagePercentage() throws CodeException {
+	public List<DeviceArrearagePercentage> queryArrearagePercentage(Integer month) throws CodeException {
 		List<DeviceArrearagePercentage> resultList = new ArrayList<DeviceArrearagePercentage>();
 		try{
 			StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
@@ -646,10 +646,15 @@ public class DeviceServiceImpl implements IDeviceService {
 				DeviceArrearagePercentage deviceArrearagePercentage = new DeviceArrearagePercentage();
 				
 				String lesseeName = lesseeNameList.get(i);
-				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + lesseeName + "'");
+//				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + lesseeName + "'");
+//				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
+//				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
+//				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+				//select count(*) from commandrecord where lesseeName = 'uestc' and recordTime >= DATE_SUB(NOW(),INTERVAL 1 MONTH)
+				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + lesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
 				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
-				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
-				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+				List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
+				int arrearageNumber = arrearageNumberList.get(0).intValue();
 				
 				
 				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
@@ -662,7 +667,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
 				int normalDeviceNum = deviceNormalNumList.get(0).intValue();
 				
-				float arrearagePercentage = (float) arrearageNumber / total;
+				float arrearagePercentage = (float) arrearageNumber / (totalNum * month);
 				
 				deviceArrearagePercentage.setLessee(lesseeName);
 				deviceArrearagePercentage.setPercentage(arrearagePercentage);
@@ -769,7 +774,7 @@ public class DeviceServiceImpl implements IDeviceService {
 
 	@Override
 	public Pager queryLesseeDeviceInformationPager(Integer pageNo,
-			Integer pageSize, Integer accountId, int type, String lesseeName, int arrearagePercentageType)
+			Integer pageSize, Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month)
 			throws CodeException {
 		try {
 			//计算总欠费次数
@@ -791,11 +796,15 @@ public class DeviceServiceImpl implements IDeviceService {
 				}
 				
 				DeviceArrearagePercentage deviceArrearagePercentage = new DeviceArrearagePercentage();
-				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + lesseeName + "'");
+//				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + lesseeName + "'");
+//				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
+//				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
+//				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+				//通过日志查询欠费总次数
+				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + lesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
 				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
-				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
-				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
-				
+				List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
+				int arrearageNumber = arrearageNumberList.get(0).intValue();
 				
 				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
 				Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
@@ -807,7 +816,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
 				int normalDeviceNum = deviceNormalNumList.get(0).intValue();
 				
-				float arrearagePercentage = (float) arrearageNumber / total;
+				float arrearagePercentage = (float) arrearageNumber / (month * totalNum);
 				
 				StringBuilder lesseePhone = new StringBuilder("select distinct lesseePhone from device where lesseeName = '" + lesseeName + "'");
 				Query queryLesseePhone = manager.createNativeQuery(lesseePhone.toString());
@@ -849,10 +858,17 @@ public class DeviceServiceImpl implements IDeviceService {
 					
 					//查询该租赁商总欠费次数
 					String thisLesseeName = lesseeNameList.get(i);
-					StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + thisLesseeName + "'");
+//					StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + thisLesseeName + "'");
+//					Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
+//					List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
+//					int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+
+					//通过日志查询欠费总次数
+					StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
 					Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
-					List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
-					int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+					List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
+					int arrearageNumber = arrearageNumberList.get(0).intValue();
+					
 					
 					//查询总设备数
 					StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "'");
@@ -870,7 +886,7 @@ public class DeviceServiceImpl implements IDeviceService {
 					List<String> deviceLesseePhoneList = queryLesseePhone.getResultList();
 					String lesseePhoneNumber = deviceLesseePhoneList.get(0);
 					
-					float arrearagePercentage = (float) arrearageNumber / total;
+					float arrearagePercentage = (float) arrearageNumber / (month * totalNum);
 		
 					if(arrearagePercentageType == 1 && (arrearagePercentage <= 0 || arrearagePercentage > 0.05)){
 						continue;

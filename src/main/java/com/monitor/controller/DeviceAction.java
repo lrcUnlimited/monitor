@@ -315,11 +315,12 @@ public class DeviceAction {
 	List queryArrearagePercentage(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "type", defaultValue = "0") int type,
+			@RequestParam(value = "month", defaultValue = "1") int month,
 			HttpServletResponse response) throws CodeException{
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		return deviceService.queryArrearagePercentage();
+		return deviceService.queryArrearagePercentage(month);
 	}
 	
 	@RequestMapping(value = "/e_queryLesseeDeviceInformation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -343,10 +344,11 @@ public class DeviceAction {
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
 			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
 			@RequestParam(value = "arrearagePercentageType", defaultValue = "-1") int arrearagePercentageType,
+			@RequestParam(value = "month", defaultValue = "1") int month,
 			HttpServletResponse response) throws CodeException{
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType);
+		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType, month);
 	}
 }
