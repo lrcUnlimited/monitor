@@ -24,6 +24,8 @@ public class CommandRecord {
 	private Integer type;//命令类型-0代表用户管理操作，1代表授权操作、暂时没用，2代表设备管理操作，3代表用户远程更新操作,4代表充值，即增加设备使用期限
 	@Transient
 	private String accountName;//命令操作用户名
+	private String addValidNote;
+	
 	public String getLesseeName() {
 		return lesseeName;
 	}
@@ -78,6 +80,12 @@ public class CommandRecord {
 	}
 	public void setType(Integer type) {
 		this.type = type;
+	}
+	public String getAddValidNote() {
+		return addValidNote;
+	}
+	public void setAddValidNote(String addValidNote) {
+		this.addValidNote = addValidNote;
 	}
 	
 

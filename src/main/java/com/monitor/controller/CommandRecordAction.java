@@ -61,4 +61,19 @@ public class CommandRecordAction {
 	public ErrorMessage handleException(CodeException e) {
 		return new ErrorMessage(e.getMessage());
 	}
+	
+	
+	@RequestMapping(value = "/e_debug", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Pager debugInfo(@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize
+			)
+			throws CodeException {
+		if (accountId == 0) {  
+			throw new CodeException("请重新登录");
+		}
+		Pager pager = commandService.queryDebug(pageNo, pageSize);
+		return pager;
+	}
 }

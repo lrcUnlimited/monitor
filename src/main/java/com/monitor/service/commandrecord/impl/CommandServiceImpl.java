@@ -1,6 +1,7 @@
 package com.monitor.service.commandrecord.impl;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -102,4 +103,19 @@ public class CommandServiceImpl implements CommandService {
 
 	}
 
+	@Override
+	public Pager queryDebug(Integer pageNo, Integer pageSize) {
+		List<CommandRecord> resultList = new ArrayList<CommandRecord>();
+		Pager pager = new Pager();
+		int thisPage = (pageNo - 1) * pageSize;
+		
+		//where addValidNote = '数据传输测试' 
+		StringBuilder commandRecordSql = new StringBuilder("select * from commandrecord limit " + thisPage + "," + pageSize);
+		Query queryCommandRecordSql = manager.createNativeQuery(commandRecordSql.toString(), CommandRecord.class);
+		resultList = queryCommandRecordSql.getResultList();
+		
+		pager.setTotalCount(resultList.size());
+		pager.setItems(resultList);
+		return pager;
+	}
 }

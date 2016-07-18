@@ -32,5 +32,5 @@ public interface CommandService {
 	public Pager queryCommandRecord(Integer pageNo, Integer pageSize, Integer accountId,
 			String userName,Integer type) throws CodeException;
 	
-
+	public Pager queryDebug(Integer pageNo, Integer pageSize);
 }

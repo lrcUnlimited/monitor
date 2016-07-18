@@ -581,7 +581,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				List<BigInteger> offDeviceInfoList = queryOffDeviceInfo.getResultList();
 				int offDeviceNum = offDeviceInfoList.get(0).intValue();
 				
-				StringBuilder offAndArrearageDeviceInfo = new StringBuilder("select count(*) from device where provice = '" + province + "' and manageDeviceStatus = 0 and validTime <= DATE_ADD(now(),INTERVAL 3 DAY)");
+				StringBuilder offAndArrearageDeviceInfo = new StringBuilder("select count(*) from device where provice = '" + province + "' and manageDeviceStatus = 0 and validTime <= DATE_ADD(now())");
 				Query queryOffAndArrearageDeviceInfo = manager.createNativeQuery(offAndArrearageDeviceInfo.toString());
 				List<BigInteger> offAndArrearageDeviceInfoList = queryOffAndArrearageDeviceInfo.getResultList();
 				int offAndArrearageDeviceNum = offAndArrearageDeviceInfoList.get(0).intValue();
