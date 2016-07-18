@@ -150,16 +150,16 @@ public class DeviceServiceImpl implements IDeviceService {
 				countSql.append("  and device.manageDeviceStatus =0 ");
 			}
 			if (!StringUtils.isEmpty(provice)) {
-				builder.append("  and device.provice =:provice ");
-				countSql.append("  and device.provice =:provice ");
+				builder.append("  and device.provice like:provice ");
+				countSql.append("  and device.provice like:provice ");
 			}
 			if (!StringUtils.isEmpty(deviceName)) {
 				builder.append("  and device.deviceName =:deviceName ");
 				countSql.append("  and device.deviceName =:deviceName ");
 			}
 			if (!StringUtils.isEmpty(lesseeName)) {
-				builder.append("  and device.lesseeName =:lesseeName ");
-				countSql.append("  and device.lesseeName =:lesseeName ");
+				builder.append("  and device.lesseeName like:lesseeName ");
+				countSql.append("  and device.lesseeName like:lesseeName ");
 			}
 			if (startTime != 0) {
 				builder.append("  and device.regTime >=:startTime ");
@@ -191,12 +191,12 @@ public class DeviceServiceImpl implements IDeviceService {
 				queryList.setParameter("deviceName", deviceName);
 			}
 			if (!StringUtils.isEmpty(provice)) {
-				query.setParameter("provice", provice);
-				queryList.setParameter("provice", provice);
+				query.setParameter("provice", '%' + provice + '%');
+				queryList.setParameter("provice", '%' + provice + '%');
 			}
 			if (!StringUtils.isEmpty(lesseeName)) {
-				query.setParameter("lesseeName", lesseeName);
-				queryList.setParameter("lesseeName", lesseeName);
+				query.setParameter("lesseeName", '%' + lesseeName + '%');
+				queryList.setParameter("lesseeName", '%' + lesseeName + '%');
 			}
 			if (startTime != 0) {
 				Date startDate = new Date(startTime);
