@@ -7,6 +7,8 @@ public class DeviceArrearagePercentage {
 	private int normalDeviceNum;//正常设备数
 	private String lesseePhone;//设备租用方电话
 	private int arrearagePercentageType;//
+	private int totalDeviceNum;//设备总数数
+	private float arrearageTimePerDevice;//积累台欠费次
 	
 	public String getLessee() {
 		return lessee;
@@ -44,4 +46,17 @@ public class DeviceArrearagePercentage {
 	public void setPercentage(float percentage) {
 		this.percentage = percentage;
 	}
+	public int getTotalDeviceNum() {
+		return totalDeviceNum;
+	}
+	public void setTotalDeviceNum(int totalDeviceNum) {
+		this.totalDeviceNum = totalDeviceNum;
+	}
+	public float getArrearageTimePerDevice() {
+		return arrearageTimePerDevice;
+	}
+	public void setArrearageTimePerDevice(float arrearageTimePerDevice) {
+		this.arrearageTimePerDevice = arrearageTimePerDevice;
+	}
+
 }

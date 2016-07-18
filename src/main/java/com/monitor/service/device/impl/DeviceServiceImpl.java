@@ -846,6 +846,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
 				deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
 				deviceArrearagePercentage.setLesseePhone(lesseePhoneNumber);
+				deviceArrearagePercentage.setTotalDeviceNum(totalNum);
+				deviceArrearagePercentage.setArrearageTimePerDevice((float) arrearageNumber / totalNum);
 				
 				resultList.add(deviceArrearagePercentage);
 			} else {
@@ -911,7 +913,8 @@ public class DeviceServiceImpl implements IDeviceService {
 					deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
 					deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
 					deviceArrearagePercentage.setLesseePhone(lesseePhoneNumber);
-				
+					deviceArrearagePercentage.setTotalDeviceNum(totalNum);
+					deviceArrearagePercentage.setArrearageTimePerDevice((float) arrearageNumber / totalNum);
 					
 					resultList.add(deviceArrearagePercentage);
 				}
