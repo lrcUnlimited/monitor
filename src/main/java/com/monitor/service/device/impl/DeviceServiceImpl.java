@@ -787,61 +787,72 @@ public class DeviceServiceImpl implements IDeviceService {
 			pager.setTotalCount(0);
 			int thisPage = (pageNo - 1) * pageSize;
 			List<DeviceArrearagePercentage> resultList = new ArrayList();
+			List<String> lesseeNameList = new ArrayList();
 			if(!StringUtils.isEmpty(lesseeName)){
-				StringBuilder isValidLesseeName = new StringBuilder("select * from device where lesseeName = '" + lesseeName + "'");
-				Query queryIsValidLesseeName = manager.createNativeQuery(isValidLesseeName.toString(), Device.class);
-				List<Device> isValidLesseeNameList = queryIsValidLesseeName.getResultList();
-				if(isValidLesseeNameList == null || isValidLesseeNameList.size() == 0){
-					return pager;
-				}
-				
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device where lesseeName like '%" + lesseeName + "%'");
+				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+				lesseeNameList = queryLesseeName.getResultList();
+			} else {
+				//获取租赁商列表
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
+				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+				lesseeNameList = queryLesseeName.getResultList();
+			}
+			
+			for(int i = 0; i < lesseeNameList.size(); i++){
 				DeviceArrearagePercentage deviceArrearagePercentage = new DeviceArrearagePercentage();
-//				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + lesseeName + "'");
+				
+				//查询该租赁商总欠费次数
+				String thisLesseeName = lesseeNameList.get(i);
+//				StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + thisLesseeName + "'");
 //				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
 //				List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
 //				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
+
 				//通过日志查询欠费总次数
-				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + lesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
+				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
 				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
 				List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
 				int arrearageNumber = arrearageNumberList.get(0).intValue();
 				
-				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "'");
+				
+				//查询总设备数
+				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "'");
 				Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
 				List<BigInteger> deviceTotalNumList = queryDeviceTotalNum.getResultList();
 				int totalNum = deviceTotalNumList.get(0).intValue();
 				
-				StringBuilder deviceNormalNum = new StringBuilder("select count(*) from device where lesseeName = '" + lesseeName + "' and manageDeviceStatus = 1");
+				StringBuilder deviceNormalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "' and manageDeviceStatus = 1");
 				Query queryDeviceNormalNum = manager.createNativeQuery(deviceNormalNum.toString());
 				List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
 				int normalDeviceNum = deviceNormalNumList.get(0).intValue();
 				
-				float arrearagePercentage = (float) arrearageNumber / (month * totalNum);
-				
-				StringBuilder lesseePhone = new StringBuilder("select distinct lesseePhone from device where lesseeName = '" + lesseeName + "'");
+				StringBuilder lesseePhone = new StringBuilder("select distinct lesseePhone from device where lesseeName = '" + thisLesseeName + "'");
 				Query queryLesseePhone = manager.createNativeQuery(lesseePhone.toString());
 				List<String> deviceLesseePhoneList = queryLesseePhone.getResultList();
 				String lesseePhoneNumber = deviceLesseePhoneList.get(0);
 				
+				float arrearagePercentage = (float) arrearageNumber / (month * totalNum);
+	
 				if(arrearagePercentageType == 1 && (arrearagePercentage <= 0 || arrearagePercentage > 0.05)){
-					return pager;
+					continue;
 				} else if(arrearagePercentageType == 2 && (arrearagePercentage <= 0.05 || arrearagePercentage > 0.1)){
-					return pager;
+					continue;
 				} else if(arrearagePercentageType == 3 && (arrearagePercentage <= 0.1 || arrearagePercentage > 0.15)){
-					return pager;
+					continue;
 				} else if(arrearagePercentageType == 4 && (arrearagePercentage <= 0.15 || arrearagePercentage > 0.2)){
-					return pager;
+					continue;
 				} else if(arrearagePercentageType == 5 && (arrearagePercentage <= 0.2 || arrearagePercentage > 0.25)){
-					return pager;
+					continue;
 				} else if(arrearagePercentageType == 6 && (arrearagePercentage <= 0.25 || arrearagePercentage > 0.3)){
-					return pager;
+					continue;
 				} else if(arrearagePercentageType == 7 && (arrearagePercentage <= 0.3 || arrearagePercentage > 1)){
-					return pager;
-				} else if(arrearagePercentageType == 0 && arrearagePercentage != 0){
-					return pager;
+					continue;
+				}else if(arrearagePercentageType == 0 && arrearagePercentage != 0){
+					continue;
 				}
 				
-				deviceArrearagePercentage.setLessee(lesseeName);
+				deviceArrearagePercentage.setLessee(thisLesseeName);
 				deviceArrearagePercentage.setPercentage(arrearagePercentage);
 				deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
 				deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
@@ -850,76 +861,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				deviceArrearagePercentage.setArrearageTimePerDevice((float) arrearageNumber / totalNum);
 				
 				resultList.add(deviceArrearagePercentage);
-			} else {
-				//获取租赁商列表
-				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
-				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
-				List<String> lesseeNameList = queryLesseeName.getResultList();
-				for(int i = 0; i < lesseeNameList.size(); i++){
-					DeviceArrearagePercentage deviceArrearagePercentage = new DeviceArrearagePercentage();
-					
-					//查询该租赁商总欠费次数
-					String thisLesseeName = lesseeNameList.get(i);
-//					StringBuilder deviceArrearageNum = new StringBuilder("select sum(arrearageCount) from device where lesseeName = '" + thisLesseeName + "'");
-//					Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
-//					List<BigDecimal> arrearageNumberList = queryArrearageNum.getResultList();
-//					int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
-
-					//通过日志查询欠费总次数
-					StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
-					Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
-					List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
-					int arrearageNumber = arrearageNumberList.get(0).intValue();
-					
-					
-					//查询总设备数
-					StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "'");
-					Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
-					List<BigInteger> deviceTotalNumList = queryDeviceTotalNum.getResultList();
-					int totalNum = deviceTotalNumList.get(0).intValue();
-					
-					StringBuilder deviceNormalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "' and manageDeviceStatus = 1");
-					Query queryDeviceNormalNum = manager.createNativeQuery(deviceNormalNum.toString());
-					List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
-					int normalDeviceNum = deviceNormalNumList.get(0).intValue();
-					
-					StringBuilder lesseePhone = new StringBuilder("select distinct lesseePhone from device where lesseeName = '" + thisLesseeName + "'");
-					Query queryLesseePhone = manager.createNativeQuery(lesseePhone.toString());
-					List<String> deviceLesseePhoneList = queryLesseePhone.getResultList();
-					String lesseePhoneNumber = deviceLesseePhoneList.get(0);
-					
-					float arrearagePercentage = (float) arrearageNumber / (month * totalNum);
-		
-					if(arrearagePercentageType == 1 && (arrearagePercentage <= 0 || arrearagePercentage > 0.05)){
-						continue;
-					} else if(arrearagePercentageType == 2 && (arrearagePercentage <= 0.05 || arrearagePercentage > 0.1)){
-						continue;
-					} else if(arrearagePercentageType == 3 && (arrearagePercentage <= 0.1 || arrearagePercentage > 0.15)){
-						continue;
-					} else if(arrearagePercentageType == 4 && (arrearagePercentage <= 0.15 || arrearagePercentage > 0.2)){
-						continue;
-					} else if(arrearagePercentageType == 5 && (arrearagePercentage <= 0.2 || arrearagePercentage > 0.25)){
-						continue;
-					} else if(arrearagePercentageType == 6 && (arrearagePercentage <= 0.25 || arrearagePercentage > 0.3)){
-						continue;
-					} else if(arrearagePercentageType == 7 && (arrearagePercentage <= 0.3 || arrearagePercentage > 1)){
-						continue;
-					}else if(arrearagePercentageType == 0 && arrearagePercentage != 0){
-						continue;
-					}
-					
-					deviceArrearagePercentage.setLessee(thisLesseeName);
-					deviceArrearagePercentage.setPercentage(arrearagePercentage);
-					deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
-					deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
-					deviceArrearagePercentage.setLesseePhone(lesseePhoneNumber);
-					deviceArrearagePercentage.setTotalDeviceNum(totalNum);
-					deviceArrearagePercentage.setArrearageTimePerDevice((float) arrearageNumber / totalNum);
-					
-					resultList.add(deviceArrearagePercentage);
-				}
-				
 			}
+			
 			pager.setTotalCount(resultList.size());
 			pager.setItems(resultList);
 			return pager;
