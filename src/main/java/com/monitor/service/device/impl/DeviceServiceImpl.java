@@ -154,8 +154,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				countSql.append("  and device.provice like:provice ");
 			}
 			if (!StringUtils.isEmpty(deviceName)) {
-				builder.append("  and device.deviceName =:deviceName ");
-				countSql.append("  and device.deviceName =:deviceName ");
+				builder.append("  and device.deviceName like:deviceName ");
+				countSql.append("  and device.deviceName like:deviceName ");
 			}
 			if (!StringUtils.isEmpty(lesseeName)) {
 				builder.append("  and device.lesseeName like:lesseeName ");
@@ -187,8 +187,8 @@ public class DeviceServiceImpl implements IDeviceService {
 			Query queryComErr = manager.createNativeQuery(select_comErrSql.toString());
 			Query queryComCor = manager.createNativeQuery(select_comCorSql.toString());
 			if (!StringUtils.isEmpty(deviceName)) {
-				query.setParameter("deviceName", deviceName);
-				queryList.setParameter("deviceName", deviceName);
+				query.setParameter("deviceName", '%' + deviceName + '%');
+				queryList.setParameter("deviceName", '%' + deviceName + '%');
 			}
 			if (!StringUtils.isEmpty(provice)) {
 				query.setParameter("provice", '%' + provice + '%');

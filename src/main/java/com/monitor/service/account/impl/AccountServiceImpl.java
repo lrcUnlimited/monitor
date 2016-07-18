@@ -113,12 +113,12 @@ public class AccountServiceImpl implements IAccountService {
 				}
 
 				if (!StringUtils.isEmpty(userName)) {
-					builder.append("  and account.userName =:userName ");
-					countSql.append("  and account.userName =:userName ");
+					builder.append("  and account.userName like:userName ");
+					countSql.append("  and account.userName like:userName ");
 				}
 				if(!StringUtils.isEmpty(userPhone)){
-					builder.append("  and account.userPhone=:userPhone ");
-					countSql.append("  and account.userPhone =:userPhone ");
+					builder.append("  and account.userPhone like:userPhone ");
+					countSql.append("  and account.userPhone like:userPhone ");
 				}
 				if(startTime!=0){
 					builder.append("  and account.registerDate>=:startDate ");
@@ -140,12 +140,12 @@ public class AccountServiceImpl implements IAccountService {
 					queryList.setParameter("id", accountId);
 				}
 				if (!StringUtils.isEmpty(userName)) {
-					query.setParameter("userName", userName);
-					queryList.setParameter("userName", userName);
+					query.setParameter("userName", '%' + userName + '%');
+					queryList.setParameter("userName", '%' + userName + '%');
 				}
 				if(!StringUtils.isEmpty(userPhone)){
-					query.setParameter("userPhone", userPhone);
-					queryList.setParameter("userPhone", userPhone);
+					query.setParameter("userPhone", '%' + userPhone + '%');
+					queryList.setParameter("userPhone", '%' + userPhone + '%');
 				}
 				if(startTime!=0){
 					Date startDate=new Date(startTime);
