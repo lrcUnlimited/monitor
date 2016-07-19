@@ -94,7 +94,7 @@ public class WebSocketHandler {
 		commandRecord.setContent("数据传输测试");
 		commandRecord.setLesseeName("test");
 		commandRecord.setAddValidNote(msg);
-		commandRecordRepository.saveAndFlush(commandRecord); 
+		commandRecordRepository.saveAndFlush(commandRecord);
 		
 //		Message reciveMessage = JSON.parseObject(msg, Message.class);// 接收消息
 //		SendMessage sendMessage = new SendMessage();// 发送消息

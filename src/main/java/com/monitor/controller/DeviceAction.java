@@ -345,10 +345,14 @@ public class DeviceAction {
 			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
 			@RequestParam(value = "arrearagePercentageType", defaultValue = "-1") int arrearagePercentageType,
 			@RequestParam(value = "month", defaultValue = "1") int month,
+			@RequestParam(value = "startYear", defaultValue = "2016") int startYear,
+			@RequestParam(value = "startMonth", defaultValue = "7") int startMonth,
+			@RequestParam(value = "endYear", defaultValue = "1") int endYear,
+			@RequestParam(value = "endMonth", defaultValue = "1") int endMonth,
 			HttpServletResponse response) throws CodeException{
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType, month);
+		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType, month, startYear, startMonth, endYear, endMonth);
 	}
 }

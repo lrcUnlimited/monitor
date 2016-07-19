@@ -109,8 +109,8 @@ public class CommandServiceImpl implements CommandService {
 		Pager pager = new Pager();
 		int thisPage = (pageNo - 1) * pageSize;
 		
-		//where addValidNote = '数据传输测试' 
-		StringBuilder commandRecordSql = new StringBuilder("select * from commandrecord limit " + thisPage + "," + pageSize);
+		// 
+		StringBuilder commandRecordSql = new StringBuilder("select * from commandrecord where addValidNote = '数据传输测试' limit " + thisPage + "," + pageSize);
 		Query queryCommandRecordSql = manager.createNativeQuery(commandRecordSql.toString(), CommandRecord.class);
 		resultList = queryCommandRecordSql.getResultList();
 		

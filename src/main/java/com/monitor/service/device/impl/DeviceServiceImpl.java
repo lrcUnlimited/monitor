@@ -774,9 +774,13 @@ public class DeviceServiceImpl implements IDeviceService {
 
 	@Override
 	public Pager queryLesseeDeviceInformationPager(Integer pageNo,
-			Integer pageSize, Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month)
+			Integer pageSize, Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month
+			, Integer startYear, Integer startMonth, Integer endYear, Integer endMonth)
 			throws CodeException {
 		try {
+			String startTime = startYear + "-" + startMonth + "-01";
+			String endTime = endYear + "-" + endMonth + "-31";			
+			
 			//计算总欠费次数
 			StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
 			Query qTotal = manager.createNativeQuery(deviceArrearageTotalStatistic.toString());
@@ -810,7 +814,8 @@ public class DeviceServiceImpl implements IDeviceService {
 //				int arrearageNumber = ((BigDecimal) arrearageNumberList.get(0)).intValue();
 
 				//通过日志查询欠费总次数
-				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime >= DATE_SUB(NOW(),INTERVAL " + month + " MONTH)");
+				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime > '" + startTime + "' and recordTime < '" + endTime + "'");
+//				System.out.println("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime > " + startTime + " and recordTime < " + endTime);
 				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
 				List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
 				int arrearageNumber = arrearageNumberList.get(0).intValue();
