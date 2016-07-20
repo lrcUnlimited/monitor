@@ -40,6 +40,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@Query("select account from Account account where account.userName=?1")
 	public Account queryAccountbyuserName(String userName);
 
+	
 	/**
 	 * 更新用户信息
 	 * 

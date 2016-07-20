@@ -86,140 +86,148 @@ public class WebSocketHandler {
 	@OnMessage
 	public void onMessage(String msg) throws IOException, InterruptedException,
 			CodeException, ParseException {
-		System.out.println(msg);
+//		System.out.println(msg);
+//		
+//		CommandRecord commandRecord = new CommandRecord();
+//		commandRecord.setDeviceId(deviceId);
+//		commandRecord.setDeviceCloseType(3);
+//		commandRecord.setContent("数据传输测试");
+//		commandRecord.setLesseeName("test");
+//		commandRecord.setAddValidNote(msg);
+//		commandRecordRepository.saveAndFlush(commandRecord);
 		
-		CommandRecord commandRecord = new CommandRecord();
-		commandRecord.setDeviceId(deviceId);
-		commandRecord.setDeviceCloseType(3);
-		commandRecord.setContent("数据传输测试");
-		commandRecord.setLesseeName("test");
-		commandRecord.setAddValidNote(msg);
-		commandRecordRepository.saveAndFlush(commandRecord);
+		Message reciveMessage = JSON.parseObject(msg, Message.class);// 接收消息
+		SendMessage sendMessage = new SendMessage();// 发送消息
+		Date nowDate = new Date();// 当前日期
+		int nowType = 0;// 设备当前的管理状态
+
+		CommandRecord c = new CommandRecord();
+		c.setDeviceId(deviceId);
+		c.setDeviceCloseType(3);
+		c.setContent("数据传输测试");
+		c.setLesseeName("test");
+		c.setAddValidNote(msg);
+		commandRecordRepository.saveAndFlush(c);
 		
-//		Message reciveMessage = JSON.parseObject(msg, Message.class);// 接收消息
-//		SendMessage sendMessage = new SendMessage();// 发送消息
-//		Date nowDate = new Date();// 当前日期
-//		int nowType = 0;// 设备当前的管理状态
-//
-//		// 检查设备的状态
-//		Device device = deviceRepository.findOne(deviceId);
-//		// 设备状态已经为off，直接关机
-//		sendMessage.setKeyCreateDate("");
-//		sendMessage.setRandomNum("");
-//		if (device.getManageDeviceStatus() == 0) {
-//			sendMessage.setType(0);
-//			nowType = 0;
-//		} else {
-//			if (nowDate.after(device.getValidTime())) {
-//				// 设备已经过期,更新数据库中的设备管理状态为off
-//				deviceRepository.updateManageDeviceStatus(0, deviceId);
-//				deviceRepository.updateArrearageCount(deviceId);
-//				//欠费关闭的设备被记录在日志表
-//				CommandRecord commandRecord = new CommandRecord();
-//				commandRecord.setDeviceId(deviceId);
-//				commandRecord.setDeviceCloseType(1);
-//				commandRecord.setContent("设备欠费被关闭");
-//				commandRecord.setLesseeName(device.getLesseeName());
-//				commandRecordRepository.saveAndFlush(commandRecord);
-//				sendMessage.setType(0);// 发送关机指令
-//				nowType = 0;
-//			} else {
-//				if (!SessionKeyUtil.isValidSessionKey(dateFormat,
-//						reciveMessage.getKeyCreateDate(),
-//						reciveMessage.getRandomNum(), device.getSessionKey())) {
-//					// 如果sessionKey不合法,重新生成
-//					SessionKey newSessionKey = SessionKeyUtil
-//							.generateSessionKey();
-//					// 数据库中更新sessionkey
-//					deviceRepository.updateDeviceSessionKey(
-//							JSON.toJSONString(newSessionKey), deviceId);
-//					// 设置发送消息的sessionKey
-//					sendMessage.setKeyCreateDate(dateFormat
-//							.format(newSessionKey.getCreateDate()));
-//					sendMessage.setRandomNum(newSessionKey.getRandomNum());
-//				} else {
-//					sendMessage.setKeyCreateDate("");
-//					sendMessage.setRandomNum("");
-//				}
-//				sendMessage.setType(1);// 设置状态为允许开机
-//				nowType = 1;
-//				sendMessage.setUpdateCRTStatus(device.getUpdateCRT());
-//			}
-//		}
-//		if (reciveMessage.getType() != nowType) {
-//			deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备运行状态
-//		}
-//
-//		// if (sendMessage.getUpdateCRTStatus() == 1) {
-//		// sendMessage.setClientCRT(readFile("D://user1.crt"));
-//		// sendMessage.setClientKey(readFile("D://user1.key"));
-//		// deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
-//		// }
-//
-//		// 需要更新证书,则发送文件
-//		if (sendMessage.getUpdateCRTStatus() == 1) {
-//			// 创建新的证书文件
-//			// 生成设备证书文件
-//			ProcessBuilder pb = new ProcessBuilder(crtPath
-//					+ "new_client_cert.sh", deviceId + "");
-//			Process p = pb.start();
-//			try {
-//				p.waitFor();// 同步执行
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//			sendMessage.setClientCRT(readFile(crtPath + "user/certificates/"
-//					+ deviceId + ".crt"));// 读取证书文件
-//			sendMessage.setClientKey(readFile(crtPath + "user/keys/" + deviceId
-//					+ ".key"));// 读取私钥文件
-//			deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
-//		}
-//
-//		sendMessage(JSON.toJSONString(sendMessage));// 发送消息
-//		// 将原始坐标转换为为百度坐标
-//		JSONObject jsonObject = HttpRequestUtil.sendGet(
-//				reciveMessage.getLongitude(), reciveMessage.getLatitude());
-//		if(jsonObject==null){
-//			return;
-//		}
-//		// 获取坐标所在省市信息
-//		JSONObject addressInfo = HttpRequestUtil.sendGet(
-//				jsonObject.getDouble("y"), jsonObject.getDouble("x"));
-//
-//		// 处理gps信息
-//		DeviceRecord latestRecord = new DeviceRecord();
-//		latestRecord.setDeviceId(deviceId);
-//		latestRecord.setLongitude(jsonObject.getDouble("x"));
-//		latestRecord.setLatitude(jsonObject.getDouble("y"));
-//		latestRecord.setRealTime(new Date());
-//		latestRecord.setStatus(reciveMessage.getType());// 设置当前设备的状态
-//		if (addressInfo != null) {
-//			latestRecord.setProvince(addressInfo.getString("province"));
-//			latestRecord.setCity(addressInfo.getString("city"));
-//			latestRecord.setDistrict(addressInfo.getString("district"));
-//			deviceRepository.updateDeviceProvice(addressInfo.getString("province"), deviceId);
-//			deviceRepository.updateDeviceCity(addressInfo.getString("city"), deviceId);
-//			deviceRepository.updateDeviceDistrict(addressInfo.getString("district"), deviceId);
-//		}
-//
-//		DeviceRecord deviceRecord = deviceRecordService
-//				.queryNewlyLocation(deviceId);
-//
-//		if (deviceRecord == null) { // 设置为危险信息
-//			latestRecord.setLocationStatus(1);// 设置为危险信息
-//		} else {
-//			// 判断两个点之间的距离
-//			int distance = distFrom(deviceRecord.getLatitude(),
-//					deviceRecord.getLongitude(), latestRecord.getLatitude(),
-//					latestRecord.getLongitude());
-//			System.out.println(distance);
-//			if (distance >= 500) {
-//				latestRecord.setLocationStatus(1);// 设置为危险信息
-//			} else {
-//				latestRecord.setLocationStatus(0);// 正常信息
-//			}
-//		}
-//		deviceRecordRepository.saveAndFlush(latestRecord);// 保存gps信息
+		// 检查设备的状态
+		Device device = deviceRepository.findOne(deviceId);
+		// 设备状态已经为off，直接关机
+		sendMessage.setKeyCreateDate("");
+		sendMessage.setRandomNum("");
+		if (device.getManageDeviceStatus() == 0) {
+			sendMessage.setType(0);
+			nowType = 0;
+		} else {
+			if (nowDate.after(device.getValidTime())) {
+				// 设备已经过期,更新数据库中的设备管理状态为off
+				deviceRepository.updateManageDeviceStatus(0, deviceId);
+				deviceRepository.updateArrearageCount(deviceId);
+				//欠费关闭的设备被记录在日志表
+				CommandRecord commandRecord = new CommandRecord();
+				commandRecord.setDeviceId(deviceId);
+				commandRecord.setDeviceCloseType(1);
+				commandRecord.setContent("设备欠费被关闭");
+				commandRecord.setLesseeName(device.getLesseeName());
+				commandRecordRepository.saveAndFlush(commandRecord);
+				sendMessage.setType(0);// 发送关机指令
+				nowType = 0;
+			} else {
+				if (!SessionKeyUtil.isValidSessionKey(dateFormat,
+						reciveMessage.getKeyCreateDate(),
+						reciveMessage.getRandomNum(), device.getSessionKey())) {
+					// 如果sessionKey不合法,重新生成
+					SessionKey newSessionKey = SessionKeyUtil
+							.generateSessionKey();
+					// 数据库中更新sessionkey
+					deviceRepository.updateDeviceSessionKey(
+							JSON.toJSONString(newSessionKey), deviceId);
+					// 设置发送消息的sessionKey
+					sendMessage.setKeyCreateDate(dateFormat
+							.format(newSessionKey.getCreateDate()));
+					sendMessage.setRandomNum(newSessionKey.getRandomNum());
+				} else {
+					sendMessage.setKeyCreateDate("");
+					sendMessage.setRandomNum("");
+				}
+				sendMessage.setType(1);// 设置状态为允许开机
+				nowType = 1;
+				sendMessage.setUpdateCRTStatus(device.getUpdateCRT());
+			}
+		}
+		if (reciveMessage.getType() != nowType) {
+			deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备运行状态
+		}
+
+		// if (sendMessage.getUpdateCRTStatus() == 1) {
+		// sendMessage.setClientCRT(readFile("D://user1.crt"));
+		// sendMessage.setClientKey(readFile("D://user1.key"));
+		// deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
+		// }
+
+		// 需要更新证书,则发送文件
+		if (sendMessage.getUpdateCRTStatus() == 1) {
+			// 创建新的证书文件
+			// 生成设备证书文件
+			ProcessBuilder pb = new ProcessBuilder(crtPath
+					+ "new_client_cert.sh", deviceId + "");
+			Process p = pb.start();
+			try {
+				p.waitFor();// 同步执行
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			sendMessage.setClientCRT(readFile(crtPath + "user/certificates/"
+					+ deviceId + ".crt"));// 读取证书文件
+			sendMessage.setClientKey(readFile(crtPath + "user/keys/" + deviceId
+					+ ".key"));// 读取私钥文件
+			deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
+		}
+
+		sendMessage(JSON.toJSONString(sendMessage));// 发送消息
+		// 将原始坐标转换为为百度坐标
+		JSONObject jsonObject = HttpRequestUtil.sendGet(
+				reciveMessage.getLongitude(), reciveMessage.getLatitude());
+		if(jsonObject==null){
+			return;
+		}
+		// 获取坐标所在省市信息
+		JSONObject addressInfo = HttpRequestUtil.sendGet(
+				jsonObject.getDouble("y"), jsonObject.getDouble("x"));
+
+		// 处理gps信息
+		DeviceRecord latestRecord = new DeviceRecord();
+		latestRecord.setDeviceId(deviceId);
+		latestRecord.setLongitude(jsonObject.getDouble("x"));
+		latestRecord.setLatitude(jsonObject.getDouble("y"));
+		latestRecord.setRealTime(new Date());
+		latestRecord.setStatus(reciveMessage.getType());// 设置当前设备的状态
+		if (addressInfo != null) {
+			latestRecord.setProvince(addressInfo.getString("province"));
+			latestRecord.setCity(addressInfo.getString("city"));
+			latestRecord.setDistrict(addressInfo.getString("district"));
+			deviceRepository.updateDeviceProvice(addressInfo.getString("province"), deviceId);
+			deviceRepository.updateDeviceCity(addressInfo.getString("city"), deviceId);
+			deviceRepository.updateDeviceDistrict(addressInfo.getString("district"), deviceId);
+		}
+
+		DeviceRecord deviceRecord = deviceRecordService
+				.queryNewlyLocation(deviceId);
+
+		if (deviceRecord == null) { // 设置为危险信息
+			latestRecord.setLocationStatus(1);// 设置为危险信息
+		} else {
+			// 判断两个点之间的距离
+			int distance = distFrom(deviceRecord.getLatitude(),
+					deviceRecord.getLongitude(), latestRecord.getLatitude(),
+					latestRecord.getLongitude());
+			System.out.println(distance);
+			if (distance >= 500) {
+				latestRecord.setLocationStatus(1);// 设置为危险信息
+			} else {
+				latestRecord.setLocationStatus(0);// 正常信息
+			}
+		}
+		deviceRecordRepository.saveAndFlush(latestRecord);// 保存gps信息
 
 	}
 
