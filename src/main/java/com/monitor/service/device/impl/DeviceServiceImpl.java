@@ -106,7 +106,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setType(2);
 			commandRecord.setRecordTime(new Date());
-			commandRecord.setContent("新增设备：" + "("+device.getDeviceName()+")");
+			commandRecord.setContent("新增设备" + "("+device.getDeviceName()+")");
 			comRecordRepository.save(commandRecord);
 		} catch (CodeException e) {
 			throw e;
@@ -267,7 +267,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setType(3);
 			commandRecord.setRecordTime(new Date());
-			commandRecord.setContent("更新设备: " + "("+device.getDeviceName() +")"+ " 证书");
+			commandRecord.setContent("更新设备" + "("+device.getDeviceName() +")"+ " 证书");
 			comRecordRepository.save(commandRecord);
 		} catch (CodeException e) {
 			throw e;
@@ -301,7 +301,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				commandRecord.setRecordTime(new Date());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				StringBuffer buffer = new StringBuffer();
-				buffer.append("设备:(").append(device.getDeviceName()).append(")有效期")
+				buffer.append("设备(").append(device.getDeviceName()).append(")有效期")
 						.append(sdf.format(device.getValidTime()))
 						.append("修改为").append(sdf.format(validDate));
 				commandRecord.setContent(buffer.toString());
@@ -346,7 +346,7 @@ public class DeviceServiceImpl implements IDeviceService {
 					deviceRepository.updateManageDeviceStatus(status, deviceId);
 					// 保存到设备记录中
 					StringBuffer buffer = new StringBuffer();
-					buffer.append(manageType).append("设备:(").append(device.getDeviceName()).append(")");
+					buffer.append(manageType).append("设备(").append(device.getDeviceName()).append(")");
 					commandRecord.setContent(buffer.toString());
 				} else {
 					// 对设备新的有效期进行检查
@@ -359,7 +359,7 @@ public class DeviceServiceImpl implements IDeviceService {
 							validTime, deviceId);
 					// 保存到设备记录
 					StringBuffer buffer = new StringBuffer();
-					buffer.append("设备:(").append(device.getDeviceName()).append(")有效期")
+					buffer.append("设备(").append(device.getDeviceName()).append(")有效期")
 							.append(sdf.format(device.getValidTime()))
 							.append("修改为").append(sdf.format(validTime));
 					commandRecord.setContent(buffer.toString());
@@ -547,7 +547,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setType(2);
 			commandRecord.setRecordTime(new Date());
-			commandRecord.setContent("关闭设备：" + "("+device.getDeviceName()+")");
+			commandRecord.setContent("关闭设备" + "("+device.getDeviceName()+")");
 			comRecordRepository.save(commandRecord);
 			
 		} catch (CodeException e) {

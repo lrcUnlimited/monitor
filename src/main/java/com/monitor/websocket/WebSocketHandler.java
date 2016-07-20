@@ -29,7 +29,9 @@ import com.monitor.model.CommandRecord;
 import com.monitor.model.Device;
 import com.monitor.model.DeviceRecord;
 import com.monitor.model.Message;
+import com.monitor.model.MessageV2;
 import com.monitor.model.SendMessage;
+import com.monitor.model.SendMessageV2;
 import com.monitor.model.SessionKey;
 import com.monitor.service.devicerecord.IDeviceRecordService;
 import com.monitor.util.HttpRequestUtil;
@@ -86,7 +88,7 @@ public class WebSocketHandler {
 	@OnMessage
 	public void onMessage(String msg) throws IOException, InterruptedException,
 			CodeException, ParseException {
-//		System.out.println(msg);
+		System.out.println(msg);
 //		
 //		CommandRecord commandRecord = new CommandRecord();
 //		commandRecord.setDeviceId(deviceId);
@@ -96,8 +98,11 @@ public class WebSocketHandler {
 //		commandRecord.setAddValidNote(msg);
 //		commandRecordRepository.saveAndFlush(commandRecord);
 		
-		Message reciveMessage = JSON.parseObject(msg, Message.class);// 接收消息
-		SendMessage sendMessage = new SendMessage();// 发送消息
+		MessageV2 reciveMessage = JSON.parseObject(msg, MessageV2.class);// 接收消息
+		SendMessageV2 sendMessage = new SendMessageV2();// 发送消息
+		//TODO 暂时不适用dwtype 先设置默认值
+		sendMessage.setDwtype(0);
+		
 		Date nowDate = new Date();// 当前日期
 		int nowType = 0;// 设备当前的管理状态
 
@@ -112,10 +117,11 @@ public class WebSocketHandler {
 		// 检查设备的状态
 		Device device = deviceRepository.findOne(deviceId);
 		// 设备状态已经为off，直接关机
-		sendMessage.setKeyCreateDate("");
-		sendMessage.setRandomNum("");
+//		sendMessage.setKeyCreateDate("");
+//		sendMessage.setRandomNum("");
 		if (device.getManageDeviceStatus() == 0) {
-			sendMessage.setType(0);
+//			sendMessage.setType(0);
+			sendMessage.setTurnOnOff(0);
 			nowType = 0;
 		} else {
 			if (nowDate.after(device.getValidTime())) {
@@ -126,32 +132,35 @@ public class WebSocketHandler {
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setDeviceId(deviceId);
 				commandRecord.setDeviceCloseType(1);
-				commandRecord.setContent("设备欠费被关闭");
+				commandRecord.setContent("设备(" + deviceRepository.findOne(deviceId).getDeviceName() + ")欠费被关闭");
 				commandRecord.setLesseeName(device.getLesseeName());
 				commandRecordRepository.saveAndFlush(commandRecord);
-				sendMessage.setType(0);// 发送关机指令
+//				sendMessage.setType(0);// 发送关机指令
+				sendMessage.setTurnOnOff(0);
 				nowType = 0;
 			} else {
-				if (!SessionKeyUtil.isValidSessionKey(dateFormat,
-						reciveMessage.getKeyCreateDate(),
-						reciveMessage.getRandomNum(), device.getSessionKey())) {
-					// 如果sessionKey不合法,重新生成
-					SessionKey newSessionKey = SessionKeyUtil
-							.generateSessionKey();
-					// 数据库中更新sessionkey
-					deviceRepository.updateDeviceSessionKey(
-							JSON.toJSONString(newSessionKey), deviceId);
-					// 设置发送消息的sessionKey
-					sendMessage.setKeyCreateDate(dateFormat
-							.format(newSessionKey.getCreateDate()));
-					sendMessage.setRandomNum(newSessionKey.getRandomNum());
-				} else {
-					sendMessage.setKeyCreateDate("");
-					sendMessage.setRandomNum("");
-				}
-				sendMessage.setType(1);// 设置状态为允许开机
+//				if (!SessionKeyUtil.isValidSessionKey(dateFormat,
+//						reciveMessage.getKeyCreateDate(),
+//						reciveMessage.getRandomNum(), device.getSessionKey())) {
+//					// 如果sessionKey不合法,重新生成
+//					SessionKey newSessionKey = SessionKeyUtil
+//							.generateSessionKey();
+//					// 数据库中更新sessionkey
+//					deviceRepository.updateDeviceSessionKey(
+//							JSON.toJSONString(newSessionKey), deviceId);
+//					// 设置发送消息的sessionKey
+//					sendMessage.setKeyCreateDate(dateFormat
+//							.format(newSessionKey.getCreateDate()));
+//					sendMessage.setRandomNum(newSessionKey.getRandomNum());
+//				} else {
+//					sendMessage.setKeyCreateDate("");
+//					sendMessage.setRandomNum("");
+//				}
+//				sendMessage.setType(1);// 设置状态为允许开机
+				sendMessage.setTurnOnOff(1);
 				nowType = 1;
-				sendMessage.setUpdateCRTStatus(device.getUpdateCRT());
+//				sendMessage.setUpdateCRTStatus(device.getUpdateCRT());
+				sendMessage.setUpdateSystem(device.getUpdateCRT());
 			}
 		}
 		if (reciveMessage.getType() != nowType) {
@@ -165,7 +174,8 @@ public class WebSocketHandler {
 		// }
 
 		// 需要更新证书,则发送文件
-		if (sendMessage.getUpdateCRTStatus() == 1) {
+//		if (sendMessage.getUpdateCRTStatus() == 1) {
+		if (sendMessage.getUpdateSystem() == 1) {
 			// 创建新的证书文件
 			// 生成设备证书文件
 			ProcessBuilder pb = new ProcessBuilder(crtPath
@@ -176,10 +186,10 @@ public class WebSocketHandler {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			sendMessage.setClientCRT(readFile(crtPath + "user/certificates/"
-					+ deviceId + ".crt"));// 读取证书文件
-			sendMessage.setClientKey(readFile(crtPath + "user/keys/" + deviceId
-					+ ".key"));// 读取私钥文件
+//			sendMessage.setClientCRT(readFile(crtPath + "user/certificates/"
+//					+ deviceId + ".crt"));// 读取证书文件
+//			sendMessage.setClientKey(readFile(crtPath + "user/keys/" + deviceId
+//					+ ".key"));// 读取私钥文件
 			deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
 		}
 

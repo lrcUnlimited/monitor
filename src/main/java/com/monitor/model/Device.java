@@ -30,6 +30,8 @@ public class Device {
 	private String city;//设备所在城市
 	private String district;//设备所在区域
 	
+	private String MachineID;
+	
 	public String getProvice() {
 		return provice;
 	}
@@ -156,6 +158,14 @@ public class Device {
 
 	public void setUpdateCRT(int updateCRT) {
 		this.updateCRT = updateCRT;
+	}
+
+	public String getMachineID() {
+		return MachineID;
+	}
+
+	public void setMachineID(String machineID) {
+		MachineID = machineID;
 	}
 
 }

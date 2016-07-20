@@ -47,7 +47,7 @@ public class AccountServiceImpl implements IAccountService {
 				commandRecord.setAccountId(account.getId());
 				commandRecord.setRecordTime(new Date());
 				StringBuffer content = new StringBuffer();
-				content.append("用户:").append(userName).append("登录系统");
+				content.append("用户(").append(userName).append(")登录系统");
 				commandRecord.setContent(content.toString());
 				commandRecord.setType(0);
 				commandRecordRepository.save(commandRecord);
@@ -81,7 +81,7 @@ public class AccountServiceImpl implements IAccountService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setType(0);
-			commandRecord.setContent("注册新用户: " + "("+account.getUserName()+")");
+			commandRecord.setContent("注册新用户" + "("+account.getUserName()+")");
 			commandRecordRepository.save(commandRecord);
 			return true;
 		} catch (CodeException e) {
@@ -206,7 +206,7 @@ public class AccountServiceImpl implements IAccountService {
 				commandRecord.setAccountId(accountId);
 				commandRecord.setRecordTime(new Date());
 				commandRecord.setType(0);
-				commandRecord.setContent("修改用户: " +"("+ account.getUserName()+")"
+				commandRecord.setContent("修改用户" +"("+ account.getUserName()+")"
 						+ "个人信息");
 				commandRecordRepository.save(commandRecord);
 			}
@@ -256,7 +256,7 @@ public class AccountServiceImpl implements IAccountService {
 			commandRecord.setAccountId(operateAccountId);
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setType(0);
-			commandRecord.setContent("删除用户:"+"(" + delAccount.getUserName()+")"
+			commandRecord.setContent("删除用户"+"(" + delAccount.getUserName()+")"
 					+ "个人信息");
 			commandRecordRepository.save(commandRecord);
 			//删除设备
@@ -290,7 +290,7 @@ public class AccountServiceImpl implements IAccountService {
 				commandRecord.setAccountName(account.getUserName());
 				commandRecord.setRecordTime(new Date());
 				commandRecord.setType(0);
-				commandRecord.setContent("修改用户:"+"(" + account.getUserName()+")"
+				commandRecord.setContent("修改用户"+"(" + account.getUserName()+")"
 						+ "个人信息");
 				commandRecordRepository.save(commandRecord);
 			}
@@ -315,7 +315,7 @@ public class AccountServiceImpl implements IAccountService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setRecordTime(new Date());
 			commandRecord.setType(0);
-			commandRecord.setContent("用户: " + account.getUserName() + "退出系统");
+			commandRecord.setContent("用户(" + account.getUserName() + ")退出系统");
 			commandRecordRepository.save(commandRecord);
 
 		} catch (CodeException e) {
