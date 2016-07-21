@@ -29,6 +29,9 @@ public class Device {
 	private String provice;//设备所在省份
 	private String city;//设备所在城市
 	private String district;//设备所在区域
+	private String registerProvince;//设备注册省份
+	private String registerCity;//设备注册城市
+	private String registerDistrict;//设备注册区域
 	
 	private String MachineID;
 	
@@ -166,6 +169,30 @@ public class Device {
 
 	public void setMachineID(String machineID) {
 		MachineID = machineID;
+	}
+
+	public String getRegisterProvince() {
+		return registerProvince;
+	}
+
+	public void setRegisterProvince(String registerProvince) {
+		this.registerProvince = registerProvince;
+	}
+
+	public String getRegisterDistrict() {
+		return registerDistrict;
+	}
+
+	public void setRegisterDistrict(String registerDistrict) {
+		this.registerDistrict = registerDistrict;
+	}
+
+	public String getRegisterCity() {
+		return registerCity;
+	}
+
+	public void setRegisterCity(String registerCity) {
+		this.registerCity = registerCity;
 	}
 
 }

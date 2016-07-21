@@ -5,7 +5,8 @@ public class SendMessageV2 {
 	private int TurnOnOff;// 0:关机 ，1：开机
 	private String MachineID;
 	private int UpdateSystem; //0：不更新受控设备程序 1:更新受控设备程序
-	
+	private String updateFile;
+
 	public int getDwtype() {
 		return dwtype;
 	}
@@ -29,5 +30,11 @@ public class SendMessageV2 {
 	}
 	public void setUpdateSystem(int updateSystem) {
 		UpdateSystem = updateSystem;
+	}
+	public String getUpdateFile() {
+		return updateFile;
+	}
+	public void setUpdateFile(String updateFile) {
+		this.updateFile = updateFile;
 	}
 }
