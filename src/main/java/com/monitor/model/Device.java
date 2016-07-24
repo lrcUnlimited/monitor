@@ -1,12 +1,7 @@
 package com.monitor.model;
 
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "device")
@@ -33,7 +28,7 @@ public class Device {
 	private String registerCity;//设备注册城市
 	private String registerDistrict;//设备注册区域
 	
-	private String MachineID;
+	private String machineId;
 	
 	public String getProvice() {
 		return provice;
@@ -163,12 +158,12 @@ public class Device {
 		this.updateCRT = updateCRT;
 	}
 
-	public String getMachineID() {
-		return MachineID;
+	public String getMachineId() {
+		return machineId;
 	}
 
-	public void setMachineID(String machineID) {
-		MachineID = machineID;
+	public void setMachineId(String machineId) {
+		machineId = machineId;
 	}
 
 	public String getRegisterProvince() {

@@ -284,7 +284,7 @@ public class WebSocketHandler {
 	/**
 	 * 打开连接
 	 * 
-	 * @param session
+	 * @param session request session
 	 * @param clientId
 	 */
 	@OnOpen
