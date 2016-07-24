@@ -1,7 +1,5 @@
 package com.monitor.model;
 
-import java.util.Date;
-
 /**
  * socket接受客户端消息类
  * 
@@ -14,7 +12,7 @@ public class MessageV2 {
 	private double longitude;// 经度
 	private double latitude;// 纬度
 	private int dwtype; //暂不适用1:心跳 2:注册
-	private int type;// 发送命令 0-代表关机 1-代表开机
+	private int currentStatus;// 受控端状态 0-代表关机 1-代表开机
 
 	public int getDeviceId() {
 		return deviceId;
@@ -46,10 +44,6 @@ public class MessageV2 {
 	public void setDwtype(int dwtype) {
 		this.dwtype = dwtype;
 	}
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
+	public int getCurrentStatus(){return this.currentStatus; }
+	public void setCurrentStatus(int currentStatus){ this.currentStatus = currentStatus; }
 }

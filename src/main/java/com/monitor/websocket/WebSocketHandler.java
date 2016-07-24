@@ -5,12 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
+import javax.persistence.Query;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -18,6 +21,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -40,7 +47,7 @@ import com.monitor.util.SessionKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.server.endpoint.SpringConfigurator;
 
-@ServerEndpoint(value = "/websocket/{deviceId}", configurator = SpringConfigurator.class)
+@ServerEndpoint(value = "/websocket/{machineId}", configurator = SpringConfigurator.class)
 public class WebSocketHandler {
 	@Autowired
 	DeviceRepository deviceRepository;
@@ -51,6 +58,10 @@ public class WebSocketHandler {
 	@Autowired
 	CommandRecordRepository commandRecordRepository;
 	private static String crtPath = null;
+
+	@PersistenceContext
+	private EntityManager manager;
+
 	// 初始化证书脚本地址
 	static {
 		if (crtPath == null) {
@@ -81,19 +92,23 @@ public class WebSocketHandler {
 			"yyyy-MM-dd HH:mm:ss");
 
 	private int deviceId;
+	private String machineId;
 	private Session sessionDevice;
 
 	public int getDeviceId() {
 		return deviceId;
 	}
 
-	public String getSessionId() {
-		return sessionDevice.getId();
+	public String getMachineId() {
+		return machineId;
 	}
+//	public String getSessionId() {
+//		return sessionDevice.getId();
+//	}
 
 	/**
 	 * 
-	 * @param message
+	 * @param msg
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws CodeException
@@ -129,7 +144,16 @@ public class WebSocketHandler {
 		commandRecordRepository.saveAndFlush(c);
 		
 		// 检查设备的状态
-		Device device = deviceRepository.findOne(deviceId);
+		//Device device = deviceRepository.findOne(deviceId);
+		//Device device = deviceRepository.queryDeviceNameById();
+
+		StringBuilder deviceInfo = new StringBuilder("select * from device where machineId = '" + this.getMachineId() + "'");
+		Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString(), Device.class);
+		List<Device> deviceInfoList = queryDeviceInfo.getResultList();
+		Device device = deviceInfoList.get(0);
+
+		this.deviceId = device.getDeviceId();
+
 		// 设备状态已经为off，直接关机
 //		sendMessage.setKeyCreateDate("");
 //		sendMessage.setRandomNum("");
@@ -146,7 +170,7 @@ public class WebSocketHandler {
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setDeviceId(deviceId);
 				commandRecord.setDeviceCloseType(1);
-				commandRecord.setContent("设备(" + deviceRepository.findOne(deviceId).getDeviceName() + ")欠费被关闭");
+				commandRecord.setContent("设备(" + device.getDeviceName() + ")欠费被关闭");
 				commandRecord.setLesseeName(device.getLesseeName());
 				commandRecordRepository.saveAndFlush(commandRecord);
 //				sendMessage.setType(0);// 发送关机指令
@@ -177,7 +201,7 @@ public class WebSocketHandler {
 				sendMessage.setUpdateSystem(device.getUpdateCRT());
 			}
 		}
-		if (reciveMessage.getType() != nowType) {
+		if (reciveMessage.getCurrentStatus() != nowType) {
 			deviceRepository.updateDeviceStatus(nowType, deviceId);// 更新设备运行状态
 		}
 
@@ -226,7 +250,7 @@ public class WebSocketHandler {
 		latestRecord.setLongitude(jsonObject.getDouble("x"));
 		latestRecord.setLatitude(jsonObject.getDouble("y"));
 		latestRecord.setRealTime(new Date());
-		latestRecord.setStatus(reciveMessage.getType());// 设置当前设备的状态
+		latestRecord.setStatus(reciveMessage.getCurrentStatus());// 设置当前设备的状态
 		if (addressInfo != null) {
 			latestRecord.setProvince(addressInfo.getString("province"));
 			latestRecord.setCity(addressInfo.getString("city"));
@@ -264,8 +288,9 @@ public class WebSocketHandler {
 	 * @param clientId
 	 */
 	@OnOpen
-	public void onOpen(Session session, @PathParam("deviceId") int deviceId) {
-		this.deviceId = deviceId;
+	public void onOpen(Session session, @PathParam("machineId") String machineId) {
+		this.machineId = machineId;
+		//this.deviceId = deviceId;
 		this.sessionDevice = session;
 		System.out.println("Client connented:" + deviceId);
 	}
