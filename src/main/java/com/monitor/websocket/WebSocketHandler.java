@@ -146,7 +146,7 @@ public class WebSocketHandler {
 		// 检查设备的状态
 		//Device device = deviceRepository.findOne(deviceId);
 		//Device device = deviceRepository.queryDeviceNameById();
-
+		System.out.println("select * from device where machineId = '" + this.getMachineId() + "'");
 		StringBuilder deviceInfo = new StringBuilder("select * from device where machineId = '" + this.getMachineId() + "'");
 		Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString(), Device.class);
 		List<Device> deviceInfoList = queryDeviceInfo.getResultList();
@@ -292,7 +292,7 @@ public class WebSocketHandler {
 		this.machineId = machineId;
 		//this.deviceId = deviceId;
 		this.sessionDevice = session;
-		System.out.println("Client connented:" + deviceId);
+		System.out.println("Client connented:" + machineId);
 	}
 
 	/**
