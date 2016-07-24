@@ -74,18 +74,18 @@ public class WebSocketHandler {
 		}
 	}
 	
-	private static String downloadPath = null;
-	// 初始化证书脚本地址
-	static {
-		if (downloadPath == null) {
-			ResourceBundle bundle = ResourceBundle.getBundle("crtpath");
-			if (bundle == null) {
-				throw new IllegalArgumentException(
-						"[crtpath.properties] is not found!");
-			}
-			downloadPath = bundle.getString("download.path");
-		}
-	}
+//	private static String downloadPath = null;
+//	// 初始化证书脚本地址
+//	static {
+//		if (downloadPath == null) {
+//			ResourceBundle bundle = ResourceBundle.getBundle("crtpath");
+//			if (bundle == null) {
+//				throw new IllegalArgumentException(
+//						"[crtpath.properties] is not found!");
+//			}
+//			downloadPath = bundle.getString("download.path");
+//		}
+//	}
 
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -229,7 +229,7 @@ public class WebSocketHandler {
 //			sendMessage.setClientKey(readFile(crtPath + "user/keys/" + deviceId
 //					+ ".key"));// 读取私钥文件
 			//读取更新文件
-			sendMessage.setUpdateFile(readFile(downloadPath));
+			//sendMessage.setUpdateFile(readFile(downloadPath));
 			deviceRepository.updateDeviceCRTStatus(0, deviceId);// 更新标志位
 		}
 
