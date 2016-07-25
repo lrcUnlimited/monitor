@@ -159,6 +159,7 @@ public class WebSocketHandler {
 		// 设备状态已经为off，直接关机
 //		sendMessage.setKeyCreateDate("");
 //		sendMessage.setRandomNum("");
+        sendMessage.setRecordTime(device.getCloseTime());
 		if (device.getManageDeviceStatus() == 0) {
 //			sendMessage.setType(0);
 			//"2016-07-25 13:00:00"

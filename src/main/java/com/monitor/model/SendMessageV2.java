@@ -7,6 +7,7 @@ public class SendMessageV2 {
 	private int UpdateSystem; //0：不更新受控设备程序 1:更新受控设备程序
 	private String updateFile;
 	private String setOnOffTime;
+	private String recordTime;
 	
 	public int getDwtype() {
 		return dwtype;
@@ -44,4 +45,6 @@ public class SendMessageV2 {
 	public void setSetOnOffTime(String setOnOffTime) {
 		this.setOnOffTime = setOnOffTime;
 	}
+	public String getRecordTime() { return this.recordTime; }
+	public void setRecordTime(String recordTime) { this.recordTime = recordTime; }
 }
