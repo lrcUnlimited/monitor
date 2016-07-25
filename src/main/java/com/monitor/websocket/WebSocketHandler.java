@@ -152,7 +152,11 @@ public class WebSocketHandler {
 		StringBuilder deviceInfo = new StringBuilder("select * from device where machineId = '" + this.getMachineId() + "'");
 		Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString(), Device.class);
 		List<Device> deviceInfoList = queryDeviceInfo.getResultList();
-		Device device = deviceInfoList.get(0);
+
+        if(deviceInfoList == null || deviceInfoList.size() == 0){
+            Device device = new Device();
+        }
+        Device device = deviceInfoList.get(0);
 		
 		this.deviceId = device.getDeviceId();
 

@@ -8,7 +8,7 @@ package com.monitor.model;
  */
 public class MessageV2 {
 	private int deviceId;// 被控端id
-	private String MachineID;// 会话秘钥生成时间
+	private String ID;// 机器码
 	private double longitude;// 经度
 	private double latitude;// 纬度
 	private int dwtype; //暂不适用1:心跳 2:注册
@@ -21,10 +21,10 @@ public class MessageV2 {
 		this.deviceId = deviceId;
 	}
 	public String getMachineID() {
-		return MachineID;
+		return ID;
 	}
 	public void setMachineID(String machineID) {
-		MachineID = machineID;
+		this.ID = machineID;
 	}
 	public double getLongitude() {
 		return longitude;
@@ -44,6 +44,10 @@ public class MessageV2 {
 	public void setDwtype(int dwtype) {
 		this.dwtype = dwtype;
 	}
-	public int getCurrentStatus(){return this.currentStatus; }
-	public void setCurrentStatus(int currentStatus){ this.currentStatus = currentStatus; }
+	public int getCurrentStatus(){
+		return this.currentStatus;
+	}
+	public void setCurrentStatus(int currentStatus){
+		this.currentStatus = currentStatus;
+	}
 }
