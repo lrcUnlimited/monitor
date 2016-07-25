@@ -150,7 +150,7 @@ public class WebSocketHandler {
             } else {
                 sendMessage.setTurnOnOff(1);
             }
-            
+
 			nowType = 0;
 		} else {
 			if (nowDate.after(device.getValidTime())) {
