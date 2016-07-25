@@ -132,6 +132,9 @@ public class WebSocketHandler {
 		
 		//设置关机延迟时间
 		sendMessage.setSetOnOffTime(delayValue);
+
+        //默认为空
+        sendMessage.setRecordTime("");
 		
 		Date nowDate = new Date();// 当前日期
 		int nowType = 0;// 设备当前的管理状态
@@ -176,7 +179,7 @@ public class WebSocketHandler {
 //            } else {
 //                sendMessage.setTurnOnOff(1);
 //            }
-            sendMessage.setRecordTime(device.getCloseTime() == null ? "" : device.getCloseTime());
+            sendMessage.setRecordTime(device.getCloseTime());
             sendMessage.setTurnOnOff(0);
 			nowType = 0;
 		} else {
