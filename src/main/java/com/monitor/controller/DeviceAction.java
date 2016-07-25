@@ -1,34 +1,25 @@
 package com.monitor.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.monitor.exception.CodeException;
+import com.monitor.exception.ErrorMessage;
+import com.monitor.model.Device;
+import com.monitor.model.DeviceStatus;
+import com.monitor.model.Pager;
+import com.monitor.service.device.IDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
-import com.monitor.dao.device.DeviceRepository;
-import com.monitor.exception.CodeException;
-import com.monitor.exception.ErrorMessage;
-import com.monitor.model.Account;
-import com.monitor.model.Device;
-import com.monitor.model.DeviceStatus;
-import com.monitor.model.Pager;
-import com.monitor.service.device.IDeviceService;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/device")
@@ -354,5 +345,28 @@ public class DeviceAction {
 			throw new CodeException("请重新登录");
 		}
 		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType, month, startYear, startMonth, endYear, endMonth);
+	}
+
+	@RequestMapping(value = "/e_testCase", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	String queryLesseeDeviceInformationPager(
+			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			HttpServletResponse response) throws CodeException{
+		if (accountId == 0) {
+			throw new CodeException("请重新登录");
+		}
+
+		return getTimeOf12().toString();
+	}
+
+	private Date getTimeOf12() {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		return  cal.getTime();
 	}
 }
