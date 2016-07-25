@@ -339,7 +339,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				if (status == 0) {
 					manageType = "关闭";
 					SimpleDateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					deviceRepository.updateDeviceShallCloseTime(dateformat.format(dateformat), deviceId);
+					deviceRepository.updateDeviceShallCloseTime(dateformat.format(new Date()), deviceId);
 				} else {
 					manageType = "开启";
 				}
