@@ -153,17 +153,19 @@ public class WebSocketHandler {
 		Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString(), Device.class);
 		List<Device> deviceInfoList = queryDeviceInfo.getResultList();
 
+        Device device = null;
         if(deviceInfoList == null || deviceInfoList.size() == 0){
-            Device device = new Device();
+            device = new Device();
+        } else {
+            device = deviceInfoList.get(0);
         }
-        Device device = deviceInfoList.get(0);
+
 		
 		this.deviceId = device.getDeviceId();
 
 		// 设备状态已经为off，直接关机
 //		sendMessage.setKeyCreateDate("");
 //		sendMessage.setRandomNum("");
-        sendMessage.setRecordTime(device.getCloseTime());
 		if (device.getManageDeviceStatus() == 0) {
 //			sendMessage.setType(0);
 			//"2016-07-25 13:00:00"
@@ -174,6 +176,7 @@ public class WebSocketHandler {
 //            } else {
 //                sendMessage.setTurnOnOff(1);
 //            }
+            sendMessage.setRecordTime(device.getCloseTime() == null ? "" : device.getCloseTime());
             sendMessage.setTurnOnOff(0);
 			nowType = 0;
 		} else {
