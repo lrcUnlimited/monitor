@@ -39,7 +39,8 @@ public class WebSocketHandler {
 	@Autowired
 	CommandRecordRepository commandRecordRepository;
 	private static String crtPath = null;
-
+	private static String delayValue = null;
+	
 	@PersistenceContext
 	private EntityManager manager;
 
@@ -52,6 +53,19 @@ public class WebSocketHandler {
 						"[crtpath.properties] is not found!");
 			}
 			crtPath = bundle.getString("crt.path");
+		}
+	}
+	
+
+	// 初始化证书脚本地址
+	static {
+		if (delayValue == null) {
+			ResourceBundle bundle = ResourceBundle.getBundle("crtpath");
+			if (bundle == null) {
+				throw new IllegalArgumentException(
+						"[crtpath.properties] is not found!");
+			}
+			delayValue = bundle.getString("delay.time");
 		}
 	}
 	
@@ -116,6 +130,9 @@ public class WebSocketHandler {
 		// 设置回传设备编号
 		sendMessage.setMachineID(this.machineId);
 		
+		//设置关机延迟时间
+		sendMessage.setSetOnOffTime(delayValue);
+		
 		Date nowDate = new Date();// 当前日期
 		int nowType = 0;// 设备当前的管理状态
 
@@ -131,11 +148,12 @@ public class WebSocketHandler {
 		//Device device = deviceRepository.findOne(deviceId);
 		//Device device = deviceRepository.queryDeviceNameById();
 		System.out.println("select * from device where machineId = '" + this.getMachineId() + "'");
+		
 		StringBuilder deviceInfo = new StringBuilder("select * from device where machineId = '" + this.getMachineId() + "'");
 		Query queryDeviceInfo = manager.createNativeQuery(deviceInfo.toString(), Device.class);
 		List<Device> deviceInfoList = queryDeviceInfo.getResultList();
 		Device device = deviceInfoList.get(0);
-
+		
 		this.deviceId = device.getDeviceId();
 
 		// 设备状态已经为off，直接关机
@@ -143,14 +161,15 @@ public class WebSocketHandler {
 //		sendMessage.setRandomNum("");
 		if (device.getManageDeviceStatus() == 0) {
 //			sendMessage.setType(0);
-			System.out.println(device.getCloseTime());
-            Date date = parseDate(device.getCloseTime());
-            if (nowDate.after(date)) {
-                sendMessage.setTurnOnOff(0);
-            } else {
-                sendMessage.setTurnOnOff(1);
-            }
-
+			//"2016-07-25 13:00:00"
+           // Date date = parseDate(device.getCloseTime());
+//            System.out.println(date);
+//            if (nowDate.after(date)) {
+//                sendMessage.setTurnOnOff(0);
+//            } else {
+//                sendMessage.setTurnOnOff(1);
+//            }
+            sendMessage.setTurnOnOff(0);
 			nowType = 0;
 		} else {
 			if (nowDate.after(device.getValidTime())) {
@@ -186,6 +205,7 @@ public class WebSocketHandler {
 //					sendMessage.setRandomNum("");
 //				}
 //				sendMessage.setType(1);// 设置状态为允许开机
+
 				sendMessage.setTurnOnOff(1);
 				nowType = 1;
 //				sendMessage.setUpdateCRTStatus(device.getUpdateCRT());
@@ -371,14 +391,14 @@ public class WebSocketHandler {
 		return null;
 	}
 
-    /**
-     * 字符串转化为date类型
-     *
-     * @param time String
-     */
-
-    private Date parseDate(String time) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-        return  simpleDateFormat.parse(time);
-    }
+//    /**
+//     * 字符串转化为date类型
+//     *
+//     * @param time String
+//     */
+//
+//    private Date parseDate(String time) throws ParseException {
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+//        return  simpleDateFormat.parse(time);
+//    }
 }
