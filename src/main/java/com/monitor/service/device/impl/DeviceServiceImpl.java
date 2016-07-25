@@ -338,6 +338,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				String manageType = null;
 				if (status == 0) {
 					manageType = "关闭";
+					SimpleDateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					deviceRepository.updateDeviceShallCloseTime(dateformat.format(dateformat), deviceId);
 				} else {
 					manageType = "开启";
 				}
