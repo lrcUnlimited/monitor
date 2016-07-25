@@ -27,6 +27,7 @@ public class Device {
 	private String registerProvince;//设备注册省份
 	private String registerCity;//设备注册城市
 	private String registerDistrict;//设备注册区域
+	private String closeTime;//设备应当关闭时间
 	
 	private String machineId;
 	
