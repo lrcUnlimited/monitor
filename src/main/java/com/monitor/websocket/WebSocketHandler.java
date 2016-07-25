@@ -112,6 +112,9 @@ public class WebSocketHandler {
 		SendMessageV2 sendMessage = new SendMessageV2();// 发送消息
 		//TODO 暂时不适用dwtype 先设置默认值
 		sendMessage.setDwtype(0);
+
+		// 设置回传设备编号
+		sendMessage.setMachineID(this.machineId);
 		
 		Date nowDate = new Date();// 当前日期
 		int nowType = 0;// 设备当前的管理状态
@@ -140,6 +143,7 @@ public class WebSocketHandler {
 //		sendMessage.setRandomNum("");
 		if (device.getManageDeviceStatus() == 0) {
 //			sendMessage.setType(0);
+			device.getCloseTime();
 			sendMessage.setTurnOnOff(0);
 			nowType = 0;
 		} else {
