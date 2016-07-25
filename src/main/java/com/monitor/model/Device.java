@@ -28,9 +28,11 @@ public class Device {
 	private String registerCity;//设备注册城市
 	private String registerDistrict;//设备注册区域
 	private String closeTime;//设备应当关闭时间
-	
 	private String machineId;
-	
+
+	public Device() {
+	}
+
 	public String getProvice() {
 		return provice;
 	}
@@ -163,9 +165,7 @@ public class Device {
 		return machineId;
 	}
 
-	public void setMachineId(String machineId) {
-		machineId = machineId;
-	}
+	public void setMachineId(String machineId) { this.machineId = machineId;}
 
 	public String getRegisterProvince() {
 		return registerProvince;
@@ -191,4 +191,7 @@ public class Device {
 		this.registerCity = registerCity;
 	}
 
+	public String getCloseTime(){ return closeTime; }
+
+	public void setCloseTime(){ this.closeTime = closeTime; }
 }
