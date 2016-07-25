@@ -143,8 +143,14 @@ public class WebSocketHandler {
 //		sendMessage.setRandomNum("");
 		if (device.getManageDeviceStatus() == 0) {
 //			sendMessage.setType(0);
-			device.getCloseTime();
-			sendMessage.setTurnOnOff(0);
+			System.out.println(device.getCloseTime());
+            Date date = parseDate(device.getCloseTime());
+            if (nowDate.after(date)) {
+                sendMessage.setTurnOnOff(0);
+            } else {
+                sendMessage.setTurnOnOff(1);
+            }
+            
 			nowType = 0;
 		} else {
 			if (nowDate.after(device.getValidTime())) {
@@ -364,4 +370,15 @@ public class WebSocketHandler {
 		}
 		return null;
 	}
+
+    /**
+     * 字符串转化为date类型
+     *
+     * @param time String
+     */
+
+    private Date parseDate(String time) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+        return  simpleDateFormat.parse(time);
+    }
 }
