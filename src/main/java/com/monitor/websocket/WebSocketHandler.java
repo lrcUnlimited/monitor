@@ -1,51 +1,32 @@
 package com.monitor.websocket;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.inject.Inject;
-import javax.persistence.Query;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
 import com.monitor.dao.device.DeviceRepository;
 import com.monitor.dao.devicerecord.DeviceRecordRepository;
 import com.monitor.exception.CodeException;
-import com.monitor.model.CommandRecord;
-import com.monitor.model.Device;
-import com.monitor.model.DeviceRecord;
-import com.monitor.model.Message;
-import com.monitor.model.MessageV2;
-import com.monitor.model.SendMessage;
-import com.monitor.model.SendMessageV2;
-import com.monitor.model.SessionKey;
+import com.monitor.model.*;
 import com.monitor.service.devicerecord.IDeviceRecordService;
 import com.monitor.util.HttpRequestUtil;
-import com.monitor.util.SessionKeyUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.server.endpoint.SpringConfigurator;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.websocket.*;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 
 @ServerEndpoint(value = "/websocket/{machineId}", configurator = SpringConfigurator.class)
 public class WebSocketHandler {
@@ -285,7 +266,7 @@ public class WebSocketHandler {
 	 * 打开连接
 	 * 
 	 * @param session request session
-	 * @param clientId
+	 * @param machineId
 	 */
 	@OnOpen
 	public void onOpen(Session session, @PathParam("machineId") String machineId) {
