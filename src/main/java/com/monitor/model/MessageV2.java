@@ -10,44 +10,58 @@ public class MessageV2 {
 	private int deviceId;// 被控端id
 	private String ID;// 机器码
 	private double longitude;// 经度
-	private double latitude;// 纬度
-	private int dwtype; //暂不适用1:心跳 2:注册
-	private int currentStatus;// 受控端状态 0-代表关机 1-代表开机
 
-	public int getDeviceId() {
-		return deviceId;
-	}
-	public void setDeviceId(int deviceId) {
-		this.deviceId = deviceId;
-	}
-	public String getMachineID() {
-		return ID;
-	}
-	public void setMachineID(String machineID) {
-		this.ID = machineID;
-	}
-	public double getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-	public double getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-	public int getDwtype() {
-		return dwtype;
-	}
-	public void setDwtype(int dwtype) {
-		this.dwtype = dwtype;
-	}
-	public int getCurrentStatus(){
-		return this.currentStatus;
-	}
-	public void setCurrentStatus(int currentStatus){
-		this.currentStatus = currentStatus;
-	}
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public int getDwType() {
+        return dwType;
+    }
+
+    public void setDwType(int dwType) {
+        this.dwType = dwType;
+    }
+
+    public int getCurrentStatus() {
+        return CurrentStatus;
+    }
+
+    public void setCurrentStatus(int currentStatus) {
+        CurrentStatus = currentStatus;
+    }
+
+    private double latitude;// 纬度
+	private int dwType; //暂不适用1:心跳 2:注册
+	private int CurrentStatus;// 受控端状态 0-代表关机 1-代表开机
+
+
 }

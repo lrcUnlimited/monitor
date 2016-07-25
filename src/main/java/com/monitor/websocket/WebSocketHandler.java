@@ -125,10 +125,10 @@ public class WebSocketHandler {
 		MessageV2 reciveMessage = JSON.parseObject(msg, MessageV2.class);// 接收消息
 		SendMessageV2 sendMessage = new SendMessageV2();// 发送消息
 		//TODO 暂时不适用dwtype 先设置默认值
-		sendMessage.setDwtype(0);
+		sendMessage.setDwType(0);
 
 		// 设置回传设备编号
-		sendMessage.setMachineID(this.machineId);
+		sendMessage.setID(this.machineId);
 		
 		//设置关机延迟时间
 		sendMessage.setSetOnOffTime(delayValue);
