@@ -36,7 +36,7 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 
 	/**
 	 * 更新设备的管理状态
-	 * 
+	 *
 	 * @param status
 	 * @param deviceId
 	 * @return
@@ -44,6 +44,18 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	@Modifying
 	@Query("update Device device set device.manageDeviceStatus=?1 where device.deviceId=?2")
 	public int updateManageDeviceStatus(int status, int deviceId);
+
+	/**
+	 * 更新设备的管理状态
+	 *
+	 * @param status
+	 * @param deviceId
+	 * @return
+	 */
+	@Modifying
+	@Query("update Device device set device.closeTime=?1 where device.deviceId=?2")
+	public int updateDeviceShallCloseTime(String closeTime, int deviceId);
+
 
 	/**
 	 * 更新是否需要更新证书状态位
