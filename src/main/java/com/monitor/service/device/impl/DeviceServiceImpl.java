@@ -1,47 +1,28 @@
 package com.monitor.service.device.impl;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
 import com.monitor.dao.device.DeviceRepository;
 import com.monitor.dao.devicerecord.DeviceRecordRepository;
 import com.monitor.exception.CodeException;
-import com.monitor.model.Account;
-import com.monitor.model.CommandRecord;
-import com.monitor.model.Device;
-import com.monitor.model.DeviceArrearagePercentage;
-import com.monitor.model.DeviceRecord;
-import com.monitor.model.DeviceStatus;
-import com.monitor.model.LesseeDeviceInfo;
-import com.monitor.model.Pager;
+import com.monitor.model.*;
 import com.monitor.service.device.IDeviceService;
-import com.monitor.util.MD5Util;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service(value = "deviceService")
 public class DeviceServiceImpl implements IDeviceService {
@@ -697,8 +678,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				
 				resultList.add(deviceArrearagePercentage);
 			}
-			
-			return resultList;
+            
+            return  resultList;
 		} catch (Exception e) {
 			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
@@ -767,7 +748,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				resultList.add(lesseeDeviceInfo);
 			}
 
-			return resultList;
+
+            return resultList;
 		} catch (Exception e) {
 			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
