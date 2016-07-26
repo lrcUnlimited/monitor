@@ -19,8 +19,12 @@ import javax.persistence.Query;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -616,7 +620,9 @@ public class DeviceServiceImpl implements IDeviceService {
 	public List<DeviceArrearagePercentage> queryArrearagePercentage(Integer month) throws CodeException {
 		List<DeviceArrearagePercentage> resultList = new ArrayList<DeviceArrearagePercentage>();
 		try{
-			StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
+            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+            StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
 			Query qTotal = manager.createNativeQuery(deviceArrearageTotalStatistic.toString());
 			List<BigDecimal> totalResultList = qTotal.getResultList();
 			
@@ -649,8 +655,9 @@ public class DeviceServiceImpl implements IDeviceService {
 				Query queryDeviceNormalNum = manager.createNativeQuery(deviceNormalNum.toString());
 				List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
 				int normalDeviceNum = deviceNormalNumList.get(0).intValue();
-				
-				float arrearagePercentage = (float) arrearageNumber / (totalNum * month);
+
+                //Integer.valueOf(delayValue).intValue()
+				float arrearagePercentage = Float.valueOf(decimalFormat.format((float) arrearageNumber / (totalNum * month))).floatValue();
 				
 				deviceArrearagePercentage.setLessee(lesseeName);
 				deviceArrearagePercentage.setPercentage(arrearagePercentage);
@@ -678,8 +685,8 @@ public class DeviceServiceImpl implements IDeviceService {
 				
 				resultList.add(deviceArrearagePercentage);
 			}
-            
-            return  resultList;
+
+			return resultList;
 		} catch (Exception e) {
 			logger.error("内部错误", e);
 			throw new CodeException("内部错误");
@@ -747,7 +754,6 @@ public class DeviceServiceImpl implements IDeviceService {
 				
 				resultList.add(lesseeDeviceInfo);
 			}
-
 
             return resultList;
 		} catch (Exception e) {
