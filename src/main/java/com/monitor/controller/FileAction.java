@@ -12,10 +12,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 
 @Controller
 @RequestMapping("/file")
 public class FileAction {
+    private static String downloadPath = null;
+
+    // 初始化文件上传下载地址
+    static {
+        if (downloadPath == null) {
+            ResourceBundle bundle = ResourceBundle.getBundle("crtpath");
+            if (bundle == null) {
+                throw new IllegalArgumentException(
+                        "[crtpath.properties] is not found!");
+            }
+            downloadPath = bundle.getString("download.path");
+        }
+    }
+
+
     /*
      * 上传文件的两种方法、 1、一种用参数接收 2、解析request
      */
@@ -29,7 +45,7 @@ public class FileAction {
 
         if (!file.isEmpty()) {
             BufferedOutputStream bos = new BufferedOutputStream(
-                    new FileOutputStream("D:/" + file.getOriginalFilename()));
+                    new FileOutputStream("downloadPath" + file.getOriginalFilename()));
             InputStream in = file.getInputStream();
             BufferedInputStream bis = new BufferedInputStream(in);
             int n = 0;
@@ -62,8 +78,8 @@ public class FileAction {
                 //获取MultipartFile类型文件
                 MultipartFile fileDetail = multiRequest.getFile(it.next());
                 if (fileDetail != null) {
-                    String fileName = "demoUpload" + fileDetail.getOriginalFilename();
-                    String path = "D:/" + fileName;
+                    String fileName = fileDetail.getOriginalFilename();
+                    String path = "downloadPath" + fileName;
                     File localFile = new File(path);
                     //将上传文件写入到指定文件出、核心！
                     fileDetail.transferTo(localFile);
@@ -89,10 +105,7 @@ public class FileAction {
                 + fileName);
         try {
             //String path = Thread.currentThread().getContextClassLoader().getResource("").getPath()
-            String path = "D:"
-                    + "download";//这个download目录为啥建立在classes下的
-            InputStream inputStream = new FileInputStream(new File(path
-                    + File.separator + fileName));
+            InputStream inputStream = new FileInputStream(new File(downloadPath + fileName));
 
             OutputStream os = response.getOutputStream();
             byte[] b = new byte[2048];
