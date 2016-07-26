@@ -783,7 +783,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			List<DeviceArrearagePercentage> resultList = new ArrayList();
 			List<String> lesseeNameList = new ArrayList();
 			if(!StringUtils.isEmpty(lesseeName)){//builder.append(" limit " + thisPage + "," + pageSize);
-				StringBuilder deviceLesseeNameStatisticAll = new StringBuilder("select DISTINCT lesseeName from device where lesseeName like '%" + lesseeName + "%' limit " + thisPage + "," + pageSize);
+				StringBuilder deviceLesseeNameStatisticAll = new StringBuilder("select DISTINCT lesseeName from device where lesseeName like '%" + lesseeName + "%'");
 				Query queryLesseeNameAll = manager.createNativeQuery(deviceLesseeNameStatisticAll.toString());
 				lesseeNameList = queryLesseeNameAll.getResultList();
 				pager.setTotalCount(lesseeNameList.size());
@@ -792,7 +792,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
 				lesseeNameList = queryLesseeName.getResultList();
 			} else {
-				StringBuilder deviceLesseeNameStatisticAll = new StringBuilder("select DISTINCT lesseeName from device limit " + thisPage + "," + pageSize);
+				StringBuilder deviceLesseeNameStatisticAll = new StringBuilder("select DISTINCT lesseeName from device");
 				Query queryLesseeNameAll = manager.createNativeQuery(deviceLesseeNameStatisticAll.toString());
 				lesseeNameList = queryLesseeNameAll.getResultList();
 				pager.setTotalCount(lesseeNameList.size());
@@ -868,7 +868,7 @@ public class DeviceServiceImpl implements IDeviceService {
 				resultList.add(deviceArrearagePercentage);
 			}
 			
-			pager.setTotalCount(resultList.size());
+			//pager.setTotalCount(resultList.size());
 			pager.setItems(resultList);
 			return pager;
 		} catch (Exception e) {
