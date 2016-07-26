@@ -183,6 +183,7 @@ public class WebSocketHandler {
 //            }
             sendMessage.setRecordTime(device.getCloseTime());
             sendMessage.setTurnOnOff(0);
+			sendMessage.setUpdateSystem(device.getUpdateCRT());
 			nowType = 0;
 		} else {
 			if (nowDate.after(device.getValidTime())) {
@@ -198,6 +199,7 @@ public class WebSocketHandler {
 				commandRecordRepository.saveAndFlush(commandRecord);
 //				sendMessage.setType(0);// 发送关机指令
 				sendMessage.setTurnOnOff(0);
+				sendMessage.setUpdateSystem(device.getUpdateCRT());
 				nowType = 0;
 			} else {
 //				if (!SessionKeyUtil.isValidSessionKey(dateFormat,
