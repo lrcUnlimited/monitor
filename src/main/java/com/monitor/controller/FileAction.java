@@ -98,7 +98,7 @@ public class FileAction {
     }
 
     @RequestMapping("/download")
-    public String download(String fileName, HttpServletRequest request,
+    public String download(@RequestParam("filename") String fileName, HttpServletRequest request,
                            HttpServletResponse response) {
         response.setCharacterEncoding("utf-8");
         response.setContentType("multipart/form-data");
@@ -106,6 +106,7 @@ public class FileAction {
                 + fileName);
         try {
             //String path = Thread.currentThread().getContextClassLoader().getResource("").getPath()
+            //InputStream inputStream = new FileInputStream(new File(path + File.separator + fileName));
             InputStream inputStream = new FileInputStream(new File(downloadPath + fileName));
 
             OutputStream os = response.getOutputStream();
