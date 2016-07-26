@@ -794,13 +794,13 @@ public class DeviceServiceImpl implements IDeviceService {
 			int thisPage = (pageNo - 1) * pageSize;
 			List<DeviceArrearagePercentage> resultList = new ArrayList();
 			List<String> lesseeNameList = new ArrayList();
-			if(!StringUtils.isEmpty(lesseeName)){
-				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device where lesseeName like '%" + lesseeName + "%'");
+			if(!StringUtils.isEmpty(lesseeName)){//builder.append(" limit " + thisPage + "," + pageSize);
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device where lesseeName like '%" + lesseeName + "%' limit " + thisPage + "," + pageSize);
 				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
 				lesseeNameList = queryLesseeName.getResultList();
 			} else {
 				//获取租赁商列表
-				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device limit " + thisPage + "," + pageSize);
 				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
 				lesseeNameList = queryLesseeName.getResultList();
 			}
