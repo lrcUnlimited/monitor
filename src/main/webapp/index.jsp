@@ -17,5 +17,6 @@
     <input type="submit" value="上传" >
 </form>
 
+<a href="/monitor/file/download?filename=demoUpload.rar" >下载</a>
 </body>
 </html>
