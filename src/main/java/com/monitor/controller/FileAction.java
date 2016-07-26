@@ -79,7 +79,8 @@ public class FileAction {
                 MultipartFile fileDetail = multiRequest.getFile(it.next());
                 if (fileDetail != null) {
                     String fileName = fileDetail.getOriginalFilename();
-                    String path = "downloadPath" + fileName;
+                    String path = downloadPath + fileName;
+                    System.out.println(path);
                     File localFile = new File(path);
                     //将上传文件写入到指定文件出、核心！
                     fileDetail.transferTo(localFile);
