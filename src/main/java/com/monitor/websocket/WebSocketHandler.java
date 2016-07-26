@@ -59,7 +59,7 @@ public class WebSocketHandler {
 	}
 	
 
-	// 初始化证书脚本地址
+	// 初始化关机延迟时间
 	static {
 		if (delayValue == null) {
 			ResourceBundle bundle = ResourceBundle.getBundle("crtpath");

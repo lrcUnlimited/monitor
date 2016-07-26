@@ -100,6 +100,7 @@ public class FileAction {
     @RequestMapping("/download")
     public String download(@RequestParam("filename") String fileName, HttpServletRequest request,
                            HttpServletResponse response) {
+        //response.reset();
         response.setCharacterEncoding("utf-8");
         response.setContentType("multipart/form-data");
         response.setHeader("Content-Disposition", "attachment;fileName="

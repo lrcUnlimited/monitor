@@ -267,7 +267,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			commandRecord.setAccountId(accountId);
 			commandRecord.setType(3);
 			commandRecord.setRecordTime(new Date());
-			commandRecord.setContent("更新设备" + "("+device.getDeviceName() +")"+ " 证书");
+			commandRecord.setContent("更新设备" + "("+device.getDeviceName() +")"+ "状态");
 			comRecordRepository.save(commandRecord);
 		} catch (CodeException e) {
 			throw e;
