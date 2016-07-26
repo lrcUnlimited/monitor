@@ -17,7 +17,15 @@
      http://www.springframework.org/schema/cache
      http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
 	 ">
+	 <bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- max upload size in bytes -->
+        <property name="maxUploadSize" value="20971520" /> <!-- 20MB -->
 
+        <!-- max size of file in memory (in bytes) -->
+        <property name="maxInMemorySize" value="1048576" /> <!-- 1MB -->
+
+    </bean>
 	<!--通用视图解析器 -->
 	<bean id="viewResolverCommon"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -34,16 +42,9 @@
 			expression="org.springframework.stereotype.Service" />
 	</context:component-scan>
 
-	<bean id="exceptionResolver"
-		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-
-	</bean>
+	
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
 
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<property name="defaultEncoding" value="utf-8" />
-		<property name="maxUploadSize" value="104857600"/>
-		<property name="maxInMemorySize" value="4096"/>
-	</bean>
+	
 </beans>

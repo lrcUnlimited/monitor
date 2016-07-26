@@ -41,12 +41,12 @@ public class SendMessageV2 {
 		this.updateFile = updateFile;
 	}
 
-	public String getSetOnOffTime() {
+	public int getSetOnOffTime() {
 		return SetOnOffTime;
 	}
 
-	public void setSetOnOffTime(String setOnOffTime) {
-		SetOnOffTime = setOnOffTime;
+	public void setSetOnOffTime(int setOnOffTime) {
+		this.SetOnOffTime = setOnOffTime;
 	}
 
 	public String getRecordTime() {
@@ -62,7 +62,7 @@ public class SendMessageV2 {
 	private String ID;
 	private int UpdateSystem; //0：不更新受控设备程序 1:更新受控设备程序
 	private String updateFile;
-	private String SetOnOffTime;
+	private int SetOnOffTime;
 	private String RecordTime;
 
 }

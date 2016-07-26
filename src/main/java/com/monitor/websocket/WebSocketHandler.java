@@ -9,6 +9,7 @@ import com.monitor.exception.CodeException;
 import com.monitor.model.*;
 import com.monitor.service.devicerecord.IDeviceRecordService;
 import com.monitor.util.HttpRequestUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.server.endpoint.SpringConfigurator;
 
@@ -18,6 +19,7 @@ import javax.persistence.Query;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -131,7 +133,7 @@ public class WebSocketHandler {
 		sendMessage.setID(this.machineId);
 		
 		//设置关机延迟时间
-		sendMessage.setSetOnOffTime(delayValue);
+		sendMessage.setSetOnOffTime(Integer.valueOf(delayValue).intValue());
 
         //默认为空
         sendMessage.setRecordTime("");
