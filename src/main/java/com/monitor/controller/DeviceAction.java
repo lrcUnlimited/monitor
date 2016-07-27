@@ -45,7 +45,6 @@ public class DeviceAction {
 		}
 		if (device.getValidTime() == null) {
 			throw new CodeException("设备名有效期不能为空");
-
 		}
 		deviceService.addNewDevice(accountId, device);
 		return "success";

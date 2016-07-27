@@ -186,6 +186,7 @@ public class WebSocketHandler {
 				CommandRecord commandRecord = new CommandRecord();
 				commandRecord.setDeviceId(deviceId);
 				commandRecord.setDeviceCloseType(1);
+				commandRecord.setType(3);
 				commandRecord.setContent("设备(" + device.getDeviceName() + ")欠费被关闭");
 				commandRecord.setLesseeName(device.getLesseeName());
 				commandRecordRepository.saveAndFlush(commandRecord);
