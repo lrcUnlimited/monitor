@@ -141,14 +141,6 @@ public class WebSocketHandler {
 		Date nowDate = new Date();// 当前日期
 		int nowType = 0;// 设备当前的管理状态
 
-		CommandRecord c = new CommandRecord();
-		c.setDeviceId(deviceId);
-		c.setDeviceCloseType(3);
-		c.setContent("数据传输测试");
-		c.setLesseeName("test");
-		c.setAddValidNote(msg);
-		commandRecordRepository.saveAndFlush(c);
-		
 		// 检查设备的状态
 		//Device device = deviceRepository.findOne(deviceId);
 		//Device device = deviceRepository.queryDeviceNameById();

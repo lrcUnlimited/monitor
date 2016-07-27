@@ -283,7 +283,7 @@ public class DeviceAction {
 			throw new CodeException("请重新登录");
 		}
 		List<DeviceStatus> resultList = new ArrayList<DeviceStatus>();
-		System.out.println(deviceService.queryDeviceStatus());
+		//System.out.println(deviceService.queryDeviceStatus());
 		resultList = deviceService.queryDeviceStatus();
 		return resultList;
 	}
