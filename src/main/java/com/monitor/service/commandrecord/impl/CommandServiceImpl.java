@@ -1,27 +1,23 @@
 package com.monitor.service.commandrecord.impl;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
-import com.monitor.exception.CodeException;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.monitor.dao.account.AccountRepository;
 import com.monitor.dao.commandrecord.CommandRecordRepository;
+import com.monitor.exception.CodeException;
 import com.monitor.model.Account;
 import com.monitor.model.CommandRecord;
 import com.monitor.model.Pager;
 import com.monitor.service.commandrecord.CommandService;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service(value = "commandService")
 public class CommandServiceImpl implements CommandService {
@@ -59,8 +55,11 @@ public class CommandServiceImpl implements CommandService {
 				countSql.append("  and cr.type =:type ");
 			}
 			if (!StringUtils.isEmpty(userName)) {
-				builder.append("  and cr.accountId =:accountId ");
-				countSql.append("  and cr.accountId =:accountId ");
+				builder.append("  and cr.accountName =:accountName ");
+				countSql.append("  and cr.accountName =:accountName ");
+//				builder.append("  and cr.accountId =:accountId ");
+//				countSql.append("  and cr.accountId =:accountId ");
+
 			}
 
 			builder.append(" ORDER BY cr.recordTime DESC ");
@@ -76,10 +75,10 @@ public class CommandServiceImpl implements CommandService {
 				queryList.setParameter("type", type);
 			}
 			if (!StringUtils.isEmpty(userName)) {
-				Account account = accountRepository.queryAccountbyuserName(userName);
-				Integer accountId = account.getId();
-				query.setParameter("accountId", accountId);
-				queryList.setParameter("accountId", accountId);
+//				Account account = accountRepository.queryAccountbyuserName(userName);
+//				Integer accountId = account.getId();
+				query.setParameter("accountName", "%" + userName + "%");
+				queryList.setParameter("accountName", "%" + userName + "%");
 			}
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());
