@@ -1,32 +1,24 @@
 package com.monitor.controller;
 
-import java.util.Date;
-import java.util.List;
-
+import com.monitor.dao.device.DeviceRepository;
+import com.monitor.exception.CodeException;
+import com.monitor.exception.ErrorMessage;
+import com.monitor.model.*;
+import com.monitor.service.device.IDeviceService;
+import com.monitor.service.devicerecord.IDeviceRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
-import com.monitor.exception.CodeException;
-import com.monitor.exception.ErrorMessage;
-import com.monitor.model.DeviceCommunicationError;
-import com.monitor.model.DeviceLocationError;
-import com.monitor.model.DeviceRecord;
-import com.monitor.model.Pager;
-import com.monitor.service.device.IDeviceService;
-import com.monitor.service.devicerecord.IDeviceRecordService;
+import java.util.List;
 
 @Controller
 @RequestMapping("/devicerecord")
 public class DeviceRecordAction {
-
+    @Autowired
+    private DeviceRepository deviceRepository;
 	@Autowired
 	private IDeviceService deviceService;
 	@Autowired
@@ -68,13 +60,13 @@ public class DeviceRecordAction {
 	}
 
 	/**
-	 * 设备当前最新位置
-	 * 
-	 * @param accountId
-	 * @param deviceId
-	 * @return
-	 * @throws CodeException
-	 */
+     *
+     *
+     * @param accountId int
+     * @param deviceId int
+     * @return
+     * @throws CodeException
+     */
 	@RequestMapping(value = "/e_querylocation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DeviceRecord> devicerecord(
@@ -250,7 +242,7 @@ public class DeviceRecordAction {
 
 	@RequestMapping(value = "/e_updateOperation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	String updateOperation(
+    Device updateOperation(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
 			@RequestParam(value = "deviceId", defaultValue = "0") int deviceId,
 			@RequestParam(value = "startTime", defaultValue = "0") long startTime,
@@ -259,11 +251,11 @@ public class DeviceRecordAction {
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		deviceRecordService.updateOperationType(accountId, deviceId, startTime,
-				endTime);
+		deviceRecordService.updateOperationType(accountId, deviceId, startTime, endTime);
 
-		return "success";
+		Device device = deviceRepository.findOne(deviceId);
 
+		return device;
 	}
 
 	@ExceptionHandler(CodeException.class)
