@@ -882,6 +882,7 @@ public class DeviceServiceImpl implements IDeviceService {
 			, Integer startYear, Integer startMonth, Integer endYear, Integer endMonth)
 			throws CodeException {
 		try {
+			DecimalFormat decimalFormat = new DecimalFormat("#.00");
 			String startTime = startYear + "-" + startMonth + "-01";
 			String endTime = endYear + "-" + endMonth + "-31";
 
@@ -912,6 +913,7 @@ public class DeviceServiceImpl implements IDeviceService {
 
 				//通过日志查询欠费总次数
 				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime > '" + startTime + "' and recordTime < '" + endTime + "'");
+
 				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
 				List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
 				int arrearageNumber = arrearageNumberList.get(0).intValue();
@@ -954,12 +956,12 @@ public class DeviceServiceImpl implements IDeviceService {
 				}
 
 				deviceArrearagePercentage.setLessee(thisLesseeName);
-				deviceArrearagePercentage.setPercentage(arrearagePercentage);
+				deviceArrearagePercentage.setPercentage(Float.valueOf(decimalFormat.format(arrearagePercentage)));
 				deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
 				deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
 				deviceArrearagePercentage.setLesseePhone(lesseePhoneNumber);
 				deviceArrearagePercentage.setTotalDeviceNum(totalNum);
-				deviceArrearagePercentage.setArrearageTimePerDevice((float) arrearageNumber / totalNum);
+				deviceArrearagePercentage.setArrearageTimePerDevice(Float.valueOf(decimalFormat.format((float) arrearageNumber / totalNum)));
 
 				resultList.add(deviceArrearagePercentage);
 			}
