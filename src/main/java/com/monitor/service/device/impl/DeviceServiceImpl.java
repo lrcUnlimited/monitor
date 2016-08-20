@@ -876,4 +876,98 @@ public class DeviceServiceImpl implements IDeviceService {
 			throw new CodeException("内部错误");
 		}
 	}
+
+	@Override
+	public List<DeviceArrearagePercentage> queryLesseeDeviceInformationPrint(Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month
+			, Integer startYear, Integer startMonth, Integer endYear, Integer endMonth)
+			throws CodeException {
+		try {
+			String startTime = startYear + "-" + startMonth + "-01";
+			String endTime = endYear + "-" + endMonth + "-31";
+
+			//计算总欠费次数
+			StringBuilder deviceArrearageTotalStatistic = new StringBuilder("select sum(arrearageCount) from device");
+			Query qTotal = manager.createNativeQuery(deviceArrearageTotalStatistic.toString());
+			List<BigDecimal> totalResultList = qTotal.getResultList();
+//			float total = ((BigDecimal) totalResultList.get(0)).floatValue();
+
+			List<DeviceArrearagePercentage> resultList = new ArrayList();
+			List<String> lesseeNameList = new ArrayList();
+			if(!StringUtils.isEmpty(lesseeName)){//builder.append(" limit " + thisPage + "," + pageSize); ddddddd
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device where lesseeName like '%" + lesseeName + "%'");
+				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+				lesseeNameList = queryLesseeName.getResultList();
+			} else {
+				//获取租赁商列表
+				StringBuilder deviceLesseeNameStatistic = new StringBuilder("select DISTINCT lesseeName from device");
+				Query queryLesseeName = manager.createNativeQuery(deviceLesseeNameStatistic.toString());
+				lesseeNameList = queryLesseeName.getResultList();
+			}
+
+			for(int i = 0; i < lesseeNameList.size(); i++){
+				DeviceArrearagePercentage deviceArrearagePercentage = new DeviceArrearagePercentage();
+
+				//查询该租赁商总欠费次数
+				String thisLesseeName = lesseeNameList.get(i);
+
+				//通过日志查询欠费总次数
+				StringBuilder deviceArrearageNum = new StringBuilder("select count(*) from commandrecord where lesseeName = '" + thisLesseeName + "' and recordTime > '" + startTime + "' and recordTime < '" + endTime + "'");
+				Query queryArrearageNum = manager.createNativeQuery(deviceArrearageNum.toString());
+				List<BigInteger> arrearageNumberList = queryArrearageNum.getResultList();
+				int arrearageNumber = arrearageNumberList.get(0).intValue();
+
+
+				//查询总设备数
+				StringBuilder deviceTotalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "'");
+				Query queryDeviceTotalNum = manager.createNativeQuery(deviceTotalNum.toString());
+				List<BigInteger> deviceTotalNumList = queryDeviceTotalNum.getResultList();
+				int totalNum = deviceTotalNumList.get(0).intValue();
+
+				StringBuilder deviceNormalNum = new StringBuilder("select count(*) from device where lesseeName = '" + thisLesseeName + "' and manageDeviceStatus = 1");
+				Query queryDeviceNormalNum = manager.createNativeQuery(deviceNormalNum.toString());
+				List<BigInteger> deviceNormalNumList = queryDeviceNormalNum.getResultList();
+				int normalDeviceNum = deviceNormalNumList.get(0).intValue();
+
+				StringBuilder lesseePhone = new StringBuilder("select distinct lesseePhone from device where lesseeName = '" + thisLesseeName + "'");
+				Query queryLesseePhone = manager.createNativeQuery(lesseePhone.toString());
+				List<String> deviceLesseePhoneList = queryLesseePhone.getResultList();
+				String lesseePhoneNumber = deviceLesseePhoneList.get(0);
+
+				float arrearagePercentage = (float) arrearageNumber / (month * totalNum);
+
+				if(arrearagePercentageType == 1 && (arrearagePercentage <= 0 || arrearagePercentage > 0.05)){
+					continue;
+				} else if(arrearagePercentageType == 2 && (arrearagePercentage <= 0.05 || arrearagePercentage > 0.1)){
+					continue;
+				} else if(arrearagePercentageType == 3 && (arrearagePercentage <= 0.1 || arrearagePercentage > 0.15)){
+					continue;
+				} else if(arrearagePercentageType == 4 && (arrearagePercentage <= 0.15 || arrearagePercentage > 0.2)){
+					continue;
+				} else if(arrearagePercentageType == 5 && (arrearagePercentage <= 0.2 || arrearagePercentage > 0.25)){
+					continue;
+				} else if(arrearagePercentageType == 6 && (arrearagePercentage <= 0.25 || arrearagePercentage > 0.3)){
+					continue;
+				} else if(arrearagePercentageType == 7 && (arrearagePercentage <= 0.3 || arrearagePercentage > 1)){
+					continue;
+				}else if(arrearagePercentageType == 0 && arrearagePercentage != 0){
+					continue;
+				}
+
+				deviceArrearagePercentage.setLessee(thisLesseeName);
+				deviceArrearagePercentage.setPercentage(arrearagePercentage);
+				deviceArrearagePercentage.setArrearageDeviceNum(totalNum - normalDeviceNum);
+				deviceArrearagePercentage.setNormalDeviceNum(normalDeviceNum);
+				deviceArrearagePercentage.setLesseePhone(lesseePhoneNumber);
+				deviceArrearagePercentage.setTotalDeviceNum(totalNum);
+				deviceArrearagePercentage.setArrearageTimePerDevice((float) arrearageNumber / totalNum);
+
+				resultList.add(deviceArrearagePercentage);
+			}
+
+			return resultList;
+		} catch (Exception e) {
+			logger.error("获取设备列表出错", e);
+			throw new CodeException("内部错误");
+		}
+	}
 }
