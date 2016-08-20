@@ -1,15 +1,10 @@
 package com.monitor.service.device;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.List;
-
 import com.monitor.exception.CodeException;
-import com.monitor.model.Device;
-import com.monitor.model.DeviceArrearagePercentage;
-import com.monitor.model.DeviceStatus;
-import com.monitor.model.LesseeDeviceInfo;
-import com.monitor.model.Pager;
+import com.monitor.model.*;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public interface IDeviceService {
 	/**
@@ -127,4 +122,12 @@ public interface IDeviceService {
 	public Pager queryLesseeDeviceInformationPager(Integer pageNo, Integer pageSize,
 			Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month,
 			Integer startYear, Integer startMonth, Integer endYear, Integer endMonth) throws CodeException;
+
+	/**
+	 *
+	 * @return List of device information by pager
+	 * @throws CodeException
+	 */
+	public List<DeviceArrearagePercentage> queryLesseeDeviceInformationPrint(Integer accountId, int type, String lesseeName, int arrearagePercentageType, Integer month,
+												   Integer startYear, Integer startMonth, Integer endYear, Integer endMonth) throws CodeException;
 }
