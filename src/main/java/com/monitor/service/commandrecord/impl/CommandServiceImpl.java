@@ -55,11 +55,8 @@ public class CommandServiceImpl implements CommandService {
 				countSql.append("  and cr.type =:type ");
 			}
 			if (!StringUtils.isEmpty(userName)) {
-				builder.append("  and cr.accountName =:accountName ");
-				countSql.append("  and cr.accountName =:accountName ");
-//				builder.append("  and cr.accountId =:accountId ");
-//				countSql.append("  and cr.accountId =:accountId ");
-
+//				builder.append("  and cr.accountName =:accountName ");
+//				countSql.append("  and cr.accountName =:accountName ");
 			}
 
 			builder.append(" ORDER BY cr.recordTime DESC ");
@@ -75,10 +72,10 @@ public class CommandServiceImpl implements CommandService {
 				queryList.setParameter("type", type);
 			}
 			if (!StringUtils.isEmpty(userName)) {
-//				Account account = accountRepository.queryAccountbyuserName(userName);
-//				Integer accountId = account.getId();
-				query.setParameter("accountName", "%" + userName + "%");
-				queryList.setParameter("accountName", "%" + userName + "%");
+				Account account = accountRepository.queryAccountbyuserName(userName);
+				Integer accountId = account.getId();
+//				query.setParameter("accountName", "%" + userName + "%");
+//				queryList.setParameter("accountName", "%" + userName + "%");
 			}
 			pager.setTotalCount(((BigInteger) query.getSingleResult())
 					.intValue());
@@ -99,7 +96,6 @@ public class CommandServiceImpl implements CommandService {
 			throw new CodeException("内部错误");
 
 		}
-
 	}
 
 	@Override
