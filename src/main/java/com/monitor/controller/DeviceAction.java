@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -324,45 +322,16 @@ public class DeviceAction {
 		}
 		return deviceService.queryLesseeDeviceInformation();
 	}
-	
-	@RequestMapping(value = "/e_queryLesseeDeviceInformationPager", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	Pager queryLesseeDeviceInformationPager(
-			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
-			@RequestParam(value = "type", defaultValue = "0") int type,
-			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
-			@RequestParam(value = "arrearagePercentageType", defaultValue = "-1") int arrearagePercentageType,
-			@RequestParam(value = "month", defaultValue = "1") int month,
-			@RequestParam(value = "startYear", defaultValue = "2016") int startYear,
-			@RequestParam(value = "startMonth", defaultValue = "7") int startMonth,
-			@RequestParam(value = "endYear", defaultValue = "1") int endYear,
-			@RequestParam(value = "endMonth", defaultValue = "1") int endMonth,
-			HttpServletResponse response) throws CodeException{
-		if (accountId == 0) {
-			throw new CodeException("请重新登录");
-		}
-		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType, month, startYear, startMonth, endYear, endMonth);
-	}
 
 	@RequestMapping(value = "/e_queryLesseeDevicePrint", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List queryLesseeDevicePrint(
+	String queryLesseeDevicePrint(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
-			@RequestParam(value = "type", defaultValue = "0") int type,
-			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
-			@RequestParam(value = "arrearagePercentageType", defaultValue = "-1") int arrearagePercentageType,
-			@RequestParam(value = "month", defaultValue = "1") int month,
-			@RequestParam(value = "startYear", defaultValue = "2016") int startYear,
-			@RequestParam(value = "startMonth", defaultValue = "7") int startMonth,
-			@RequestParam(value = "endYear", defaultValue = "1") int endYear,
-			@RequestParam(value = "endMonth", defaultValue = "1") int endMonth,
 			HttpServletResponse response) throws CodeException{
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-		return deviceService.queryLesseeDeviceInformationPrint(accountId, type, lesseeName, arrearagePercentageType, month, startYear, startMonth, endYear, endMonth);
+		return "success";
 	}
 
 	@RequestMapping(value = "/e_queryLesseeDeviceInformationPrint", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -384,26 +353,26 @@ public class DeviceAction {
 		return deviceService.queryLesseeDeviceInformationPrint(accountId, type, lesseeName, arrearagePercentageType, month, startYear, startMonth, endYear, endMonth);
 	}
 
-	@RequestMapping(value = "/e_testCase", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(value = "/e_queryLesseeDeviceInformationPager", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	String queryLesseeDeviceInformationPager(
+	Pager queryLesseeDeviceInformationPager(
 			@RequestParam(value = "accountId", defaultValue = "0") int accountId,
+			@RequestParam(value = "type", defaultValue = "0") int type,
+			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+			@RequestParam(value = "lesseeName", defaultValue = "") String lesseeName,
+			@RequestParam(value = "arrearagePercentageType", defaultValue = "-1") int arrearagePercentageType,
+			@RequestParam(value = "month", defaultValue = "1") int month,
+			@RequestParam(value = "startYear", defaultValue = "2016") int startYear,
+			@RequestParam(value = "startMonth", defaultValue = "7") int startMonth,
+			@RequestParam(value = "endYear", defaultValue = "1") int endYear,
+			@RequestParam(value = "endMonth", defaultValue = "1") int endMonth,
 			HttpServletResponse response) throws CodeException{
 		if (accountId == 0) {
 			throw new CodeException("请重新登录");
 		}
-
-		return getTimeOf12().toString();
+		return deviceService.queryLesseeDeviceInformationPager(pageNo, pageSize, accountId, type, lesseeName, arrearagePercentageType, month, startYear, startMonth, endYear, endMonth);
 	}
 
-	private Date getTimeOf12() {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		cal.add(Calendar.DAY_OF_MONTH, 1);
-		return  cal.getTime();
-	}
 }
